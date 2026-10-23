@@ -1,0 +1,24 @@
+[
+  {
+    "check": "frontend_and_proxy_health",
+    "status": "Passed",
+    "postgresql": "17.11 (Debian 17.11-1.pgdg13+2)"
+  },
+  {
+    "check": "HTTP_login_RBAC_logout_admin",
+    "status": "Passed"
+  },
+  {
+    "check": "HTTP_login_RBAC_logout_customer",
+    "status": "Passed"
+  },
+  {
+    "check": "HTTP_login_RBAC_logout_technician",
+    "status": "Passed"
+  },
+  {
+    "check": "live_openapi_validator",
+    "status": "Passed",
+    "operations": 8
+  }
+]

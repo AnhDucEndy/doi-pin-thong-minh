@@ -1,0 +1,204 @@
+{
+  "checked_at_utc": "2026-10-23T17:22:39.221350+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "python_executable": "C:\\Users\\admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "scope": "Phase 0 static checks; no business modules executed",
+  "sources_sha256": {
+    "CODEX_START_HERE.md": "8c6b3168ce38544f5c6502af48e95b466c013eb2def0b2fb07d6c418507fa5c6",
+    "handoff/DECISIONS_APPROVED_2026-10-23.md": "7fca1aff1acf5424c5e26463decfb608ac89ffbb59be092e2417417d7751031a",
+    "handoff/decisions.approved.json": "98090c358d1e43b93e6724d7796c7c52d3306bef1e11257b962b2d5e1730deb3",
+    "contracts/demo-config.approved.yaml": "316b3f208d94ed41c3c1615e84c42286062be5167cfecdcc6fdbdfe7c0861a28"
+  },
+  "checks": [
+    {
+      "name": "baseline/SHA256.json",
+      "status": "Passed",
+      "detail": {
+        "files": 5,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "validation/delivery-sha256.json",
+      "status": "Passed",
+      "detail": {
+        "files": 74,
+        "mismatches": []
+      }
+    },
+    {
+      "name": "QD01-QD09",
+      "status": "Passed",
+      "detail": {
+        "QD01": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD02": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD03": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD04": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD05": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD06": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD07": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD08": "APPROVED_FOR_SIMULATION_BY_USER",
+        "QD09": "APPROVED_FOR_SIMULATION_BY_USER"
+      }
+    },
+    {
+      "name": "approved_config_current_schema_constraints",
+      "status": "Passed",
+      "detail": {
+        "fields": 34,
+        "errors": [],
+        "official_validator": "Not Run"
+      }
+    },
+    {
+      "name": "approved_policy_values",
+      "status": "Passed",
+      "detail": {
+        "decision_status": "APPROVED_FOR_SIMULATION_BY_USER",
+        "environment": "simulation_only",
+        "station_count": 2,
+        "compartments_per_station": 6,
+        "battery_family": "DEMO_FAMILY_A",
+        "ownership_mode": "NETWORK",
+        "payment_mode": "MOCK",
+        "charge_timing": "BEFORE_RETURN",
+        "refund_mode": "FULL_ADMIN_REVIEWED",
+        "accounts_mode": "PRECREATED",
+        "rfid_mode": "SIMULATED",
+        "roles_mode": "SEPARATE",
+        "fee_minor": 9000,
+        "currency": "VND",
+        "soc_min_pct": 80,
+        "soh_min_pct": 80,
+        "temperature_max_c": 40,
+        "qr_ttl_seconds": 120,
+        "login_max_failures": 5,
+        "login_window_seconds": 900,
+        "telemetry_interval_seconds": 5,
+        "telemetry_stale_seconds": 15,
+        "reservation_ttl_seconds": 120,
+        "physical_step_timeout_seconds": 60,
+        "command_ttl_seconds": 15,
+        "payment_timeout_seconds": 30,
+        "web_session_ttl_seconds": 3600,
+        "verification_ttl_seconds": 120,
+        "dashboard_poll_seconds": 3,
+        "idempotency_retention_hours": 72,
+        "staff_count": 5,
+        "weeks": 10,
+        "hours_per_person_week": 8
+      }
+    },
+    {
+      "name": "FR_UC_TC_baseline_coverage",
+      "status": "Passed",
+      "detail": {
+        "FR": 19,
+        "UC": 17,
+        "TC": 19
+      }
+    },
+    {
+      "name": "GD2_trace_matches_GD1",
+      "status": "Passed",
+      "detail": {
+        "differences": []
+      }
+    },
+    {
+      "name": "BR01-BR12_in_baseline",
+      "status": "Passed",
+      "detail": {
+        "BR01": "M\u1ed9t kh\u00e1ch c\u00f3 t\u1ed1i \u0111a m\u1ed9t phi\u00ean \u0111\u1ed5i \u0111ang ho\u1ea1t \u0111\u1ed9ng; m\u1ed9t pin/ng\u0103n ch\u1ec9 b\u1ecb gi\u1eef b\u1edfi m\u1ed9t phi\u00ean. Gi\u1eef ch\u1ed7 ph\u1ea3i nguy\u00ean t\u1eed.",
+        "BR02": "Pin c\u1ea5p ph\u1ea3i \u0111\u00fang h\u1ecd pin, \u0111\u1ee7 SOC theo c\u1ea5u h\u00ecnh demo, kh\u00f4ng c\u00f3 c\u1edd l\u1ed7i/c\u00e1ch ly, d\u1eef li\u1ec7u BMS c\u00f2n m\u1edbi, ng\u0103n ph\u1ee5c v\u1ee5 v\u00e0 c\u1eeda \u0111\u00f3ng. SOH kh\u00f4ng t\u1ef1 t\u00ednh t\u1eeb nhi\u1ec7t \u0111\u1ed9; l\u1ea5y t\u1eeb d\u1eef li\u1ec7u BMS m\u00f4 ph\u1ecfng.",
+        "BR03": "QR g\u1eafn kh\u00e1ch, tr\u1ea1m, th\u1eddi h\u1ea1n v\u00e0 nonce d\u00f9ng m\u1ed9t l\u1ea7n. RFID demo \u00e1nh x\u1ea1 credential \u0111\u1ebfn t\u00e0i kho\u1ea3n c\u00f2n hi\u1ec7u l\u1ef1c; UID th\u1ebb kh\u00f4ng \u0111\u01b0\u1ee3c xem l\u00e0 c\u01a1 ch\u1ebf ch\u1ed1ng sao ch\u00e9p cho v\u1eadn h\u00e0nh th\u1eadt.",
+        "BR04": "Th\u1ee9 t\u1ef1 \u0111\u1ec1 xu\u1ea5t: x\u00e1c th\u1ef1c \u2192 gi\u1eef pin/ng\u0103n \u2192 ch\u1ea5p thu\u1eadn ph\u00ed \u2192 thu ph\u00ed x\u00e1c minh \u2192 nh\u1eadn pin c\u0169 \u2192 c\u1ea5p pin m\u1edbi \u2192 x\u00e1c nh\u1eadn ho\u00e0n t\u1ea5t. \u0110\u00e2y l\u00e0 ch\u00ednh s\u00e1ch DX, ch\u01b0a ph\u1ea3i y\u00eau c\u1ea7u g\u1ed1c.",
+        "BR05": "Pin tr\u1ea3 ph\u1ea3i thu\u1ed9c m\u1ea1ng l\u01b0\u1edbi, \u0111\u00fang lo\u1ea1i v\u00e0 \u0111\u00fang pin kh\u00e1ch \u0111ang gi\u1eef. Kh\u00f4ng nh\u1eadn di\u1ec7n \u0111\u01b0\u1ee3c th\u00ec kh\u00f4ng c\u1ea5p pin m\u1edbi. N\u1ebfu pin \u0111\u00e3 \u1edf trong ng\u0103n, gi\u1eef tr\u1ea1ng th\u00e1i c\u1ea7n x\u1eed l\u00fd v\u00e0 nh\u1edd k\u1ef9 thu\u1eadt vi\u00ean; kh\u00f4ng t\u1ef1 m\u1edf l\u1ea1i khi ch\u01b0a \u0111\u00e1nh gi\u00e1 \u0111i\u1ec1u ki\u1ec7n.",
+        "BR06": "M\u1ed7i l\u1ec7nh c\u00f3 command_id duy nh\u1ea5t, th\u1eddi h\u1ea1n v\u00e0 phi\u00ean \u0111\u00edch. Retry c\u00f9ng ID ch\u1ec9 tr\u1ea3 l\u1ea1i k\u1ebft qu\u1ea3 \u0111\u00e3 bi\u1ebft. ACK l\u1ec7nh kh\u00e1c v\u1edbi b\u1eb1ng ch\u1ee9ng c\u1eeda \u0111\u00e3 m\u1edf ho\u1eb7c pin \u0111\u00e3 \u0111\u01b0\u1ee3c l\u1ea5y.",
+        "BR07": "Timeout thanh to\u00e1n l\u00e0 UNKNOWN, kh\u00f4ng ph\u1ea3i FAILED. Kh\u00f4ng t\u1ea1o l\u1ea7n thu m\u1edbi khi k\u1ebft qu\u1ea3 c\u0169 ch\u01b0a r\u00f5. Ch\u1ec9 ti\u1ebfp t\u1ee5c sau x\u00e1c minh t\u1eeb mock/sandbox.",
+        "BR08": "N\u1ebfu \u0111\u00e3 thu v\u00e0 x\u00e1c minh ch\u01b0a giao pin m\u1edbi: ho\u00e0n ph\u00ed theo y\u00eau c\u1ea7u Admin c\u00f3 nh\u1eadt k\u00fd. N\u1ebfu pin c\u0169 \u0111\u00e3 b\u1ecb gi\u1eef, \u0111\u1ed3ng th\u1eddi m\u1edf vi\u1ec7c k\u1ef9 thu\u1eadt \u0111\u1ec3 tr\u1ea3 l\u1ea1i ho\u1eb7c x\u1eed l\u00fd quy\u1ec1n gi\u1eef pin; ho\u00e0n ph\u00ed kh\u00f4ng t\u1ef1 gi\u1ea3i quy\u1ebft t\u00e0i s\u1ea3n.",
+        "BR09": "N\u1ebfu kh\u00f4ng r\u00f5 kh\u00e1ch \u0111\u00e3 l\u1ea5y pin m\u1edbi hay ch\u01b0a, kh\u00f4ng ho\u00e0n ti\u1ec1n t\u1ef1 \u0111\u1ed9ng v\u00e0 kh\u00f4ng c\u1ea5p th\u00eam pin; kh\u00f3a phi\u00ean \u1edf ch\u1edd \u0111\u1ed1i so\u00e1t. Tr\u1ea1ng th\u00e1i v\u1eadt l\u00fd sau kh\u00f4i ph\u1ee5c quy\u1ebft \u0111\u1ecbnh nh\u00e1nh ti\u1ebfp theo.",
+        "BR10": "C\u1ea3nh b\u00e1o nguy hi\u1ec3m ch\u1eb7n c\u1ea5p pin/ng\u0103n li\u00ean quan; x\u00e1c nh\u1eadn \u0111\u00e3 \u0111\u1ecdc c\u1ea3nh b\u00e1o kh\u00f4ng \u0111\u1ed3ng ngh\u0129a \u0111\u00e3 x\u1eed l\u00fd. Ch\u1ec9 k\u1ef9 thu\u1eadt vi\u00ean \u0111\u01b0\u1ee3c ph\u1ee5c h\u1ed3i sau khi \u0111i\u1ec1u ki\u1ec7n h\u1ebft l\u1ed7i \u0111\u01b0\u1ee3c x\u00e1c minh.",
+        "BR11": "MVP ch\u1ec9 cho t\u1ea1o phi\u00ean m\u1edbi khi tr\u1ea1m online v\u00e0 d\u1eef li\u1ec7u \u0111\u1ee7 m\u1edbi. Khi \u0111ang \u0111\u1ed5i m\u00e0 m\u1ea5t m\u1ea1ng, d\u1eebng l\u1ec7nh m\u1edbi v\u00e0 gi\u1eef th\u00f4ng tin phi\u00ean \u0111\u1ec3 \u0111\u1ed1i so\u00e1t.",
+        "BR12": "Kh\u00f4ng x\u00f3a v\u1eadt l\u00fd pin/tr\u1ea1m/t\u00e0i kho\u1ea3n c\u00f3 l\u1ecbch s\u1eed; \u0111\u00e1nh d\u1ea5u ng\u1eebng s\u1eed d\u1ee5ng. Kh\u00f4ng ch\u1ec9nh tr\u1ef1c ti\u1ebfp tr\u1ea1ng th\u00e1i giao d\u1ecbch \u0111\u1ec3 l\u00e0m \u0111\u1eb9p b\u00e1o c\u00e1o."
+      }
+    },
+    {
+      "name": "TC01-TC19_definition_coverage",
+      "status": "Passed",
+      "detail": {
+        "defined": 19,
+        "executed": false
+      }
+    },
+    {
+      "name": "openapi_operation_metadata",
+      "status": "Passed",
+      "detail": {
+        "operations": 50,
+        "FR": 19,
+        "UC": 17,
+        "scope": "text structure only"
+      }
+    },
+    {
+      "name": "catalog_matches_openapi_metadata",
+      "status": "Passed",
+      "detail": {
+        "catalog_operations": 50
+      }
+    },
+    {
+      "name": "trace_operations_and_diagrams",
+      "status": "Passed",
+      "detail": {
+        "rows": 19
+      }
+    },
+    {
+      "name": "DDL_dictionary_tables",
+      "status": "Passed",
+      "detail": {
+        "DDL_tables": 24,
+        "dictionary_tables": 24,
+        "SQL_parser": "Not Run"
+      }
+    },
+    {
+      "name": "state_enums_match_DDL",
+      "status": "Passed",
+      "detail": {
+        "enum_types": 16
+      }
+    },
+    {
+      "name": "diagram_source_and_artifact_structure",
+      "status": "Passed",
+      "detail": {
+        "sources": 16,
+        "errors": [],
+        "rerendered": false,
+        "visual_review": "Not Run"
+      }
+    }
+  ],
+  "open_items": [
+    "P0-01: demo_policies.review_status cannot represent APPROVED_FOR_SIMULATION_BY_USER; migration decision required.",
+    "P0-02: official validators not installed; original validate_design.py checks proposed config and overwrites original evidence.",
+    "P0-03: missing-config HTTP status descriptions differ between DOCX and OpenAPI; align before contract tests."
+  ],
+  "not_run": [
+    "official JSON Schema validator",
+    "OpenAPI validator",
+    "PostgreSQL SQL parser",
+    "PostgreSQL migration",
+    "API/UI/simulators",
+    "TC01-TC19",
+    "CT01-CT14",
+    "NFR runtime checks"
+  ],
+  "summary": {
+    "Passed": 15,
+    "Failed": 0
+  }
+}

@@ -1,0 +1,87 @@
+# Hệ thống quản lý trạm đổi pin thông minh
+
+Phase 1: nền tảng FastAPI, React/TypeScript/Vite, PostgreSQL 17, Alembic, seed demo và Authentication/RBAC. Phạm vi mô phỏng đã duyệt QD01–QD09. Các nghiệp vụ đổi pin/thanh toán/thiết bị thuộc phase sau, chưa có endpoint.
+
+## Chuẩn bị
+
+- Windows 11, Python 3.12, Node.js 24 LTS/npm, Git, Docker Desktop/WSL2 đang chạy.
+- Giữ nguyên bộ tài liệu `doi-pin-giai-doan-2/` trong workspace: ứng dụng đọc approved policy/schema và hợp đồng tại đó; validator/test đối chiếu bản gốc. Bộ DOCX/ảnh thiết kế không nằm trong commit source Phase 1 theo yêu cầu; khi khôi phục source từ Git cần đặt lại bộ hồ sơ này từ bản bàn giao đã giữ.
+- Không cài thêm PostgreSQL native. Một `.venv/` và một bộ node_modules tại apps/web.
+
+Tại gốc workspace, dùng Python 3.12 đã cài của bạn:
+
+```powershell
+py -V:3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --cache-dir .cache/pip -r requirements.lock.txt
+npm.cmd --prefix apps/web ci --cache .cache/npm
+```
+
+Không tạo lại venv nếu đã hoạt động. `requirements.in` mô tả giới hạn dependency trực tiếp; requirements.lock.txt đóng băng bộ Python đã test; package-lock.json đóng băng npm. Không nâng cấp công cụ toàn hệ thống để chạy dự án.
+
+## Cấu hình local
+
+Copy `.env.example` thành `.env` nếu chưa có, thay toàn bộ REPLACE_* bằng secret ngẫu nhiên riêng. Các URL phải khớp password tương ứng; nếu dùng ký tự đặc biệt, URL-encode phần password. Không ghi mật khẩu thật vào README hoặc terminal chia sẻ.
+
+`.env` hiện tại trong workspace đã được tạo bằng secret ngẫu nhiên và bị Git ignore; không copy đè nếu đã có DB. Biến POSTGRES_PASSWORD chỉ khởi tạo mật khẩu lần đầu của volume trống; thay file env không tự đổi mật khẩu DB đã có.
+
+## Khởi tạo lần đầu
+
+Các lệnh sau tạo DB/container/volume nếu chưa có; cần đồng ý trước khi dùng trên máy mới. Sự đồng ý đã có cho lượt triển khai hiện tại.
+
+```powershell
+.\tools\dev.ps1 database
+.\tools\dev.ps1 provision
+.\tools\dev.ps1 migrate
+.\tools\dev.ps1 seed
+.\tools\dev.ps1 validate
+```
+
+PostgreSQL chỉ bind 127.0.0.1:5432; schema doi_pin. Provision tạo role migrator/runtime nếu thiếu, không thay mật khẩu role có sẵn. Migration dùng role riêng; seed không ghi đè dữ liệu có sẵn. Không chạy DDL gốc thêm lần nữa. Không downgrade hoặc xóa schema/volume để sửa lỗi.
+
+Nếu không chạy được file .ps1 do chính sách, không cần thay Execution Policy: gọi trực tiếp các lệnh Python/npm tương đương trong file hoặc mở bằng PowerShell 7 với chính sách sẵn có của bạn.
+
+## Chạy ứng dụng
+
+Mở hai terminal tại gốc:
+
+```powershell
+# Terminal 1
+.\tools\dev.ps1 backend
+
+# Terminal 2
+.\tools\dev.ps1 frontend
+```
+
+Frontend: http://127.0.0.1:5173. Backend: http://127.0.0.1:8000. API docs: http://127.0.0.1:8000/docs. Health: http://127.0.0.1:8000/health. Vite proxy /v1 và /health sang Backend nên không cần public CORS.
+
+Tài khoản demo: admin, customer, technician. Password lấy từ DEMO_ADMIN_PASSWORD, DEMO_CUSTOMER_PASSWORD, DEMO_TECHNICIAN_PASSWORD trong `.env` local. Token chỉ nằm trong bộ nhớ tab; tải lại trang yêu cầu đăng nhập lại. Admin quản lý tài khoản; hai vai trò còn lại có màn hình phiên của mình. Không cung cấp mật khẩu mặc định công khai.
+
+Chạy Backend trực tiếp nếu cần:
+
+```powershell
+$env:PYTHONPATH = Join-Path (Get-Location) 'services/backend'
+.\.venv\Scripts\python.exe -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log --no-proxy-headers
+```
+
+## Kiểm tra
+
+```powershell
+.\tools\dev.ps1 test
+npm.cmd --prefix apps/web run build
+.\.venv\Scripts\python.exe -m pip check
+```
+
+Test cần quyền kết nối localhost và role admin/migrator để chuẩn bị schema test riêng; không chạy bằng SQLite. Bằng chứng: docs/PHASE1_TEST_RESULTS.xml, docs/TEST_ENVIRONMENT.json và docs/CONTRACT_VALIDATION.json. TC01/02 bao phủ login/role, wrong-password/rate limit, concurrent failures, expiry/logout, account locking/revocation, create/update/assignments, idempotency/version conflict và bảo toàn lịch sử. Không coi đó là nghiệm thu TC03–19.
+
+## Dừng và dung lượng
+
+Ctrl+C ở từng terminal để dừng web/API. Dừng DB mà giữ dữ liệu:
+
+```powershell
+# Dùng docker.exe tại đường dẫn đã cài nếu CLI chưa trên PATH
+docker compose --env-file .env -f deploy/compose.yaml stop db
+```
+
+Không dùng `down -v`, `docker volume prune`, `DROP DATABASE/SCHEMA` hoặc xóa .git/ để dọn máy. DB và các schema test nằm trong volume Docker, ngoài workspace; không di chuyển VHDX thủ công.
+
+`.venv/`, apps/web/node_modules và apps/web/dist có thể tạo lại từ dependency/lockfile, nhưng xóa venv/node_modules sẽ cần cài lại. `.cache/pip`, `.cache/npm` và thư mục pytest tạm là cache có thể tái tạo; kiểm tra đúng đường dẫn trong workspace trước khi dọn. Giữ source, migrations, lockfile, tài liệu gốc, docs bằng chứng, `.env` local và DB/ledger quan trọng để khôi phục.

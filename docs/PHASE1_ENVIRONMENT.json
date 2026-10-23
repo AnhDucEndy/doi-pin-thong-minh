@@ -1,0 +1,30 @@
+{
+  "python": "3.12.10",
+  "node": "v24.22.1",
+  "npm": "11.19.1",
+  "git": "git version 2.56.0.windows.3",
+  "database": {
+    "version": "17.11 (Debian 17.11-1.pgdg13+2)",
+    "runtime_role": "doi_pin_runtime",
+    "users": 3,
+    "stations": 2,
+    "compartments": 12,
+    "migration": "0002_user_approval",
+    "test_schemas": [
+      "phase1_test_925e7c723055",
+      "phase1_test_96a70fe4bd0b",
+      "phase1_test_d500f0e86c8e",
+      "phase1_test_f7cf1d79cf38"
+    ]
+  },
+  "workspace_bytes": {
+    ".venv": 100493374,
+    "apps/web/node_modules": 59134182,
+    "apps/web/dist": 235732,
+    ".cache": 153533703
+  },
+  "postgres_image_bytes": 639939162,
+  "postgres_volume_kib": 71524,
+  "docker_resources_approved_by_user": true,
+  "data_or_volumes_deleted": false
+}

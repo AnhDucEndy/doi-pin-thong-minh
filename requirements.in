@@ -1,0 +1,14 @@
+# Phase 1 application and verification dependencies; resolved versions in requirements.lock.txt
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+SQLAlchemy>=2.0,<2.1
+alembic>=1.13,<2
+psycopg[binary]>=3.2,<4
+argon2-cffi>=23,<26
+python-dotenv>=1,<2
+PyYAML>=6,<7
+jsonschema>=4,<5
+openapi-spec-validator>=0.7,<1
+pglast>=7,<8
+pytest>=8,<10
+httpx>=0.27,<1

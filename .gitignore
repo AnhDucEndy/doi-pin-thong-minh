@@ -1,0 +1,54 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+*.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+
+# npm dependencies and frontend caches
+node_modules/
+.npm/
+.next/
+.nuxt/
+.vite/
+.parcel-cache/
+coverage/
+
+# Generated builds and temporary files
+build/
+dist/
+out/
+.cache/
+tmp/
+temp/
+*.tmp
+*.temp
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Local environment configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
