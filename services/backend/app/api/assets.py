@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
 import hmac
 
-from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Request, Response
 from sqlalchemy import insert, select
 
 from app.api.asset_schemas import (AvailabilityPage, CompartmentAction, CompartmentCreate,
@@ -83,10 +83,11 @@ def build_router(session, principal, admin, mutation):
         return {'device': device, 'device_key_once': secret}
 
     @router.get('/v1/devices', response_model=DevicesPage, operation_id='listDevices', tags=['FR03'])
-    def list_devices(request: Request, cursor: UUID | None = None, limit: int = Query(20, ge=1, le=100),
+    def list_devices(request: Request, response: Response, cursor: UUID | None = None, limit: int = Query(20, ge=1, le=100),
                      actor=Depends(operator, scope='function'), current=Depends(session, scope='function')):
         db = request.app.state.db
         table = db.table('devices')
+        response.headers['X-Dashboard-Poll-Seconds'] = str(approved_policy(request.app.state.settings.policy_path)['dashboard_poll_seconds'])
         clauses = []
         if actor['user']['role'] == 'TECHNICIAN':
             assignments = db.table('user_station_assignments')

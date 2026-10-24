@@ -2,7 +2,7 @@
 
 Cập nhật: 24/10/2026 (Asia/Bangkok).
 
-**Phase 3 – F3 hoàn tất trong phạm vi Battery/BMS; dừng trước Phase 4 IoT.** Kế thừa Phase 1–2. Phase 0 được người dùng xác nhận hoàn thành; P0-01/02/03 đã giải quyết theo [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md).
+**Phase 4 – IoT Simulator & Device Communication hoàn tất trong phạm vi đã giao; dừng trước Phase 5.** Phase 0–3 được kế thừa, không xây dựng lại. P0-01/02/03 giữ nguyên theo IMPLEMENTATION_DECISIONS.md.
 
 ## Tiến độ
 
@@ -12,7 +12,7 @@ Cập nhật: 24/10/2026 (Asia/Bangkok).
 | 1 Nền tảng/định danh | Passed | 18 tests, build web, 5 HTTP smoke checks; bằng chứng bên dưới |
 | 2 F2 Trạm/thiết bị/ngăn | Passed | 55 Passed / 0 Failed; build + 14 HTTP checks Passed; xem PHASE2_IMPLEMENTATION.md |
 | 3 F3 Pin/BMS (phần còn lại của nhóm 2 handoff) | Passed trong phạm vi F3 | 103 tests Passed: 18 Phase 1 + 37 Phase 2 + 48 F3; build, 16 HTTP checks, UI đọc ba vai trò |
-| 4 IoT/thiết bị/bằng chứng | Not Run | Chưa triển khai pipeline/simulator; không đồng nhất với mã nhóm 3 của handoff gốc |
+| 4 IoT/thiết bị/bằng chứng | Passed trong phạm vi giao tiếp | 147 tests = 103 hồi quy + 44 IoT; 8 E2E tiến trình thật; 13 HTTP checks local; GUI ACK trên schema test |
 | 5 QR/RFID và reservation | Not Run | Chưa triển khai |
 | 6 Payment Mock | Not Run | Chưa triển khai |
 | 7 Quy trình đổi pin | Not Run | Chưa triển khai |
@@ -20,6 +20,8 @@ Cập nhật: 24/10/2026 (Asia/Bangkok).
 | Tích hợp/nghiệm thu toàn hệ thống | Not Run | Không suy ra từ kiểm thử từng module |
 
 ## Kết quả mới nhất: Phase 2 – F2
+
+**Cập nhật Phase 4:** [PHASE4_IMPLEMENTATION.md](PHASE4_IMPLEMENTATION.md), PHASE4_TEST_RESULTS.xml, PHASE4_E2E_RESULTS.json, PHASE4_HTTP_SMOKE_RESULTS.json và PHASE4_UI_RESULTS.json. Snapshot/heartbeat/BMS, event inbox, command polling/ledger, timeout và cảnh báo đã kiểm. Không migration mới, head 0002_user_approval; chỉ thêm grants. Chưa có API tạo swap/payment/reservation hoặc chuyển custody. Năm probe nghiệm thu Phase 3 đã được người dùng dọn, không nằm trong 103 ca hồi quy hiện có. Bằng chứng Phase 4 không thay thế hay sửa baseline; các phần Phase 1–3 bên dưới là lịch sử.
 
 **Cập nhật Phase 3:** xem [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md), [JUnit](PHASE3_TEST_RESULTS.xml), [HTTP smoke](PHASE3_HTTP_SMOKE_RESULTS.json), [validator](PHASE3_CONTRACT_VALIDATION.json), [DB check](PHASE3_DATABASE_CHECK.json). Không có migration cấu trúc mới, head 0002_user_approval; seed thêm 10 mẫu BMS chưa xác minh, bảo toàn hồ sơ/vị trí có sẵn. TC06 chuyển custody qua quy trình đổi và TC07 nhận telemetry qua thiết bị vẫn Not Run ngoài phạm vi F3. Các bảng/mục Phase 1–2 dưới đây là lịch sử nghiệm thu; Phase 3 dùng số thứ tự theo yêu cầu mới, không sửa mã module trong handoff.
 

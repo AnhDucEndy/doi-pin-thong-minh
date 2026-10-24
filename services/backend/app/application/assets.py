@@ -123,6 +123,13 @@ def quality(session, db, pin, device, now, policy, issue=True, require_service=T
             and event['compartment_id'] == pin['compartment_id']
             and fresh(reading['received_at'], now, policy) and fresh(reading['measured_at'], now, policy)):
         return False
+    # New Phase 4 FAULT evidence invalidates an older good sample, even when it is still within TTL.
+    fault = session.execute(select(events.c.received_at).where(events.c.device_id == device['id'],
+        events.c.compartment_id == pin['compartment_id'], events.c.kind == 'FAULT',
+        events.c.accepted.is_(True), events.c.processed_at.is_not(None))
+        .order_by(events.c.received_at.desc()).limit(1)).scalar()
+    if fault and reading['received_at'] <= fault:
+        return False
     if reading['temperature_c'] > policy['temperature_max_c']:
         return False
     return not issue or (reading['soc'] >= policy['soc_min_pct'] and reading['soh'] >= policy['soh_min_pct'])

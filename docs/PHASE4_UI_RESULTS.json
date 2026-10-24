@@ -1,0 +1,10 @@
+{
+  "result": "Passed",
+  "schema": "phase4_e2e_24addf236f",
+  "port": 5174,
+  "technician_device_scope": "S01 only",
+  "alert_after_gui_ack": "ACKNOWLEDGED",
+  "pin_after_ack": "QUARANTINED",
+  "compartment_after_ack": "BLOCKED",
+  "production_schema_modified": false
+}

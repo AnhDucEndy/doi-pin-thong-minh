@@ -26,6 +26,7 @@ build/
 dist/
 out/
 .cache/
+.local/
 tmp/
 temp/
 *.tmp

@@ -17,7 +17,7 @@ def main():
         assert client.get('/').status_code == 200
         checks.append('Frontend HTML 200')
         health = httpx.get('http://127.0.0.1:8000/health', timeout=10)
-        assert health.status_code == 200 and health.json()['phase'] == 3
+        assert health.status_code == 200 and health.json()['phase'] >= 3
         checks.append('Phase 3 health / PostgreSQL connected')
         for name in ['admin', 'technician', 'customer']:
             login = client.post('/v1/auth/login', json={'username': name, 'password': os.environ[f'DEMO_{name.upper()}_PASSWORD']})

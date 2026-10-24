@@ -37,6 +37,9 @@ def main():
             cursor.execute(sql.SQL('GRANT INSERT ON {}.audit_events TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT UPDATE (state, review_reason, version) ON {}.swap_transactions TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT UPDATE (state, resolved_by, resolution_note, last_event_id, version) ON {}.alerts TO doi_pin_runtime').format(sql.Identifier(schema)))
+            for name in ('device_events','device_commands','alerts'):
+                cursor.execute(sql.SQL('GRANT INSERT, UPDATE ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema),sql.Identifier(name)))
+            cursor.execute(sql.SQL('GRANT INSERT ON {}.battery_telemetry TO doi_pin_runtime').format(sql.Identifier(schema)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

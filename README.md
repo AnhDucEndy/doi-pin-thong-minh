@@ -1,6 +1,6 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1 + F2 + F3: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, quản lý trạm/ngăn và hồ sơ pin/BMS theo QD01–QD09. Pipeline telemetry, simulator, đổi pin và thanh toán chưa triển khai. Báo cáo mới: [docs/PHASE3_IMPLEMENTATION.md](docs/PHASE3_IMPLEMENTATION.md); lịch sử F2: [docs/PHASE2_IMPLEMENTATION.md](docs/PHASE2_IMPLEMENTATION.md).
+Phase 1–4: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker và simulator bền vững theo QD01–QD09. QR/RFID, reservation API, payment mock và quy trình đổi pin chưa triển khai. Báo cáo mới: [docs/PHASE4_IMPLEMENTATION.md](docs/PHASE4_IMPLEMENTATION.md).
 
 ## Chuẩn bị
 
@@ -31,6 +31,10 @@ Giữ nguyên `.env` và volume. Bổ sung `DEVICE_KEY_DERIVATION_SECRET` ngẫu
 Sau đăng nhập, chọn **Trạm và ngăn tủ**. Customer chỉ thấy khả dụng tổng hợp; Technician xem và bảo trì ngăn đúng trạm; Admin quản lý trạm/thiết bị/ngăn. Ngăn seed BLOCKED/cửa UNKNOWN; khả dụng bằng 0 khi chưa có dữ liệu hợp lệ. RESTORE cần SNAPSHOT mới đã xử lý, không có nút mở cửa. Admin có mục Tài khoản riêng giữ chức năng Phase 1.
 
 ## Khởi tạo lần đầu
+
+Từ Phase 3 lên Phase 4: `tools/dev.ps1 migrate` cập nhật grants inbox/worker, head vẫn 0002, không có migration cấu trúc mới. Không cần seed lại hoặc chạy schema.sql. Mở terminal riêng cho `tools/dev.ps1 backend`, `tools/dev.ps1 worker`, `tools/dev.ps1 frontend`, và khi muốn chạy demo hợp lệ: `tools/dev.ps1 simulator` (hai trạm). Key simulator lấy DEMO_DEVICE_KEY_S01/S02 từ .env, không nhập lên Frontend. Simulator mặc định chỉ snapshot/heartbeat/BMS và ACK; không tự kích hoạt pin/ngăn hoặc đổi custody. CLI và các kịch bản lỗi/schema test xem báo cáo Phase 4.
+
+Ledger `.local/device/*.sqlite3` là dữ liệu bền vững, đã gitignore; giữ và sao lưu cùng DB khi cần khôi phục. Không xóa ledger để retry command. Menu **Thiết bị và IoT** hiển thị heartbeat, online/offline, dashboard theo scope và cảnh báo; ACK không gỡ cách ly. Không có nút mở cửa tùy ý. `--scenario physical/hot/fault/...` chỉ dùng trên schema test; xem `tools/smoke_phase4.py` để chạy E2E tách biệt.
 
 Đã có Phase 2: chạy `tools/dev.ps1 migrate` để cập nhật grants F3 (head vẫn 0002), rồi `tools/dev.ps1 seed`; không chạy DDL gốc. Seed chỉ bổ sung mẫu SOC/SOH/nhiệt độ **chưa xác minh**, không đổi vị trí/lifecycle/cửa/heartbeat. Chọn menu **Pin và BMS**, **Xem hồ sơ và BMS** để xem dữ liệu; Admin đăng ký/ngừng pin, Technician đúng trạm kích hoạt/cách ly/phục hồi bằng SNAPSHOT hợp lệ. Mẫu seed không phải bằng chứng để kích hoạt/phục hồi; khả dụng vẫn 0 cho đến khi có đủ chứng cứ của module thiết bị. Không có form sửa BMS hoặc vị trí pin đang phục vụ.
 

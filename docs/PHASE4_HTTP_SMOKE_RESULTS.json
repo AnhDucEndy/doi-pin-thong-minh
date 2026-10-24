@@ -1,0 +1,19 @@
+{
+  "result": "Passed",
+  "asset_mutations": false,
+  "checks": [
+    "Phase4 health and PostgreSQL",
+    "Frontend HTML",
+    "admin: /v1/dashboard",
+    "admin: /v1/alerts",
+    "admin: logout",
+    "technician: /v1/dashboard",
+    "technician: /v1/alerts",
+    "technician: logout",
+    "customer: /v1/dashboard",
+    "customer: /v1/alerts",
+    "customer: logout",
+    "User bearer cannot poll device commands",
+    "Authenticated malformed event rejected without inbox write"
+  ]
+}

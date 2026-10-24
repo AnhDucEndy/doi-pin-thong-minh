@@ -4,6 +4,8 @@ Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–Q
 
 ## Nguồn và thứ tự ưu tiên
 
+Cập nhật Phase 4: hoàn thành phần giao tiếp thiết bị theo FR17/UC15, FR19/UC17, dashboard read-only FR18/UC16 và tích hợp FR07. Nhãn F4 người dùng dùng cho Phase 4 không đổi baseline: F4 gốc vẫn là QR/RFID, chưa triển khai. Giao thức HTTP events/poll commands, worker inbox PostgreSQL và SQLite ledger simulator theo ARCH-01. Kết quả ở PHASE4_IMPLEMENTATION.md; dừng trước Phase 5.
+
 Cập nhật phạm vi thực hiện: Phase 3 được người dùng giao là F3 (FR06–08, UC06–08, TC06–08), hoàn thành phần pin/BMS của nhóm 2 trong handoff. Bước tiếp theo là Phase 4 IoT theo cách đánh số của người dùng. Các số nhóm trong CODEX_HANDOFF.md gốc giữ nguyên; không lấy tên phase mới để đổi FR/UC/TC. Kết quả Phase 3 ở PHASE3_IMPLEMENTATION.md; chưa thực hiện pipeline thiết bị hoặc chuyển custody qua đổi pin.
 
 - Đọc `../AGENTS.md` và `../doi-pin-giai-doan-2/CODEX_START_HERE.md` trước mỗi phase.
