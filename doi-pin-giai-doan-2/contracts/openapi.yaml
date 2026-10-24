@@ -1,0 +1,6408 @@
+openapi: 3.1.0
+info:
+  title: Smart Battery Swap GD2 contract
+  version: 0.2.0-draft
+  description: Thiết kế dựa GD1; chưa triển khai. x-roles, x-fr, x-uc là ràng buộc
+    Backend bắt buộc; OpenAPI tự nó không thực thi phân quyền. Không có endpoint sửa
+    state trực tiếp.
+servers:
+- url: http://localhost:8000
+  description: Chỉ demo loopback; triển khai từ xa phải HTTPS
+security:
+- UserBearer: []
+paths:
+  /v1/auth/login:
+    post:
+      operationId: login
+      summary: Đăng nhập
+      description: Backend giới hạn thử sai theo NFR02; tài khoản khóa không cấp token.
+        Không tiết lộ tài khoản có tồn tại.
+      tags:
+      - FR01
+      x-roles: &id001
+      - ADMIN
+      - CUSTOMER
+      - TECHNICIAN
+      x-fr:
+      - FR01
+      x-uc:
+      - UC01
+      responses:
+        '200':
+          description: Đăng nhập
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+  /v1/auth/logout:
+    post:
+      operationId: logout
+      summary: Thu hồi phiên
+      description: Thu hồi token hiện hành; gọi lặp trả accepted=true.
+      tags:
+      - FR01
+      x-roles: *id001
+      x-fr:
+      - FR01
+      x-uc:
+      - UC01
+      responses:
+        '200':
+          description: Thu hồi phiên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackReceipt'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+  /v1/me:
+    get:
+      operationId: me
+      summary: Thông tin phiên hiện hành
+      description: Thông tin phiên hiện hành
+      tags:
+      - FR01
+      x-roles: *id001
+      x-fr:
+      - FR01
+      x-uc:
+      - UC01
+      responses:
+        '200':
+          description: Thông tin phiên hiện hành
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+  /v1/users:
+    get:
+      operationId: listUsers
+      summary: Danh sách tài khoản
+      description: Danh sách tài khoản
+      tags:
+      - FR02
+      x-roles: &id002
+      - ADMIN
+      x-fr:
+      - FR02
+      x-uc:
+      - UC02
+      responses:
+        '200':
+          description: Danh sách tài khoản
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    post:
+      operationId: createUser
+      summary: Tạo tài khoản
+      description: Tạo tài khoản
+      tags:
+      - FR02
+      x-roles: *id002
+      x-fr:
+      - FR02
+      x-uc:
+      - UC02
+      responses:
+        '201':
+          description: Tạo tài khoản
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+  /v1/users/{user_id}:
+    patch:
+      operationId: updateUser
+      summary: Khóa và gán vai trò
+      description: Không xóa lịch sử. Revoke phiên cũ; nếu vai trò bị đổi phải kiểm
+        tra giao dịch đang hoạt động và assignment liên quan; từ chối thay đổi gây
+        mất tính nhất quán.
+      tags:
+      - FR02
+      x-roles: *id002
+      x-fr:
+      - FR02
+      x-uc:
+      - UC02
+      responses:
+        '200':
+          description: Khóa và gán vai trò
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+  /v1/users/{user_id}/station-assignments:
+    put:
+      operationId: assignStations
+      summary: Phân công trạm kỹ thuật
+      description: Chỉ user TECHNICIAN; thay tập trạm được giao nguyên tử.
+      tags:
+      - FR02
+      x-roles: *id002
+      x-fr:
+      - FR02
+      x-uc:
+      - UC02
+      responses:
+        '200':
+          description: Phân công trạm kỹ thuật
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+  /v1/stations:
+    get:
+      operationId: listStations
+      summary: Tra cứu khả dụng công khai
+      description: Khách chỉ nhận dữ liệu công khai; count tính theo BR02, không gửi
+        telemetry chi tiết.
+      tags:
+      - FR05
+      x-roles: *id001
+      x-fr:
+      - FR05
+      x-uc:
+      - UC05
+      responses:
+        '200':
+          description: Tra cứu khả dụng công khai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StationAvailabilityPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    post:
+      operationId: createStation
+      summary: Tạo trạm
+      description: Tạo trạm
+      tags:
+      - FR03
+      x-roles: *id002
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '201':
+          description: Tạo trạm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stations'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StationCreate'
+  /v1/stations/{station_id}:
+    get:
+      operationId: getStation
+      summary: Chi tiết cấu hình trạm
+      description: Kỹ thuật viên chỉ trạm được phân công.
+      tags:
+      - FR03
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '200':
+          description: Chi tiết cấu hình trạm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stations'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: station_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateStation
+      summary: Cập nhật trạm
+      description: Không cho chuyển ngừng/bảo trì khi có active swap; dùng sự kiện
+        lỗi để chặn cấp khẩn cấp.
+      tags:
+      - FR03
+      x-roles: *id002
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '200':
+          description: Cập nhật trạm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stations'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: station_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StationUpdate'
+  /v1/devices:
+    post:
+      operationId: createDevice
+      summary: Đăng ký thiết bị
+      description: Đăng ký thiết bị
+      tags:
+      - FR03
+      x-roles: *id002
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '201':
+          description: Đăng ký thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCreated'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreate'
+    get:
+      operationId: listDevices
+      summary: Tra cứu thiết bị
+      description: Kỹ thuật chỉ trạm được giao; không trả secret/key hash.
+      tags:
+      - FR03
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '200':
+          description: Tra cứu thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevicesPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+  /v1/devices/{device_id}:
+    patch:
+      operationId: updateDevice
+      summary: Vô hiệu hóa thiết bị
+      description: enabled=false thu hồi danh tính ngay và chuyển các phiên đang chạy
+        về REVIEW_REQUIRED; không giải phóng tài nguyên.
+      tags:
+      - FR03
+      x-roles: *id002
+      x-fr:
+      - FR03
+      x-uc:
+      - UC03
+      responses:
+        '200':
+          description: Vô hiệu hóa thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Devices'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdate'
+  /v1/stations/{station_id}/compartments:
+    get:
+      operationId: listCompartments
+      summary: Xem ngăn tủ
+      description: Kỹ thuật chỉ trạm được giao.
+      tags:
+      - FR04
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR04
+      x-uc:
+      - UC04
+      responses:
+        '200':
+          description: Xem ngăn tủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompartmentsPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: station_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    post:
+      operationId: createCompartment
+      summary: Tạo ngăn tủ
+      description: Tạo ngăn tủ
+      tags:
+      - FR04
+      x-roles: *id002
+      x-fr:
+      - FR04
+      x-uc:
+      - UC04
+      responses:
+        '201':
+          description: Tạo ngăn tủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compartments'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: station_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompartmentCreate'
+  /v1/compartments/{compartment_id}/actions:
+    post:
+      operationId: changeCompartment
+      summary: Bảo trì hoặc phục hồi ngăn
+      description: Đúng trạm; không active reservation. RESTORE cần snapshot mới và
+        đủ điều kiện; không bỏ qua pin cách ly; RETIRE chỉ Admin, ngăn trống. Không
+        phát lệnh mở khóa.
+      tags:
+      - FR04
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR04
+      x-uc:
+      - UC04
+      responses:
+        '200':
+          description: Bảo trì hoặc phục hồi ngăn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compartments'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: compartment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompartmentAction'
+  /v1/batteries:
+    get:
+      operationId: listBatteries
+      summary: Danh mục pin
+      description: Kỹ thuật chỉ pin ở trạm được giao; Admin toàn mạng.
+      tags:
+      - FR06
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR06
+      x-uc:
+      - UC06
+      responses:
+        '200':
+          description: Danh mục pin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatteriesPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    post:
+      operationId: createBattery
+      summary: Đăng ký pin và vị trí ban đầu
+      description: Chỉ initial REGISTERED; XOR ngăn/khách theo location, kiểm tra
+        họ pin, chủ có role CUSTOMER và ngăn còn trống. Không sửa vị trí pin đang
+        phục vụ.
+      tags:
+      - FR06
+      x-roles: *id002
+      x-fr:
+      - FR06
+      x-uc:
+      - UC06
+      responses:
+        '201':
+          description: Đăng ký pin và vị trí ban đầu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batteries'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatteryCreate'
+  /v1/batteries/{battery_id}/actions:
+    post:
+      operationId: changeBattery
+      summary: Cách ly phục hồi hoặc ngừng pin
+      description: ADMIN chỉ RETIRE với không khách giữ/không active swap. TECHNICIAN
+        đúng trạm được ACTIVATE/QUARANTINE/RESTORE; RESTORE + resolve_alert_ids xử
+        lý nguyên tử nếu đủ chứng cứ; không xóa lịch sử.
+      tags:
+      - FR06
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR06
+      - FR08
+      x-uc:
+      - UC06
+      - UC08
+      responses:
+        '200':
+          description: Cách ly phục hồi hoặc ngừng pin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batteries'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: battery_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatteryAction'
+  /v1/batteries/{battery_id}/telemetry:
+    get:
+      operationId: listTelemetry
+      summary: Xem dữ liệu BMS
+      description: Kỹ thuật chỉ trạm được giao; dữ liệu cũ hoặc quality=false không
+        có nghĩa an toàn.
+      tags:
+      - FR07
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR07
+      x-uc:
+      - UC07
+      responses:
+        '200':
+          description: Xem dữ liệu BMS
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatteryTelemetryPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: battery_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+  /v1/users/{user_id}/credentials:
+    post:
+      operationId: createCredential
+      summary: Liên kết RFID mô phỏng
+      description: Liên kết RFID mô phỏng
+      tags:
+      - FR02
+      x-roles: *id002
+      x-fr:
+      - FR02
+      - FR09
+      x-uc:
+      - UC02
+      - UC09
+      responses:
+        '201':
+          description: Liên kết RFID mô phỏng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialView'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialRequest'
+  /v1/credentials/{credential_id}/revoke:
+    post:
+      operationId: revokeCredential
+      summary: Thu hồi RFID
+      description: Thu hồi RFID
+      tags:
+      - FR02
+      x-roles: *id002
+      x-fr:
+      - FR02
+      - FR09
+      x-uc:
+      - UC02
+      - UC09
+      responses:
+        '200':
+          description: Thu hồi RFID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialView'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: credential_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+  /v1/qr-challenges:
+    post:
+      operationId: createQr
+      summary: Cấp QR cho khách hiện hành
+      description: Cấp QR cho khách hiện hành
+      tags:
+      - FR09
+      x-roles: &id003
+      - CUSTOMER
+      x-fr:
+      - FR09
+      x-uc:
+      - UC09
+      responses:
+        '201':
+          description: Cấp QR cho khách hiện hành
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QrResponse'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QrRequest'
+  /v1/device/verifications:
+    post:
+      operationId: verifyAtDevice
+      summary: Xác thực credential tại trạm
+      description: Trạm suy từ key, không tin station_id từ client. Tiêu thụ QR và
+        tạo VERIFIED trong cùng transaction; RFID tạo cùng dạng phiên. Khách dùng
+        web đã đăng nhập để chấp thuận phí sau đó.
+      tags:
+      - FR09
+      x-roles:
+      - DEVICE
+      x-fr:
+      - FR09
+      x-uc:
+      - UC09
+      responses:
+        '201':
+          description: Xác thực credential tại trạm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactions'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - DeviceKey: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationRequest'
+  /v1/swaps:
+    get:
+      operationId: listSwaps
+      summary: Lịch sử và phiên đang hoạt động
+      description: CUSTOMER luôn filter customer_id từ phiên; Admin toàn hệ thống.
+        Kỹ thuật không được xem lịch sử khách.
+      tags:
+      - FR13
+      x-roles:
+      - ADMIN
+      - CUSTOMER
+      x-fr:
+      - FR13
+      x-uc:
+      - UC11
+      responses:
+        '200':
+          description: Lịch sử và phiên đang hoạt động
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactionsPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: active
+        in: query
+        schema:
+          type: boolean
+  /v1/swaps/{swap_id}:
+    get:
+      operationId: getSwap
+      summary: Chi tiết giao dịch
+      description: CUSTOMER chỉ của mình; trả state đổi riêng, payment qua endpoint
+        riêng.
+      tags:
+      - FR13
+      x-roles:
+      - ADMIN
+      - CUSTOMER
+      x-fr:
+      - FR13
+      x-uc:
+      - UC11
+      responses:
+        '200':
+          description: Chi tiết giao dịch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactions'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /v1/swaps/{swap_id}/reserve:
+    post:
+      operationId: reserveSwap
+      summary: Giữ pin và hai ngăn
+      description: Chỉ VERIFIED của chính khách. Guard BR01/02/11, config bắt buộc
+        có giá/SOC/nhiệt độ. Lock và reserve nguyên tử; trả quote từ Backend.
+      tags:
+      - FR10
+      x-roles: *id003
+      x-fr:
+      - FR10
+      x-uc:
+      - UC10
+      responses:
+        '200':
+          description: Giữ pin và hai ngăn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactions'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionAction'
+  /v1/swaps/{swap_id}/consent:
+    post:
+      operationId: consentSwap
+      summary: Chấp thuận phí và tạo khoản thu
+      description: Chỉ RESERVED chưa hết hạn. Giá client phải khớp quote; ghi consent,
+        payment intent, AWAITING_PAYMENT và outbox cùng commit. Không chờ provider
+        trong DB lock.
+      tags:
+      - FR10
+      x-roles: *id003
+      x-fr:
+      - FR10
+      - FR14
+      x-uc:
+      - UC10
+      - UC12
+      responses:
+        '202':
+          description: Chấp thuận phí và tạo khoản thu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactions'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentRequest'
+  /v1/swaps/{swap_id}/cancel:
+    post:
+      operationId: cancelSwap
+      summary: Hủy trước khi gửi thu
+      description: Chỉ VERIFIED hoặc RESERVED chưa tạo payment/outbox; release cùng
+        commit. Khi đã thu/không rõ chỉ vào phục hồi, không force cancel.
+      tags:
+      - FR12
+      x-roles: *id003
+      x-fr:
+      - FR12
+      x-uc:
+      - UC10
+      responses:
+        '200':
+          description: Hủy trước khi gửi thu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapTransactions'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+  /v1/swaps/{swap_id}/recovery:
+    get:
+      operationId: getRecovery
+      summary: Xem hồ sơ khôi phục trong trạm
+      description: Kỹ thuật đúng trạm; chỉ thông tin tối thiểu phục vụ khắc phục,
+        không quyền lịch sử giao dịch khách.
+      tags:
+      - FR12
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR12
+      x-uc:
+      - UC10
+      responses:
+        '200':
+          description: Xem hồ sơ khôi phục trong trạm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryCases'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /v1/swaps/{swap_id}/recovery/evidence:
+    post:
+      operationId: recordRecoveryEvidence
+      summary: Ghi nhận bằng chứng đối soát thiết bị
+      description: Kỹ thuật đúng trạm. Backend diễn giải event/ledger để đặt new_pin_delivered;
+        client không tự nhập YES/NO. Không chuyển state theo ý client.
+      tags:
+      - FR12
+      x-roles: &id004
+      - TECHNICIAN
+      x-fr:
+      - FR12
+      x-uc:
+      - UC10
+      responses:
+        '200':
+          description: Ghi nhận bằng chứng đối soát thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryCases'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryEvidence'
+  /v1/swaps/{swap_id}/recovery/settle:
+    post:
+      operationId: settleRecovery
+      summary: Xác minh xử lý quyền giữ pin cũ
+      description: Cần chứng cứ hợp lệ đúng trạm và note. Không cấp quyền mở cửa tùy
+        ý; xử lý thu hồi vật lý mô phỏng theo quy trình kỹ thuật rồi đối soát. Chỉ
+        đóng swap khi tất cả guard tài sản/tiền đạt.
+      tags:
+      - FR12
+      x-roles: *id004
+      x-fr:
+      - FR12
+      x-uc:
+      - UC10
+      responses:
+        '200':
+          description: Xác minh xử lý quyền giữ pin cũ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryCases'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoverySettle'
+  /v1/swaps/{swap_id}/payment:
+    get:
+      operationId: getPayment
+      summary: Xem tình trạng khoản thu
+      description: CUSTOMER chỉ khoản thu của mình.
+      tags:
+      - FR14
+      x-roles:
+      - ADMIN
+      - CUSTOMER
+      x-fr:
+      - FR14
+      - FR13
+      x-uc:
+      - UC12
+      - UC11
+      responses:
+        '200':
+          description: Xem tình trạng khoản thu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: swap_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /v1/payments/{payment_id}/reconcile:
+    post:
+      operationId: reconcilePayment
+      summary: Đối soát khoản thu chưa rõ
+      description: Query cùng provider_key; chưa rõ giữ UNKNOWN và reservation. Không
+        tạo charge mới.
+      tags:
+      - FR15
+      x-roles: *id002
+      x-fr:
+      - FR15
+      x-uc:
+      - UC13
+      responses:
+        '202':
+          description: Đối soát khoản thu chưa rõ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+  /v1/payments/{payment_id}/refund:
+    post:
+      operationId: requestRefund
+      summary: Yêu cầu hoàn phí có kiểm chứng
+      description: Guard BR08/09 và INVARIANTS.md; payment SUCCEEDED, chắc chắn chưa
+        giao pin mới, không lệnh còn có thể tác động. Refund full amount từ DB, không
+        do client quyết định.
+      tags:
+      - FR16
+      x-roles: *id002
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Yêu cầu hoàn phí có kiểm chứng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+    get:
+      operationId: getRefund
+      summary: Xem khoản hoàn
+      description: Khách chỉ payment của mình; 404 khi chưa có refund.
+      tags:
+      - FR16
+      x-roles:
+      - ADMIN
+      - CUSTOMER
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '200':
+          description: Xem khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /v1/refunds/{refund_id}/reconcile:
+    post:
+      operationId: reconcileRefund
+      summary: Đối soát khoản hoàn
+      description: UNKNOWN chỉ query. FAILED chỉ thử lại cùng intent/provider_key
+        sau xác nhận chưa hoàn và provider cho phép; không tạo refund mới.
+      tags:
+      - FR16
+      x-roles: *id002
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Đối soát khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: refund_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+  /v1/payment-events:
+    post:
+      operationId: receivePaymentEvent
+      summary: Nhận callback thu hoặc hoàn
+      description: Xác minh X-Payment-Key qua HTTPS/private mock, mã/tiền/currency.
+        Cùng event ID khác hash =409. Callback chỉ được inbox sau xác minh; không
+        cho trình duyệt tự xác nhận trả tiền.
+      tags:
+      - FR14
+      x-roles:
+      - PAYMENT
+      x-fr:
+      - FR14
+      - FR15
+      - FR16
+      x-uc:
+      - UC12
+      - UC13
+      - UC14
+      responses:
+        '202':
+          description: Nhận callback thu hoặc hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackReceipt'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - PaymentKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCallback'
+  /v1/device/events:
+    post:
+      operationId: receiveDeviceEvent
+      summary: Nhận telemetry và sự kiện thiết bị
+      description: Event ID/boot/seq và payload hash chống lặp. Reject sai trạm, sai
+        command/swap. Inbox bền vững trước ACK; 202 không đồng nghĩa event đã thay
+        đổi nghiệp vụ. Xử lý schema từng kind.
+      tags:
+      - FR07
+      x-roles:
+      - DEVICE
+      x-fr:
+      - FR07
+      - FR11
+      - FR17
+      - FR19
+      x-uc:
+      - UC07
+      - UC10
+      - UC15
+      - UC17
+      responses:
+        '202':
+          description: Nhận telemetry và sự kiện thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventReceipt'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - DeviceKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceEvent'
+            example:
+              event_id: 11111111-1111-4111-8111-111111111111
+              boot_id: 22222222-2222-4222-8222-222222222222
+              seq: 10
+              kind: TELEMETRY
+              observed_at: '2026-10-23T09:00:00Z'
+              compartment_id: 33333333-3333-4333-8333-333333333333
+              payload:
+                battery_id: 44444444-4444-4444-8444-444444444444
+                soc: 90
+                soh: 95
+                temperature_c: 25
+                fault_codes: []
+  /v1/device/commands:
+    get:
+      operationId: pollCommands
+      summary: Nhận lệnh của chính thiết bị
+      description: GET có thể trả lại cùng lệnh tới khi ACK/expire. Thiết bị dedup
+        bền vững theo ID; không tự thực thi lại. Trước dispatch/check tại thiết bị
+        phải kiểm tra thời hạn và liên động.
+      tags:
+      - FR17
+      x-roles:
+      - DEVICE
+      x-fr:
+      - FR17
+      x-uc:
+      - UC15
+      responses:
+        '200':
+          description: Nhận lệnh của chính thiết bị
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandsPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - DeviceKey: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+  /v1/alerts:
+    get:
+      operationId: listAlerts
+      summary: Danh sách cảnh báo
+      description: Kỹ thuật chỉ trạm được phân công.
+      tags:
+      - FR19
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR19
+      x-uc:
+      - UC17
+      responses:
+        '200':
+          description: Danh sách cảnh báo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertsPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+  /v1/alerts/{alert_id}/acknowledge:
+    post:
+      operationId: ackAlert
+      summary: Xác nhận đã đọc cảnh báo
+      description: Không gỡ cách ly hoặc khôi phục ngăn; đúng trạm.
+      tags:
+      - FR19
+      x-roles: *id004
+      x-fr:
+      - FR19
+      x-uc:
+      - UC17
+      responses:
+        '200':
+          description: Xác nhận đã đọc cảnh báo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alerts'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionAction'
+  /v1/alerts/{alert_id}/resolve:
+    post:
+      operationId: resolveAlert
+      summary: Đóng cảnh báo có bằng chứng
+      description: Hết lỗi xác minh và không còn xung đột. Phục hồi pin bằng battery/actions
+        RESTORE có thể resolve nguyên tử; ACK không phải RESOLVED.
+      tags:
+      - FR19
+      x-roles: *id004
+      x-fr:
+      - FR19
+      x-uc:
+      - UC17
+      responses:
+        '200':
+          description: Đóng cảnh báo có bằng chứng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alerts'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertResolve'
+  /v1/dashboard:
+    get:
+      operationId: dashboard
+      summary: Tổng quan vận hành
+      description: Kỹ thuật chỉ số liệu trạm được giao; không có thông tin lịch sử
+        khách ngoài hồ sơ khắc phục cần thiết.
+      tags:
+      - FR18
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR18
+      x-uc:
+      - UC16
+      responses:
+        '200':
+          description: Tổng quan vận hành
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+  /v1/audit-events:
+    get:
+      operationId: audit
+      summary: Tra cứu nhật ký
+      description: Admin toàn mạng; kỹ thuật chỉ hành động xử lý của mình. Không trả
+        secret/token.
+      tags:
+      - FR01
+      x-roles:
+      - ADMIN
+      - TECHNICIAN
+      x-fr:
+      - FR01
+      - FR18
+      x-uc:
+      - UC02
+      - UC16
+      responses:
+        '200':
+          description: Tra cứu nhật ký
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditViewPage'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+  /mock/v1/charges:
+    post:
+      operationId: providerCharge
+      summary: Mock tạo khoản thu
+      description: Mock service độc lập; provider_key dedup bền vững. Chỉ Backend
+        gọi, không expose cho web.
+      tags:
+      - FR14
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR14
+      x-uc:
+      - UC12
+      responses:
+        '202':
+          description: Mock tạo khoản thu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResult'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderChargeRequest'
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+  /mock/v1/charges/{provider_key}:
+    get:
+      operationId: providerQueryCharge
+      summary: Mock truy vấn thu
+      description: NOT_FOUND sau timeout không tự chứng minh FAILED vì request có
+        thể đang đến; cần xác minh trạng thái cuối trước hủy.
+      tags:
+      - FR15
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR15
+      x-uc:
+      - UC13
+      responses:
+        '200':
+          description: Mock truy vấn thu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResult'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: provider_key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+  /mock/v1/refunds:
+    post:
+      operationId: providerRefund
+      summary: Mock tạo khoản hoàn
+      description: Một intent, cùng key; chỉ full refund không quá khoản thu; ledger
+        tồn tại qua restart.
+      tags:
+      - FR16
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Mock tạo khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResult'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderRefundRequest'
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+  /mock/v1/refunds/{provider_key}:
+    get:
+      operationId: providerQueryRefund
+      summary: Mock truy vấn hoàn
+      description: Mock truy vấn hoàn
+      tags:
+      - FR16
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '200':
+          description: Mock truy vấn hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResult'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: provider_key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+components:
+  schemas:
+    Role:
+      type: string
+      enum:
+      - ADMIN
+      - CUSTOMER
+      - TECHNICIAN
+    AccountState:
+      type: string
+      enum:
+      - ACTIVE
+      - LOCKED
+      - INACTIVE
+    StationState:
+      type: string
+      enum:
+      - ACTIVE
+      - MAINTENANCE
+      - INACTIVE
+    BatteryState:
+      type: string
+      enum:
+      - REGISTERED
+      - IN_SERVICE
+      - QUARANTINED
+      - RETIRED
+    LocationKind:
+      type: string
+      enum:
+      - COMPARTMENT
+      - CUSTOMER
+      - UNKNOWN
+    CompartmentState:
+      type: string
+      enum:
+      - ACTIVE
+      - BLOCKED
+      - MAINTENANCE
+      - RETIRED
+    DoorState:
+      type: string
+      enum:
+      - UNKNOWN
+      - CLOSED
+      - OPEN
+    SwapState:
+      type: string
+      enum:
+      - VERIFIED
+      - RESERVED
+      - AWAITING_PAYMENT
+      - AWAITING_RETURN
+      - RETURN_ACCEPTED
+      - AWAITING_PICKUP
+      - REVIEW_REQUIRED
+      - COMPENSATING
+      - COMPLETED
+      - CANCELLED
+      - CLOSED_COMPENSATED
+    PaymentState:
+      type: string
+      enum:
+      - CREATED
+      - PENDING
+      - UNKNOWN
+      - SUCCEEDED
+      - FAILED
+    RefundState:
+      type: string
+      enum:
+      - REQUESTED
+      - PENDING
+      - UNKNOWN
+      - SUCCEEDED
+      - FAILED
+    CommandState:
+      type: string
+      enum:
+      - QUEUED
+      - DISPATCHED
+      - ACKNOWLEDGED
+      - OBSERVED
+      - REJECTED
+      - EXPIRED
+      - UNKNOWN
+    AlertState:
+      type: string
+      enum:
+      - OPEN
+      - ACKNOWLEDGED
+      - RESOLVED
+    CaseState:
+      type: string
+      enum:
+      - OPEN
+      - EVIDENCE_RECORDED
+      - RESOLVED
+    CredentialKind:
+      type: string
+      enum:
+      - RFID
+    CommandKind:
+      type: string
+      enum:
+      - OPEN_RETURN
+      - OPEN_SUPPLY
+    EventKind:
+      type: string
+      enum:
+      - HEARTBEAT
+      - TELEMETRY
+      - DOOR
+      - PRESENCE
+      - COMMAND_ACK
+      - SNAPSHOT
+      - FAULT
+    Users:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        username:
+          type: string
+          description: Tên đăng nhập chuẩn hóa lowercase
+        role:
+          $ref: '#/components/schemas/Role'
+          description: Không kế thừa ADMIN → TECHNICIAN
+        state:
+          $ref: '#/components/schemas/AccountState'
+          description: Khóa/ngừng tài khoản không xóa lịch sử
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - username
+      - role
+      - state
+      - version
+      - created_at
+    Stations:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        code:
+          type: string
+          description: Mã trạm
+        name:
+          type: string
+          description: Tên
+        address:
+          type: string
+          description: Địa chỉ hiển thị
+        state:
+          $ref: '#/components/schemas/StationState'
+          description: Trạng thái hành chính; online tính riêng
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - code
+      - name
+      - address
+      - state
+      - version
+      - created_at
+    Devices:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: MVP một bộ điều khiển hiện hành mỗi trạm
+        serial:
+          type: string
+          description: Mã thiết bị
+        enabled:
+          type: boolean
+          description: Vô hiệu hóa danh tính
+        last_received_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Heartbeat gần nhất được chấp nhận
+        boot_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Phiên khởi động hiện hành
+        last_seq:
+          type: integer
+          description: Sequence lớn nhất trong boot hiện hành
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - serial
+      - enabled
+      - last_received_at
+      - boot_id
+      - last_seq
+      - version
+      - created_at
+    Compartments:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: Thuộc trạm
+        slot_no:
+          type: integer
+          description: Số ngăn
+        service_state:
+          $ref: '#/components/schemas/CompartmentState'
+          description: Ban đầu chặn tới khi có snapshot
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+          description: Trạng thái cửa độc lập trạng thái phục vụ
+        observed_present:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: NULL nếu chưa biết có pin
+        observed_serial:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Giữ mã quan sát kể cả không nhận diện được
+        observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Thời gian Backend nhận quan sát hợp lệ
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - slot_no
+      - service_state
+      - door_state
+      - observed_present
+      - observed_serial
+      - observed_at
+      - version
+      - created_at
+    Batteries:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        serial:
+          type: string
+          description: Mã pin trong mạng lưới
+        family:
+          type: string
+          description: Họ pin duy nhất trong demo, vẫn lưu để kiểm tra
+        lifecycle:
+          $ref: '#/components/schemas/BatteryState'
+          description: Vòng đời quản lý không đồng nhất SOC
+        location_kind:
+          $ref: '#/components/schemas/LocationKind'
+          description: Vị trí đã xác minh
+        compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn khi location=COMPARTMENT
+        holder_user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Khách giữ khi location=CUSTOMER
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - serial
+      - family
+      - lifecycle
+      - location_kind
+      - compartment_id
+      - holder_user_id
+      - version
+      - created_at
+    SwapTransactions:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        customer_id:
+          type: string
+          format: uuid
+          description: Khách hàng
+        station_id:
+          type: string
+          format: uuid
+          description: Trạm
+        verified_via:
+          type: string
+          description: Phương thức xác thực
+        state:
+          $ref: '#/components/schemas/SwapState'
+          description: Trạng thái nghiệp vụ
+        policy_id:
+          type: string
+          format: uuid
+          description: Phiên bản chính sách
+        old_battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin khách phải trả, xác định khi giữ tài nguyên
+        new_battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin được giữ để cấp
+        return_compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn nhận
+        supply_compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn cấp
+        amount_minor:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Phí VND nguyên, chốt khi reserve
+        currency:
+          type: string
+          description: Demo chỉ VND
+        consented_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Chấp thuận phí trước yêu cầu thu
+        reservation_expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Chỉ tự hết hạn khi RESERVED chưa gửi thu
+        return_observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Bằng chứng nhận pin cũ + cửa đóng
+        pickup_observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Bằng chứng lấy pin mới + cửa đóng
+        review_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Lý do chờ xử lý
+        closed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Thời điểm trạng thái kết thúc
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - customer_id
+      - station_id
+      - verified_via
+      - state
+      - policy_id
+      - old_battery_id
+      - new_battery_id
+      - return_compartment_id
+      - supply_compartment_id
+      - amount_minor
+      - currency
+      - consented_at
+      - reservation_expires_at
+      - return_observed_at
+      - pickup_observed_at
+      - review_reason
+      - closed_at
+      - version
+      - created_at
+    Payments:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        swap_id:
+          type: string
+          format: uuid
+          description: Một intent/phiên; thất bại chắc chắn kết thúc phiên
+        provider_key:
+          type: string
+          format: uuid
+          description: Idempotency key khi gọi mock
+        provider_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Mã phía mock
+        state:
+          $ref: '#/components/schemas/PaymentState'
+          description: Trạng thái thu độc lập
+        amount_minor:
+          type: integer
+          description: Phải bằng phí phiên
+        currency:
+          type: string
+          description: Đơn vị
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Khi đã xác minh kết quả
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - swap_id
+      - provider_key
+      - provider_reference
+      - state
+      - amount_minor
+      - currency
+      - verified_at
+      - version
+      - created_at
+    Refunds:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        payment_id:
+          type: string
+          format: uuid
+          description: Một refund intent cho khoản thu, retry cùng khóa
+        requested_by:
+          type: string
+          format: uuid
+          description: Admin; service kiểm tra role
+        provider_key:
+          type: string
+          format: uuid
+          description: Idempotency key hoàn
+        provider_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Mã hoàn bên mock
+        state:
+          $ref: '#/components/schemas/RefundState'
+          description: Lỗi/UNKNOWN không được tạo intent mới
+        amount_minor:
+          type: integer
+          description: MVP bằng toàn bộ khoản thu
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Xác minh hoàn
+        reason:
+          type: string
+          description: Lý do và kết quả đối soát
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - payment_id
+      - requested_by
+      - provider_key
+      - provider_reference
+      - state
+      - amount_minor
+      - verified_at
+      - reason
+      - version
+      - created_at
+    Alerts:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: Trạm
+        battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin liên quan
+        compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn liên quan
+        dedup_key:
+          type: string
+          description: Loại lỗi + tài nguyên, phạm vi trạm
+        code:
+          type: string
+          description: Mã lỗi ổn định
+        state:
+          $ref: '#/components/schemas/AlertState'
+          description: ACK không gỡ chặn
+        last_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Bằng chứng gần nhất
+        acknowledged_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên được giao
+        resolved_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên
+        resolution_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Bằng chứng hết lỗi
+        occurrences:
+          type: integer
+          description: Số lần báo
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - battery_id
+      - compartment_id
+      - dedup_key
+      - code
+      - state
+      - last_event_id
+      - acknowledged_by
+      - resolved_by
+      - resolution_note
+      - occurrences
+      - version
+      - created_at
+    RecoveryCases:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        swap_id:
+          type: string
+          format: uuid
+          description: Một hồ sơ theo phiên
+        state:
+          $ref: '#/components/schemas/CaseState'
+          description: Tình trạng
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên đúng trạm
+        evidence_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Snapshot/lịch sử mới sau reconnect
+        new_pin_delivered:
+          type: string
+          description: Kết luận dựa dữ liệu thiết bị
+        old_pin_settled:
+          type: boolean
+          description: Đã hoàn trả/giải quyết quyền giữ pin cũ
+        resolution_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Không đủ chứng cứ thì không resolve
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - swap_id
+      - state
+      - assigned_to
+      - evidence_event_id
+      - new_pin_delivered
+      - old_pin_settled
+      - resolution_note
+      - version
+      - created_at
+    BatteryTelemetry:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        event_id:
+          type: string
+          format: uuid
+          description: Telemetry event chứa đúng một pin
+        battery_id:
+          type: string
+          format: uuid
+          description: Pin
+        soc:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Phần trăm; NULL = thiếu
+        soh:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Phần trăm do BMS demo cung cấp
+        temperature_c:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Độ C; NULL = thiếu
+        fault_codes:
+          type: array
+          items:
+            type: string
+          description: Cờ lỗi
+        measured_at:
+          type: string
+          format: date-time
+          description: Thời gian đo
+        received_at:
+          type: string
+          format: date-time
+          description: Thời gian nhận
+        quality_ok:
+          type: boolean
+          description: Chỉ true khi đầy đủ, đúng thứ tự, hợp lệ
+      required:
+      - id
+      - event_id
+      - battery_id
+      - soc
+      - soh
+      - temperature_c
+      - fault_codes
+      - measured_at
+      - received_at
+      - quality_ok
+    DeviceCommands:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        device_id:
+          type: string
+          format: uuid
+          description: Thiết bị đích
+        swap_id:
+          type: string
+          format: uuid
+          description: Phiên đổi
+        compartment_id:
+          type: string
+          format: uuid
+          description: Ngăn chính xác
+        kind:
+          $ref: '#/components/schemas/CommandKind'
+          description: OPEN_RETURN hoặc OPEN_SUPPLY
+        state:
+          $ref: '#/components/schemas/CommandState'
+          description: ACK không đủ để OBSERVED
+        expires_at:
+          type: string
+          format: date-time
+          description: Lệnh quá hạn không tác động
+        payload:
+          type: object
+          additionalProperties: true
+          description: Thông tin liên động và pin dự kiến
+        evidence_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Event xác nhận vật lý
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - device_id
+      - swap_id
+      - compartment_id
+      - kind
+      - state
+      - expires_at
+      - payload
+      - evidence_event_id
+      - version
+      - created_at
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        correlation_id:
+          type: string
+          format: uuid
+        details:
+          type: object
+          additionalProperties: true
+      required:
+      - code
+      - message
+      - correlation_id
+      - details
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required:
+      - username
+      - password
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          const: Bearer
+        expires_in:
+          type: integer
+          minimum: 1
+        user:
+          $ref: '#/components/schemas/Users'
+      required:
+      - access_token
+      - token_type
+      - expires_in
+      - user
+    UserCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 100
+        password:
+          type: string
+          minLength: 12
+          maxLength: 256
+        role:
+          $ref: '#/components/schemas/Role'
+      required:
+      - username
+      - password
+      - role
+    UserUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        role:
+          $ref: '#/components/schemas/Role'
+        state:
+          $ref: '#/components/schemas/AccountState'
+      required:
+      - expected_version
+    AssignmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        station_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - station_ids
+    StationCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+      required:
+      - code
+      - name
+      - address
+    StationUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        address:
+          type: string
+        state:
+          $ref: '#/components/schemas/StationState'
+      required:
+      - expected_version
+    StationAvailability:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        operational_state:
+          type: string
+          enum:
+          - ONLINE
+          - OFFLINE
+          - MAINTENANCE
+          - INACTIVE
+        available_count:
+          type: integer
+          minimum: 0
+        as_of:
+          type: string
+          format: date-time
+      required:
+      - station_id
+      - name
+      - address
+      - operational_state
+      - available_count
+      - as_of
+    DeviceCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+        serial:
+          type: string
+      required:
+      - station_id
+      - serial
+    DeviceCreated:
+      type: object
+      additionalProperties: false
+      properties:
+        device:
+          $ref: '#/components/schemas/Devices'
+        device_key_once:
+          type: string
+      required:
+      - device
+      - device_key_once
+    DeviceUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        enabled:
+          type: boolean
+      required:
+      - expected_version
+      - enabled
+    CompartmentCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        slot_no:
+          type: integer
+          minimum: 1
+      required:
+      - slot_no
+    CompartmentAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        action:
+          type: string
+          enum:
+          - SET_MAINTENANCE
+          - RESTORE
+          - RETIRE
+        reason:
+          type: string
+          minLength: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+      required:
+      - expected_version
+      - action
+      - reason
+    BatteryCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        serial:
+          type: string
+        family:
+          type: string
+        location_kind:
+          $ref: '#/components/schemas/LocationKind'
+        compartment_id:
+          type: string
+          format: uuid
+        holder_user_id:
+          type: string
+          format: uuid
+      required:
+      - serial
+      - family
+      - location_kind
+    BatteryAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        action:
+          type: string
+          enum:
+          - ACTIVATE
+          - QUARANTINE
+          - RESTORE
+          - RETIRE
+        reason:
+          type: string
+          minLength: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolve_alert_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - expected_version
+      - action
+      - reason
+    CredentialRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rfid_value:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - rfid_value
+    CredentialView:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        revoked:
+          type: boolean
+      required:
+      - id
+      - user_id
+      - revoked
+    QrRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+      required:
+      - station_id
+    QrResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        challenge_id:
+          type: string
+          format: uuid
+        qr_token:
+          type: string
+        station_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - challenge_id
+      - qr_token
+      - station_id
+      - expires_at
+    VerificationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+          - QR
+          - RFID
+        credential:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - method
+      - credential
+    VersionAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+      required:
+      - expected_version
+    ConsentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        quoted_amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+        accept:
+          type: boolean
+          const: true
+      required:
+      - expected_version
+      - quoted_amount_minor
+      - currency
+      - accept
+    ReasonAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - reason
+    RecoveryEvidence:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - note
+    RecoverySettle:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolution_note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - resolution_note
+    AlertResolve:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolution_note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - resolution_note
+    TelemetryPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        battery_id:
+          type: string
+          format: uuid
+        soc:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        soh:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        temperature_c:
+          type:
+          - number
+          - 'null'
+        fault_codes:
+          type: array
+          items:
+            type: string
+      required:
+      - battery_id
+      - soc
+      - soh
+      - temperature_c
+      - fault_codes
+    ObservationPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+        present:
+          type:
+          - boolean
+          - 'null'
+        observed_serial:
+          type:
+          - string
+          - 'null'
+      required:
+      - door_state
+      - present
+      - observed_serial
+    AckPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        result:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - UNKNOWN
+        reason:
+          type: string
+      required:
+      - result
+      - reason
+    FaultPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        battery_id:
+          type: string
+          format: uuid
+        details:
+          type: string
+      required:
+      - code
+      - details
+    SnapshotSlot:
+      type: object
+      additionalProperties: false
+      properties:
+        compartment_id:
+          type: string
+          format: uuid
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+        present:
+          type:
+          - boolean
+          - 'null'
+        observed_serial:
+          type:
+          - string
+          - 'null'
+      required:
+      - compartment_id
+      - door_state
+      - present
+      - observed_serial
+    SnapshotPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotSlot'
+        command_ledger:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              command_id:
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum:
+                - NOT_EXECUTED
+                - EXECUTED
+                - UNKNOWN
+            required:
+            - command_id
+            - status
+      required:
+      - slots
+      - command_ledger
+    HeartbeatPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        health:
+          type: string
+          enum:
+          - OK
+          - FAULT
+      required:
+      - health
+    HeartbeatEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: HEARTBEAT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/HeartbeatPayload'
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+    TelemetryEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: TELEMETRY
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/TelemetryPayload'
+        compartment_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+    DoorEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: DOOR
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/ObservationPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    PresenceEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: PRESENCE
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/ObservationPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    CommandAckEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: COMMAND_ACK
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/AckPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    SnapshotEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: SNAPSHOT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/SnapshotPayload'
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+    FaultEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: FAULT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/FaultPayload'
+        compartment_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+    DeviceEvent:
+      oneOf:
+      - $ref: '#/components/schemas/HeartbeatEvent'
+      - $ref: '#/components/schemas/TelemetryEvent'
+      - $ref: '#/components/schemas/DoorEvent'
+      - $ref: '#/components/schemas/PresenceEvent'
+      - $ref: '#/components/schemas/CommandAckEvent'
+      - $ref: '#/components/schemas/SnapshotEvent'
+      - $ref: '#/components/schemas/FaultEvent'
+      discriminator:
+        propertyName: kind
+        mapping:
+          HEARTBEAT: '#/components/schemas/HeartbeatEvent'
+          TELEMETRY: '#/components/schemas/TelemetryEvent'
+          DOOR: '#/components/schemas/DoorEvent'
+          PRESENCE: '#/components/schemas/PresenceEvent'
+          COMMAND_ACK: '#/components/schemas/CommandAckEvent'
+          SNAPSHOT: '#/components/schemas/SnapshotEvent'
+          FAULT: '#/components/schemas/FaultEvent'
+    EventReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        duplicate:
+          type: boolean
+        processing_state:
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSED
+          - REJECTED
+      required:
+      - event_id
+      - duplicate
+      - processing_state
+    PaymentCallback:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_event_id:
+          type: string
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type: string
+        result:
+          type: string
+          enum:
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - provider_event_id
+      - payment_id
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+    CallbackReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        accepted:
+          type: boolean
+        duplicate:
+          type: boolean
+      required:
+      - accepted
+      - duplicate
+    Dashboard:
+      type: object
+      additionalProperties: false
+      properties:
+        online_stations:
+          type: integer
+        offline_stations:
+          type: integer
+        open_alerts:
+          type: integer
+        review_swaps:
+          type: integer
+        as_of:
+          type: string
+          format: date-time
+      required:
+      - online_stations
+      - offline_stations
+      - open_alerts
+      - review_swaps
+      - as_of
+    AuditView:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        actor_type:
+          type: string
+        actor_id:
+          type: string
+        action:
+          type: string
+        aggregate_type:
+          type: string
+        aggregate_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - actor_type
+      - actor_id
+      - action
+      - aggregate_type
+      - aggregate_id
+      - created_at
+    ProviderChargeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - payment_id
+      - swap_id
+      - provider_key
+      - amount_minor
+      - currency
+    ProviderRefundRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+    ProviderResult:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type:
+          - string
+          - 'null'
+        result:
+          type: string
+          enum:
+          - NOT_FOUND
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+          - UNKNOWN
+        amount_minor:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        currency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - VND
+          - null
+      required:
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+    UsersPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Users'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    StationsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stations'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    StationAvailabilityPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StationAvailability'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    DevicesPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Devices'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    CompartmentsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Compartments'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    BatteriesPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batteries'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    SwapTransactionsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SwapTransactions'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    PaymentsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payments'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    RefundsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refunds'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    AlertsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    BatteryTelemetryPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatteryTelemetry'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    DeviceCommandsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceCommands'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    AuditViewPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditView'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    CredentialViewPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialView'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+  securitySchemes:
+    UserBearer:
+      type: http
+      scheme: bearer
+      description: Opaque web session; server lưu hash; role/scope kiểm tra mỗi request.
+    DeviceKey:
+      type: apiKey
+      in: header
+      name: X-Device-Key
+    PaymentKey:
+      type: apiKey
+      in: header
+      name: X-Payment-Key
+    ServiceKey:
+      type: apiKey
+      in: header
+      name: X-Service-Key

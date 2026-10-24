@@ -1,0 +1,96 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title ERD-03 IoT và cảnh báo
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+entity "devices" as devices {
+  * id : uuid <<PK>>
+  * station_id : uuid <<FK>>
+  boot_id : uuid
+}
+entity "device_events" as device_events {
+  * id : uuid <<PK>>
+  * device_id : uuid <<FK>>
+  * boot_id : uuid
+  * seq : bigint
+  compartment_id : uuid <<FK>>
+  swap_id : uuid <<FK>>
+  command_id : uuid
+}
+entity "battery_telemetry" as battery_telemetry {
+  * id : uuid <<PK>>
+  * event_id : uuid <<FK>>
+  * battery_id : uuid <<FK>>
+}
+entity "batteries" as batteries {
+  * id : uuid <<PK>>
+  * lifecycle : battery_state
+  * location_kind : location_kind
+  compartment_id : uuid <<FK>>
+  holder_user_id : uuid <<FK>>
+}
+entity "device_commands" as device_commands {
+  * id : uuid <<PK>>
+  * device_id : uuid <<FK>>
+  * swap_id : uuid <<FK>>
+  * compartment_id : uuid <<FK>>
+  * state : command_state
+  evidence_event_id : uuid <<FK>>
+}
+entity "swap_transactions" as swap_transactions {
+  * id : uuid <<PK>>
+  * customer_id : uuid <<FK>>
+  * station_id : uuid <<FK>>
+  qr_challenge_id : uuid <<FK>>
+  credential_id : uuid <<FK>>
+  * state : swap_state
+  * policy_id : uuid <<FK>>
+  old_battery_id : uuid <<FK>>
+  new_battery_id : uuid <<FK>>
+  return_compartment_id : uuid <<FK>>
+  supply_compartment_id : uuid <<FK>>
+}
+entity "alerts" as alerts {
+  * id : uuid <<PK>>
+  * station_id : uuid <<FK>>
+  battery_id : uuid <<FK>>
+  compartment_id : uuid <<FK>>
+  * dedup_key : text
+  * state : alert_state
+  last_event_id : uuid <<FK>>
+}
+entity "payment_events" as payment_events {
+  * id : uuid <<PK>>
+  * provider_event_id : text
+  * payment_id : uuid <<FK>>
+  refund_id : uuid <<FK>>
+}
+entity "payments" as payments {
+  * id : uuid <<PK>>
+  * swap_id : uuid <<FK>>
+  * provider_key : uuid
+  * state : payment_state
+}
+entity "refunds" as refunds {
+  * id : uuid <<PK>>
+  * payment_id : uuid <<FK>>
+  * provider_key : uuid
+  * state : refund_state
+}
+devices ||--o{ device_events
+device_events ||--o| battery_telemetry
+batteries ||--o{ battery_telemetry
+devices ||--o{ device_commands
+swap_transactions ||--o{ device_commands
+device_commands |o--o{ device_events : event liên quan
+device_events |o--o{ alerts : bằng chứng mới nhất
+payments ||--o{ payment_events
+refunds |o--o{ payment_events
+@enduml

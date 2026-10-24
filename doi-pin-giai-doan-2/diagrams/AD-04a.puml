@@ -1,0 +1,36 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-04a Thu phí và đối soát • UC12 UC13
+|Backend|
+start
+:Đọc payment/outbox đã commit\nsau consent, dùng provider_key cố định;
+|Payment mock|
+:Thu theo idempotency key\nlưu kết quả để truy vấn lại;
+|Backend|
+if (Nhận kết quả xác minh?) then (Có)
+:Kiểm tra payment ID, tiền, currency,\nnguồn, inbox chống callback trùng;
+  if (Thành công?) then (Có)
+:Ghi payment SUCCEEDED;
+  else (Không)
+:Ghi FAILED chỉ khi đối tác\nxác nhận kết quả cuối cùng;
+  endif
+else (Timeout / mâu thuẫn)
+:Ghi UNKNOWN, swap REVIEW_REQUIRED\nkhông tạo lần thu mới;
+  |Admin|
+:Yêu cầu đối soát UC13;
+  |Backend|
+:Truy vấn cùng provider_key;
+  |Payment mock|
+:Trả kết quả đã lưu hoặc chưa xác định;
+  |Backend|
+:Apply kết quả đã xác minh\nchưa rõ thì giữ UNKNOWN;
+endif
+:Chỉ thông báo kết quả cho UC10\nkhông tự suy ra đã giao pin;
+stop
+@enduml

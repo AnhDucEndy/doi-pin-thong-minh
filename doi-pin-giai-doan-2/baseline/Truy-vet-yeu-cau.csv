@@ -1,0 +1,20 @@
+﻿FR,Yeu cau,Module,Use Case,Nguon,Tieu chi,Test
+FR01,Đăng nhập và phân quyền,F1,"UC01,UC02",DX,Tài khoản bị khóa hoặc sai vai trò không truy cập được dữ liệu; giới hạn thử sai do Backend xử lý.,TC01
+FR02,Quản lý tài khoản,F1,UC02,DX,"Admin tạo, khóa và gán vai trò; khóa tài khoản không xóa lịch sử giao dịch.",TC02
+FR03,Quản lý trạm và thiết bị,F2,UC03,G1,Tạo ít nhất hai trạm; thiết bị thuộc đúng một trạm; mã thiết bị không trùng.,TC03
+FR04,Quản lý từng ngăn tủ,F2,UC04,G2,"Mỗi ngăn có ID, trạng thái cửa, pin và bảo trì riêng; ngăn bảo trì bị loại khỏi cấp pin.",TC04
+FR05,Tra cứu pin khả dụng tại trạm,F2,UC05,DX,"Chỉ đếm pin đúng loại, đủ SOC, dữ liệu còn mới, không bị giữ hoặc cách ly và ngăn đủ điều kiện.",TC05
+FR06,Quản lý hồ sơ và vị trí pin,F3,UC06,G3,Mã pin duy nhất; một pin không đồng thời ở hai ngăn hoặc vừa ở trạm vừa do khách giữ.,TC06
+FR07,Theo dõi BMS,F3,UC07,G3,"Hiển thị SOC, SOH, nhiệt độ, cờ lỗi và thời điểm đo; dữ liệu thiếu/cũ không được coi là an toàn.",TC07
+FR08,Cách ly và phục hồi pin,F3,UC08,G3/DX,"Pin lỗi bị cách ly; chỉ kỹ thuật viên sau kiểm tra và dữ liệu hợp lệ mới đưa về phục vụ, có nhật ký.",TC08
+FR09,Xác thực QR và RFID,F4,UC09,G4,Hai cách xác thực mô phỏng cùng tạo một phiên gắn khách và trạm; QR hết hạn/dùng lại hoặc thẻ bị thu hồi bị từ chối.,TC09
+FR10,Giữ pin và điều phối đổi,F5,UC10,G5,Hai khách tranh cùng pin chỉ một người giữ thành công; không mở ngăn cấp khi pin trả chưa được xác nhận.,TC10
+FR11,Nhận pin trả và cấp pin mới,F5,UC10,"G2,G5","Ghi nhận ID pin, cảm biến có/không có pin và cửa đóng; ACK lệnh riêng lẻ không đủ để xác nhận đổi thành công.",TC11
+FR12,Xử lý giao dịch bị gián đoạn,F5,UC10,G5/DX,Mất kết nối hoặc phản hồi không rõ chuyển chờ xử lý; không tự mở ngăn khác hoặc giải phóng pin chưa đối soát.,TC12
+FR13,Tra cứu lịch sử đổi pin,F5,UC11,"G5,G9",Khách chỉ xem của mình; Admin xem toàn hệ thống; thấy trạng thái đổi và thanh toán tách biệt.,TC13
+FR14,Thu phí đổi pin tự động,F6,UC12,G7,"Sau khi khách chấp thuận phí, tạo yêu cầu thu tự động; chỉ kết quả đã xác minh đúng mã/số tiền mới ghi đã trả.",TC14
+FR15,Đối soát kết quả thanh toán,F6,UC13,G7/DX,"Timeout giữ trạng thái UNKNOWN; truy vấn lại mock/sandbox, xử lý callback trùng không ghi thu thêm.",TC15
+FR16,Hoàn tiền khi đổi lỗi,F6,UC14,DX,"Nếu đã thu nhưng chưa giao pin mới và đã xác minh, Admin yêu cầu hoàn; một khoản thu không hoàn quá số đã thu.",TC16
+FR17,Đồng bộ IoT và lệnh,F7,UC15,G8,Thiết bị chỉ gửi trạng thái trạm của mình; event_id/command_id trùng không tạo tác động lặp; giữ kết quả phản hồi.,TC17
+FR18,Giám sát vận hành,F7,UC16,G9,"Dashboard phân biệt offline, đang phục vụ, bảo trì và giao dịch cần xử lý; không hiển thị dữ liệu cũ như trực tiếp.",TC18
+FR19,Phát hiện và xử lý cảnh báo,F7,UC17,G6,"Sự kiện lỗi/vi phạm chính sách demo tạo cảnh báo, chặn cấp pin liên quan; ACK cảnh báo không tự gỡ cách ly.",TC19

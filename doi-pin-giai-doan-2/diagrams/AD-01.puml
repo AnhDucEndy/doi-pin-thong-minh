@@ -1,0 +1,36 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-01 Đăng nhập và phân quyền • UC01
+|GUI|
+start
+:Nhập và gửi thông tin đăng nhập;
+|Backend|
+:Kiểm tra giới hạn thử sai\nvà trạng thái tài khoản;
+if (Đang bị khóa?) then (Có)
+ :Từ chối đăng nhập;
+ |GUI|
+ :Hiển thị lỗi chung và thời gian chờ;
+ stop
+else (Không)
+endif
+|Backend|
+if (Thông tin đúng?) then (Không)
+ :Tăng bộ đếm sai, áp dụng khóa tạm\nnếu đạt giới hạn cấu hình;
+ |GUI|
+ :Hiển thị lỗi chung;
+ stop
+else (Có)
+endif
+|Backend|
+:Reset cửa sổ sai, tạo phiên ngắn hạn;
+:Đọc quyền và phạm vi hiện hành;
+|GUI|
+:Mở giao diện theo vai trò;
+stop
+@enduml

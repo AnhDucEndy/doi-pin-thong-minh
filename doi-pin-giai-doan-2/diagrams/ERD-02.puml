@@ -1,0 +1,86 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title ERD-02 Đổi pin và thanh toán
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+entity "users" as users {
+  * id : uuid <<PK>>
+  * state : account_state
+}
+entity "stations" as stations {
+  * id : uuid <<PK>>
+  * state : station_state
+}
+entity "batteries" as batteries {
+  * id : uuid <<PK>>
+  * lifecycle : battery_state
+  * location_kind : location_kind
+  compartment_id : uuid <<FK>>
+  holder_user_id : uuid <<FK>>
+}
+entity "compartments" as compartments {
+  * id : uuid <<PK>>
+  * station_id : uuid <<FK>>
+  * service_state : compartment_state
+  * door_state : door_state
+}
+entity "demo_policies" as demo_policies {
+  * id : uuid <<PK>>
+  * parameters : jsonb
+}
+entity "swap_transactions" as swap_transactions {
+  * id : uuid <<PK>>
+  * customer_id : uuid <<FK>>
+  * station_id : uuid <<FK>>
+  qr_challenge_id : uuid <<FK>>
+  credential_id : uuid <<FK>>
+  * state : swap_state
+  * policy_id : uuid <<FK>>
+  old_battery_id : uuid <<FK>>
+  new_battery_id : uuid <<FK>>
+  return_compartment_id : uuid <<FK>>
+  supply_compartment_id : uuid <<FK>>
+}
+entity "resource_reservations" as resource_reservations {
+  * id : uuid <<PK>>
+  * swap_id : uuid <<FK>>
+  battery_id : uuid <<FK>>
+  compartment_id : uuid <<FK>>
+}
+entity "payments" as payments {
+  * id : uuid <<PK>>
+  * swap_id : uuid <<FK>>
+  * provider_key : uuid
+  * state : payment_state
+}
+entity "refunds" as refunds {
+  * id : uuid <<PK>>
+  * payment_id : uuid <<FK>>
+  * provider_key : uuid
+  * state : refund_state
+}
+entity "recovery_cases" as recovery_cases {
+  * id : uuid <<PK>>
+  * swap_id : uuid <<FK>>
+  * state : case_state
+  evidence_event_id : uuid <<FK>>
+}
+users ||--o{ swap_transactions
+stations ||--o{ swap_transactions
+demo_policies ||--o{ swap_transactions
+batteries |o--o{ swap_transactions : pin cũ / mới
+compartments |o--o{ swap_transactions : ngăn nhận / cấp
+swap_transactions ||--o{ resource_reservations
+batteries |o--o{ resource_reservations
+compartments |o--o{ resource_reservations
+swap_transactions ||--o| payments
+payments ||--o| refunds
+swap_transactions ||--o| recovery_cases
+@enduml

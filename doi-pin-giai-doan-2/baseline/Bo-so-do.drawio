@@ -1,0 +1,779 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="UCD-00" name="UCD-00">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="1270" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="1185" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="A" target="UC02" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="A" target="UC03" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="A" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="A" target="UC11" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="A" target="UC16" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="K" target="UC05" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="K" target="UC10" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="K" target="UC11" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge8" edge="1" parent="1" source="K" target="UC12" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" source="T" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="T" target="UC16" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge11" edge="1" parent="1" source="T" target="UC17" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="D" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge13" edge="1" parent="1" source="D" target="UC10" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge14" edge="1" parent="1" source="D" target="UC15" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge15" edge="1" parent="1" source="P" target="UC12" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC02" value="UC02&#10;Quản lý tài khoản và quyền" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC03" value="UC03&#10;Quản lý trạm và thiết bị" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC05" value="UC05&#10;Tra cứu trạm có pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC07" value="UC07&#10;Theo dõi dữ liệu BMS" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="440" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC10" value="UC10&#10;Thực hiện đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="555" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC11" value="UC11&#10;Tra cứu giao dịch đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="670" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC12" value="UC12&#10;Thanh toán phí đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="785" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC15" value="UC15&#10;Đồng bộ trạng thái thiết bị" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="900" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC16" value="UC16&#10;Giám sát vận hành" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="1015" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC17" value="UC17&#10;Xử lý cảnh báo nguy hiểm" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="1130" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="K" value="Khách hàng" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="605.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="T" value="Kỹ thuật viên" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="1085.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="D" value="Thiết bị trạm&#10;hoặc simulator" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="P" value="Dịch vụ thanh toán&#10;mock hoặc sandbox" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="1085.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-01" name="UCD-01">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="A" target="UC03" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="A" target="UC04" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="T" target="UC04" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="K" target="UC05" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC03" value="UC03&#10;Quản lý trạm và thiết bị" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC04" value="UC04&#10;Quản lý ngăn tủ" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC05" value="UC05&#10;Tra cứu trạm có pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="K" value="Khách hàng" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="275.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="T" value="Kỹ thuật viên" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-02" name="UCD-02">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="A" target="UC06" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="A" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="T" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="T" target="UC08" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="D" target="UC07" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC06" value="UC06&#10;Quản lý hồ sơ pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC07" value="UC07&#10;Theo dõi dữ liệu BMS" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC08" value="UC08&#10;Cách ly và đưa pin về phục vụ" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="T" value="Kỹ thuật viên" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="D" value="Thiết bị trạm&#10;hoặc simulator" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="245.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-03" name="UCD-03">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="K" target="UC09" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="K" target="UC10" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="K" target="UC11" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="A" target="UC11" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="D" target="UC09" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="D" target="UC10" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC09" value="UC09&#10;Xác thực phiên đổi bằng QR&#10;hoặc RFID" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC10" value="UC10&#10;Thực hiện đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC11" value="UC11&#10;Tra cứu giao dịch đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="K" value="Khách hàng" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="D" value="Thiết bị trạm&#10;hoặc simulator" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="245.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-04" name="UCD-04">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="K" target="UC12" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="A" target="UC13" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="A" target="UC14" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="P" target="UC12" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="P" target="UC13" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="P" target="UC14" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC12" value="UC12&#10;Thanh toán phí đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC13" value="UC13&#10;Đối soát thanh toán" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC14" value="UC14&#10;Hoàn tiền giao dịch lỗi" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="K" value="Khách hàng" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="P" value="Dịch vụ thanh toán&#10;mock hoặc sandbox" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="245.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-05" name="UCD-05">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="D" target="UC15" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="D" target="UC17" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="A" target="UC16" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="T" target="UC16" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="T" target="UC17" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC15" value="UC15&#10;Đồng bộ trạng thái thiết bị" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC16" value="UC16&#10;Giám sát vận hành" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC17" value="UC17&#10;Xử lý cảnh báo nguy hiểm" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="325" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="T" value="Kỹ thuật viên" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="D" value="Thiết bị trạm&#10;hoặc simulator" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="245.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UCD-06" name="UCD-06">
+    <mxGraphModel page="1" pageWidth="1080" pageHeight="610" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Phần mềm quản lý mạng lưới đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;fillColor=none;verticalAlign=top;align=center;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="260" y="60" width="560" height="525" />
+        </mxCell>
+        <mxCell id="edge0" edge="1" parent="1" source="K" target="UC01" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="A" target="UC01" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="T" target="UC01" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="A" target="UC02" style="edgeStyle=none;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UC01" value="UC01&#10;Đăng nhập" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="95" width="400" height="85" />
+        </mxCell>
+        <mxCell id="UC02" value="UC02&#10;Quản lý tài khoản và quyền" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;ellipse;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="340" y="210" width="400" height="85" />
+        </mxCell>
+        <mxCell id="A" value="Admin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="125.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="K" value="Khách hàng" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="275.0" width="50" height="85" />
+        </mxCell>
+        <mxCell id="T" value="Kỹ thuật viên" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;shape=umlActor;labelBackgroundColor=#FFFFFF;verticalLabelPosition=bottom;verticalAlign=top;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="100" y="425.0" width="50" height="85" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="FDD-01" name="FDD-01">
+    <mxGraphModel page="1" pageWidth="1140" pageHeight="1362" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="edge0" edge="1" parent="1" source="F0" target="F1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="154.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="F1" target="F1.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="154.5" />
+              <mxPoint x="560.0" y="96.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="F1" target="F1.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="154.5" />
+              <mxPoint x="560.0" y="149.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="F1" target="F1.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="154.5" />
+              <mxPoint x="560.0" y="202.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="F0" target="F2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="335.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="F2" target="F2.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="335.5" />
+              <mxPoint x="560.0" y="277.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="F2" target="F2.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="335.5" />
+              <mxPoint x="560.0" y="330.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="F2" target="F2.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="335.5" />
+              <mxPoint x="560.0" y="383.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge8" edge="1" parent="1" source="F0" target="F3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="516.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" source="F3" target="F3.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="516.5" />
+              <mxPoint x="560.0" y="458.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="F3" target="F3.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="516.5" />
+              <mxPoint x="560.0" y="511.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge11" edge="1" parent="1" source="F3" target="F3.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="516.5" />
+              <mxPoint x="560.0" y="564.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="F0" target="F4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="671.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge13" edge="1" parent="1" source="F4" target="F4.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="671.0" />
+              <mxPoint x="560.0" y="639.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge14" edge="1" parent="1" source="F4" target="F4.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="671.0" />
+              <mxPoint x="560.0" y="692.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge15" edge="1" parent="1" source="F0" target="F5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="852.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge16" edge="1" parent="1" source="F5" target="F5.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="852.0" />
+              <mxPoint x="560.0" y="767.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge17" edge="1" parent="1" source="F5" target="F5.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="852.0" />
+              <mxPoint x="560.0" y="820.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge18" edge="1" parent="1" source="F5" target="F5.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="852.0" />
+              <mxPoint x="560.0" y="873.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge19" edge="1" parent="1" source="F5" target="F5.4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="852.0" />
+              <mxPoint x="560.0" y="926.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge20" edge="1" parent="1" source="F0" target="F6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="1059.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge21" edge="1" parent="1" source="F6" target="F6.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1059.5" />
+              <mxPoint x="560.0" y="1001.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge22" edge="1" parent="1" source="F6" target="F6.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1059.5" />
+              <mxPoint x="560.0" y="1054.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge23" edge="1" parent="1" source="F6" target="F6.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1059.5" />
+              <mxPoint x="560.0" y="1107.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge24" edge="1" parent="1" source="F0" target="F7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="262.5" y="615.0" />
+              <mxPoint x="262.5" y="1240.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge25" edge="1" parent="1" source="F7" target="F7.1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1240.5" />
+              <mxPoint x="560.0" y="1182.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge26" edge="1" parent="1" source="F7" target="F7.2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1240.5" />
+              <mxPoint x="560.0" y="1235.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge27" edge="1" parent="1" source="F7" target="F7.3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;startArrow=none;endArrow=none;strokeColor=#526274;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560.0" y="1240.5" />
+              <mxPoint x="560.0" y="1288.0" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="F0" value="F0&#10;Quản lý mạng lưới&#10;tủ đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="25" y="565" width="205" height="100" />
+        </mxCell>
+        <mxCell id="F1" value="F1&#10;Tài khoản và quyền" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="122.5" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F1.1" value="F1.1 Đăng nhập và quản lý phiên [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="75" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F1.2" value="F1.2 Quản lý tài khoản và vai trò [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="128" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F1.3" value="F1.3 Giới hạn truy cập và ghi nhật ký [TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="181" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F2" value="F2&#10;Trạm và ngăn tủ" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="303.5" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F2.1" value="F2.1 Quản lý trạm và thiết bị [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="256" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F2.2" value="F2.2 Quản lý trạng thái ngăn tủ [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="309" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F2.3" value="F2.3 Tra cứu trạm và pin khả dụng [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="362" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F3" value="F3&#10;Pin và BMS" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="484.5" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F3.1" value="F3.1 Quản lý hồ sơ và vị trí pin [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="437" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F3.2" value="F3.2 Kiểm tra dữ liệu BMS [TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="490" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F3.3" value="F3.3 Cách ly và phục hồi pin [N]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="543" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F4" value="F4&#10;Xác thực tại trạm" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="639.0" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F4.1" value="F4.1 Cấp và xác minh QR phiên đổi [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="618" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F4.2" value="F4.2 Liên kết và xác minh RFID mô phỏng [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="671" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F5" value="F5&#10;Điều phối đổi pin" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="820.0" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F5.1" value="F5.1 Kiểm tra điều kiện và giữ pin [TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="746" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F5.2" value="F5.2 Nhận pin trả và cấp pin mới [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="799" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F5.3" value="F5.3 Kết thúc và tra cứu giao dịch [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="852" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F5.4" value="F5.4 Xử lý đổi pin gián đoạn [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="905" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F6" value="F6&#10;Giao dịch thanh toán" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="1027.5" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F6.1" value="F6.1 Thu phí đổi pin [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="980" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F6.2" value="F6.2 Đối soát kết quả chưa rõ [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="1033" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F6.3" value="F6.3 Hoàn tiền giao dịch lỗi [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="1086" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F7" value="F7&#10;IoT và cảnh báo" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="295" y="1208.5" width="230" height="64" />
+        </mxCell>
+        <mxCell id="F7.1" value="F7.1 Đồng bộ telemetry và phản hồi lệnh [TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="1161" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F7.2" value="F7.2 Giám sát kết nối và vận hành [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="1214" width="510" height="42" />
+        </mxCell>
+        <mxCell id="F7.3" value="F7.3 Phát hiện và xử lý cảnh báo [N/TĐ]" style="whiteSpace=wrap;html=0;fontFamily=DejaVu Sans;fontSize=17;strokeColor=#526274;fillColor=#F1F5F9;rounded=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="595" y="1267" width="510" height="42" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

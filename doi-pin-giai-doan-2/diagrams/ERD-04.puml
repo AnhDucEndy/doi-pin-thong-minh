@@ -1,0 +1,45 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title ERD-04 Hạ tầng hỗ trợ
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+entity "users" as users {
+  * id : uuid <<PK>>
+  * state : account_state
+}
+entity "auth_sessions" as auth_sessions {
+  * id : uuid <<PK>>
+  * user_id : uuid <<FK>>
+}
+entity "login_limits" as login_limits {
+  * bucket_key : text <<PK>>
+  * failed_count : integer
+  locked_until : timestamptz
+}
+entity "idempotency_records" as idempotency_records {
+  * principal : text <<PK part>>
+  * route : text <<PK part>>
+  * key : uuid <<PK part>>
+  * request_hash : text
+  * expires_at : timestamptz
+}
+entity "outbox_messages" as outbox_messages {
+  * id : uuid <<PK>>
+  * aggregate_id : uuid
+  * dedup_key : text
+}
+entity "audit_events" as audit_events {
+  * id : uuid <<PK>>
+  * actor_id : text
+  * aggregate_id : uuid
+  * correlation_id : uuid
+}
+users ||--o{ auth_sessions
+@enduml

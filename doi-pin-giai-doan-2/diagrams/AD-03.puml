@@ -1,0 +1,38 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-03 BMS và cảnh báo • UC07 UC15 UC17
+|Thiết bị|
+start
+:Gửi event có ID, boot_id, seq và dữ liệu;
+|Backend|
+:Kiểm tra danh tính, schema và ID trùng;
+if (Event không hợp lệ / trùng?) then (Có)
+:Từ chối hoặc trả kết quả cũ\nkhông cập nhật độ mới;
+  stop
+else (Không)
+endif
+:Ghi inbox, kiểm tra thứ tự và tuổi dữ liệu;
+if (Thiếu / cũ / lỗi / quá ngưỡng demo?) then (Có)
+:Lưu dữ liệu với quality tương ứng\nchặn pin/ngăn, tạo hoặc gộp cảnh báo;
+:Dừng cấp mới, phiên đang đổi\nchuyển REVIEW_REQUIRED;
+  |Kỹ thuật viên|
+:Nhận cảnh báo, xác nhận đã đọc;
+:Kiểm tra và khắc phục mô phỏng;
+  |Backend|
+  if (Đúng trạm; có bằng chứng hết lỗi
+và không còn xung đột?) then (Có)
+:Cho phục hồi qua UC08/UC04\nđóng cảnh báo qua UC17;
+  else (Không)
+:Giữ cách ly và hồ sơ mở;
+  endif
+else (Không)
+:Cập nhật BMS, tính lại khả dụng\nkhông tự phục hồi pin đang cách ly;
+endif
+stop
+@enduml

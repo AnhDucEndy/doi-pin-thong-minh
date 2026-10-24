@@ -1,0 +1,47 @@
+[
+  [
+    "QD01",
+    "02 trạm × 06 ngăn, một dòng pin, thiết bị mô phỏng",
+    "Nhóm xác nhận quy mô demo và phạm vi mô phỏng. Số trạm/ngăn là dữ liệu cấu hình; nhiều dòng pin cần đánh giá lại quy tắc tương thích."
+  ],
+  [
+    "QD02",
+    "Pin thuộc mạng lưới; khách có pin ban đầu",
+    "Xác nhận quyền sở hữu và cách cấp pin ban đầu. Không bật pin cá nhân bằng một cờ cấu hình."
+  ],
+  [
+    "QD03",
+    "Phí cố định, thu trước, cổng thanh toán mock",
+    "Chốt số tiền VND; cấu hình phí theo phiên bản. Đổi sang thu sau hoặc thanh toán thật cần duyệt lại thiết kế."
+  ],
+  [
+    "QD04",
+    "Pin sai hoặc không nhận diện được chuyển xử lý kỹ thuật",
+    "Xác nhận quy trình thu hồi và trả lại pin. Không phát pin mới khi chưa rõ pin cũ; không tự động gán pin lạ vào kho."
+  ],
+  [
+    "QD05",
+    "QR dùng một lần và RFID mô phỏng; tài khoản tạo sẵn",
+    "Chốt lựa chọn demo và cách cấp định danh. RFID mô phỏng không được coi là cơ chế chống sao chép."
+  ],
+  [
+    "QD06",
+    "Admin và Technician là hai vai trò riêng",
+    "Xác nhận phân quyền. Không cho Admin kế thừa quyền kỹ thuật hay mở khóa ngăn tùy ý."
+  ],
+  [
+    "QD07",
+    "Ngưỡng BMS, hạn QR và thời gian chờ cấu hình",
+    "Chốt SOC tối thiểu, nhiệt độ tối đa, phí và các timeout. Các giá trị an toàn chưa có căn cứ để tự đặt; thiếu cấu hình bắt buộc thì từ chối giữ chỗ."
+  ],
+  [
+    "QD08",
+    "05 thành viên, 08 giờ mỗi tuần, trong 10 tuần",
+    "Nhóm xác nhận năng lực và tên người phụ trách. Thứ tự module ở GĐ2 là chi tiết hóa kế hoạch GĐ1, không mở thêm 10 tuần."
+  ],
+  [
+    "QD09",
+    "Duyệt quy tắc nghiệp vụ và yêu cầu trước thiết kế kỹ thuật",
+    "Yêu cầu hiện tại cho phép soạn thiết kế kỹ thuật đề xuất. Chưa có bằng chứng nhóm chốt BR/FR/QD; chưa cho phép triển khai toàn bộ ứng dụng."
+  ]
+]

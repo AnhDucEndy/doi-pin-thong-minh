@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-02b Bàn giao pin • UC10 BR04 BR05 BR06
+|Backend|
+start
+:Đầu vào AWAITING_RETURN\nđã xác minh thu và kiểm tra lại điều kiện;
+:Tạo OPEN_RETURN một lần;
+|Thiết bị|
+:Kiểm tra ID, thời hạn, liên động\nmở đúng ngăn nhận hoặc từ chối;
+|Khách hàng|
+:Đưa pin cũ vào, đóng cửa;
+|Thiết bị|
+:Gửi ID pin, hiện diện, cửa và command_id;
+|Backend|
+if (Pin trả đúng và cửa đóng;
+dữ liệu đầy đủ?) then (Không / timeout)
+:REVIEW_REQUIRED, dừng lệnh mới\nđối soát pin và tiền qua AD-04b;
+  stop
+else (Có)
+endif
+:Ghi RETURN_ACCEPTED\nchuyển vị trí pin cũ về ngăn nhận;
+if (Pin cấp vẫn đủ điều kiện
+và trạm online?) then (Không)
+:REVIEW_REQUIRED, giữ bằng chứng\nchuyển AD-04b;
+  stop
+else (Có)
+endif
+:Ghi AWAITING_PICKUP và OPEN_SUPPLY\ntrong một commit;
+|Thiết bị|
+:Kiểm tra lại liên động và ledger lệnh\nmở đúng ngăn pin đã giữ;
+|Khách hàng|
+:Lấy pin mới, đóng cửa;
+|Thiết bị|
+:Gửi bằng chứng lấy pin và cửa đóng;
+|Backend|
+if (Bằng chứng đầy đủ, khớp phiên?) then (Có)
+:Một commit chuyển pin mới cho khách,\nCOMPLETED, giải phóng tài nguyên, audit;
+  |Khách hàng|
+:Xem biên nhận và lịch sử;
+  stop
+else (Không / timeout)
+  |Backend|
+:REVIEW_REQUIRED, không tự hoàn tiền\nhoặc cấp thêm, chờ đối soát AD-04b;
+  stop
+endif
+@enduml

@@ -1,0 +1,81 @@
+[
+  {
+    "id": "QD01",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "02 trạm × 06 ngăn, một dòng pin, thiết bị mô phỏng",
+    "decision": "Chốt 2 trạm, mỗi trạm 6 ngăn, một dòng pin, thiết bị mô phỏng.",
+    "original_confirmation_request": "Nhóm xác nhận quy mô demo và phạm vi mô phỏng. Số trạm/ngăn là dữ liệu cấu hình; nhiều dòng pin cần đánh giá lại quy tắc tương thích.",
+    "sources": []
+  },
+  {
+    "id": "QD02",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Pin thuộc mạng lưới; khách có pin ban đầu",
+    "decision": "Pin thuộc mạng lưới; tạo seed trạng thái pin ban đầu do khách giữ; không hỗ trợ pin riêng.",
+    "original_confirmation_request": "Xác nhận quyền sở hữu và cách cấp pin ban đầu. Không bật pin cá nhân bằng một cờ cấu hình.",
+    "sources": []
+  },
+  {
+    "id": "QD03",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Phí cố định, thu trước, cổng thanh toán mock",
+    "decision": "Thu trước bằng payment mock, phí cố định 9.000 VND/lượt; chưa áp dụng 20 lượt miễn phí.",
+    "original_confirmation_request": "Chốt số tiền VND; cấu hình phí theo phiên bản. Đổi sang thu sau hoặc thanh toán thật cần duyệt lại thiết kế.",
+    "sources": [
+      "https://vgreen.net/san-pham-dich-vu?tab=xemay",
+      "https://vgreen.net/vi/huong-dan-doi-pin-tai-tu-doi-pin-v-green-trong-3-buoc"
+    ]
+  },
+  {
+    "id": "QD04",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Pin sai hoặc không nhận diện được chuyển xử lý kỹ thuật",
+    "decision": "Pin trả sai loại/không nhận diện: không cấp pin mới; tạm giữ trạng thái, kỹ thuật xác minh và xử lý.",
+    "original_confirmation_request": "Xác nhận quy trình thu hồi và trả lại pin. Không phát pin mới khi chưa rõ pin cũ; không tự động gán pin lạ vào kho.",
+    "sources": []
+  },
+  {
+    "id": "QD05",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "QR dùng một lần và RFID mô phỏng; tài khoản tạo sẵn",
+    "decision": "QR dùng một lần và RFID mô phỏng; tài khoản cấp sẵn; không coi RFID UID là bảo mật của phần cứng thật.",
+    "original_confirmation_request": "Chốt lựa chọn demo và cách cấp định danh. RFID mô phỏng không được coi là cơ chế chống sao chép.",
+    "sources": []
+  },
+  {
+    "id": "QD06",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Admin và Technician là hai vai trò riêng",
+    "decision": "Admin và Technician độc lập, backend cưỡng chế RBAC/ownership.",
+    "original_confirmation_request": "Xác nhận phân quyền. Không cho Admin kế thừa quyền kỹ thuật hay mở khóa ngăn tùy ý.",
+    "sources": []
+  },
+  {
+    "id": "QD07",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Ngưỡng BMS, hạn QR và thời gian chờ cấu hình",
+    "decision": "Phí 9.000 VND/lượt (giá V-Green tham khảo); ngưỡng phát pin SOC >=80%, SOH >=80%, T <=40°C là GIẢ ĐỊNH DEMO; TTL và timeout giữ theo GĐ2. Không coi mức T là tiêu chuẩn an toàn. Cảnh báo/lỗi BMS vẫn chặn phục vụ theo BR.",
+    "original_confirmation_request": "Chốt SOC tối thiểu, nhiệt độ tối đa, phí và các timeout. Các giá trị an toàn chưa có căn cứ để tự đặt; thiếu cấu hình bắt buộc thì từ chối giữ chỗ.",
+    "sources": [
+      "https://vgreen.net/vi/san-pham-dich-vu?tab=pin",
+      "https://vinfastauto.com/vn_vi/luu-y-su-dung-doi-voi-pin-cell-lfp-gotion",
+      "https://vinfastauto.com/vn_vi/xe-may-dien-vinfast-amio-s"
+    ]
+  },
+  {
+    "id": "QD08",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "05 thành viên, 08 giờ mỗi tuần, trong 10 tuần",
+    "decision": "Lập kế hoạch theo 5 thành viên, 8 giờ/người/tuần, 10 tuần, có thể điều chỉnh phân công tên thực tế.",
+    "original_confirmation_request": "Nhóm xác nhận năng lực và tên người phụ trách. Thứ tự module ở GĐ2 là chi tiết hóa kế hoạch GĐ1, không mở thêm 10 tuần.",
+    "sources": []
+  },
+  {
+    "id": "QD09",
+    "status": "APPROVED_FOR_SIMULATION_BY_USER",
+    "original_proposal": "Duyệt quy tắc nghiệp vụ và yêu cầu trước thiết kế kỹ thuật",
+    "decision": "Người dùng đồng ý phương án thiết kế FR01–19, UC01–17, BR01–12 và MVP để chuyển sang triển khai từng module. Không thay cho phê duyệt chính thức của giảng viên hay biên bản của các thành viên khác.",
+    "original_confirmation_request": "Yêu cầu hiện tại cho phép soạn thiết kế kỹ thuật đề xuất. Chưa có bằng chứng nhóm chốt BR/FR/QD; chưa cho phép triển khai toàn bộ ứng dụng.",
+    "sources": []
+  }
+]

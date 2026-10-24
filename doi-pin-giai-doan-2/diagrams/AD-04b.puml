@@ -1,0 +1,53 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-04b Khôi phục và hoàn tiền • UC10 UC14
+|Backend|
+start
+:Phiên REVIEW_REQUIRED\ngiữ khóa nghiệp vụ và mở recovery case;
+|Kỹ thuật viên|
+:Thu thập snapshot và ledger thiết bị\ntrong trạm được giao;
+|Backend|
+if (Xác minh đã giao pin mới?) then (Có)
+  if (Đủ bằng chứng trả pin/cửa
+và khoản thu đã xác minh?) then (Có)
+:Hoàn thiện vị trí, COMPLETED\nđóng hồ sơ và giải phóng tài nguyên;
+  else (Không)
+:Giữ REVIEW_REQUIRED;
+  endif
+  stop
+else (Không)
+endif
+if (Xác minh chắc chắn chưa giao?) then (Không)
+:Giữ REVIEW_REQUIRED\nkhông hoàn và không cấp thêm;
+  stop
+else (Có)
+endif
+if (Khoản thu SUCCEEDED?) then (Có)
+  |Admin|
+:Yêu cầu hoàn toàn bộ phí;
+  |Backend|
+:Kiểm tra chứng cứ và quyền\nCOMPENSATING, tạo refund/outbox một lần;
+  |Payment mock|
+:Hoàn theo provider_key cố định;
+  |Backend|
+:Xác minh kết quả, timeout = UNKNOWN\ntruy vấn lại, không tạo refund mới;
+else (Không)
+  |Backend|
+:Đối soát khoản thu, chưa rõ\nthì giữ REVIEW_REQUIRED;
+endif
+|Kỹ thuật viên|
+:Giải quyết pin cũ nếu đã nhận\nghi chứng cứ xử lý quyền giữ pin;
+|Backend|
+if (Hoàn đã xác minh và pin cũ đã giải quyết?) then (Có)
+:CLOSED_COMPENSATED, giải phóng giữ chỗ;
+else (Không)
+:Giữ COMPENSATING hoặc REVIEW_REQUIRED\nkhông đóng chỉ vì đã hoàn phí;
+endif
+stop
+@enduml

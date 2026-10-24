@@ -1,0 +1,38 @@
+# Cấu hình riêng cho mô phỏng (không dùng cho tủ/pin thật)
+# QD01-QD09 được người dùng xác nhận ngày 2026-10-23.
+# SOH >=80% là bộ lọc PIN CẤP, không phải điều kiện SOH pin trả của V-Green.
+# SOC >=80% và T<=40C là giả định demo, KHÔNG phải chuẩn kỹ thuật VinFast.
+schema_version: '0.2'
+decision_status: APPROVED_FOR_SIMULATION_BY_USER
+environment: simulation_only
+station_count: 2
+compartments_per_station: 6
+battery_family: DEMO_FAMILY_A
+ownership_mode: NETWORK
+payment_mode: MOCK
+charge_timing: BEFORE_RETURN
+refund_mode: FULL_ADMIN_REVIEWED
+accounts_mode: PRECREATED
+rfid_mode: SIMULATED
+roles_mode: SEPARATE
+fee_minor: 9000
+currency: VND
+soc_min_pct: 80
+temperature_max_c: 40
+soh_min_pct: 80
+qr_ttl_seconds: 120
+login_max_failures: 5
+login_window_seconds: 900
+telemetry_interval_seconds: 5
+telemetry_stale_seconds: 15
+reservation_ttl_seconds: 120
+physical_step_timeout_seconds: 60
+command_ttl_seconds: 15
+payment_timeout_seconds: 30
+web_session_ttl_seconds: 3600
+verification_ttl_seconds: 120
+dashboard_poll_seconds: 3
+idempotency_retention_hours: 72
+staff_count: 5
+weeks: 10
+hours_per_person_week: 8

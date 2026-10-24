@@ -1,0 +1,20 @@
+﻿FR,Module,UC baseline,TC baseline,Diagrams,Operation IDs
+FR01,F1,"UC01,UC02",TC01,AD-01;ERD-01;ERD-04,login;logout;me;audit
+FR02,F1,UC02,TC02,AD-01;ERD-01;ERD-04,listUsers;createUser;updateUser;assignStations;createCredential;revokeCredential
+FR03,F2,UC03,TC03,SM-02;ERD-01,createStation;getStation;updateStation;createDevice;listDevices;updateDevice
+FR04,F2,UC04,TC04,SM-02;ERD-01,listCompartments;createCompartment;changeCompartment
+FR05,F2,UC05,TC05,SM-02;ERD-01,listStations
+FR06,F3,UC06,TC06,AD-03;SM-01;ERD-01;ERD-03,listBatteries;createBattery;changeBattery
+FR07,F3,UC07,TC07,AD-03;SM-01;ERD-01;ERD-03,listTelemetry;receiveDeviceEvent
+FR08,F3,UC08,TC08,AD-03;SM-01;ERD-01;ERD-03,changeBattery
+FR09,F4,UC09,TC09,AD-02a;ERD-01;ERD-02,createCredential;revokeCredential;createQr;verifyAtDevice
+FR10,F5,UC10,TC10,AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02,reserveSwap;consentSwap
+FR11,F5,UC10,TC11,AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02,receiveDeviceEvent
+FR12,F5,UC10,TC12,AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02,cancelSwap;getRecovery;recordRecoveryEvidence;settleRecovery
+FR13,F5,UC11,TC13,AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02,listSwaps;getSwap;getPayment
+FR14,F6,UC12,TC14,AD-04a;AD-04b;SM-04;ERD-02;ERD-03,consentSwap;getPayment;receivePaymentEvent;providerCharge
+FR15,F6,UC13,TC15,AD-04a;AD-04b;SM-04;ERD-02;ERD-03,reconcilePayment;receivePaymentEvent;providerQueryCharge
+FR16,F6,UC14,TC16,AD-04a;AD-04b;SM-04;ERD-02;ERD-03,requestRefund;getRefund;reconcileRefund;receivePaymentEvent;providerRefund;providerQueryRefund
+FR17,F7,UC15,TC17,AD-03;SM-02;ERD-03,receiveDeviceEvent;pollCommands
+FR18,F7,UC16,TC18,AD-03;SM-02;ERD-03,dashboard;audit
+FR19,F7,UC17,TC19,AD-03;SM-02;ERD-03,receiveDeviceEvent;listAlerts;ackAlert;resolveAlert

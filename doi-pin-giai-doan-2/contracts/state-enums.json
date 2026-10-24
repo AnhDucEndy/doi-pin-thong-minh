@@ -1,0 +1,101 @@
+{
+  "role": [
+    "ADMIN",
+    "CUSTOMER",
+    "TECHNICIAN"
+  ],
+  "account_state": [
+    "ACTIVE",
+    "LOCKED",
+    "INACTIVE"
+  ],
+  "station_state": [
+    "ACTIVE",
+    "MAINTENANCE",
+    "INACTIVE"
+  ],
+  "battery_state": [
+    "REGISTERED",
+    "IN_SERVICE",
+    "QUARANTINED",
+    "RETIRED"
+  ],
+  "location_kind": [
+    "COMPARTMENT",
+    "CUSTOMER",
+    "UNKNOWN"
+  ],
+  "compartment_state": [
+    "ACTIVE",
+    "BLOCKED",
+    "MAINTENANCE",
+    "RETIRED"
+  ],
+  "door_state": [
+    "UNKNOWN",
+    "CLOSED",
+    "OPEN"
+  ],
+  "swap_state": [
+    "VERIFIED",
+    "RESERVED",
+    "AWAITING_PAYMENT",
+    "AWAITING_RETURN",
+    "RETURN_ACCEPTED",
+    "AWAITING_PICKUP",
+    "REVIEW_REQUIRED",
+    "COMPENSATING",
+    "COMPLETED",
+    "CANCELLED",
+    "CLOSED_COMPENSATED"
+  ],
+  "payment_state": [
+    "CREATED",
+    "PENDING",
+    "UNKNOWN",
+    "SUCCEEDED",
+    "FAILED"
+  ],
+  "refund_state": [
+    "REQUESTED",
+    "PENDING",
+    "UNKNOWN",
+    "SUCCEEDED",
+    "FAILED"
+  ],
+  "command_state": [
+    "QUEUED",
+    "DISPATCHED",
+    "ACKNOWLEDGED",
+    "OBSERVED",
+    "REJECTED",
+    "EXPIRED",
+    "UNKNOWN"
+  ],
+  "alert_state": [
+    "OPEN",
+    "ACKNOWLEDGED",
+    "RESOLVED"
+  ],
+  "case_state": [
+    "OPEN",
+    "EVIDENCE_RECORDED",
+    "RESOLVED"
+  ],
+  "credential_kind": [
+    "RFID"
+  ],
+  "command_kind": [
+    "OPEN_RETURN",
+    "OPEN_SUPPLY"
+  ],
+  "event_kind": [
+    "HEARTBEAT",
+    "TELEMETRY",
+    "DOOR",
+    "PRESENCE",
+    "COMMAND_ACK",
+    "SNAPSHOT",
+    "FAULT"
+  ]
+}

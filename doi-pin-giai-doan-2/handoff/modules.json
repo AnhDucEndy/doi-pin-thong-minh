@@ -1,0 +1,50 @@
+[
+  [
+    "0",
+    "Khóa baseline và hợp đồng",
+    "Cả nhóm",
+    "Đối chiếu SHA256, QD01–09, FR01–19, UC01–17, BR01–12; ghi quyết định và cập nhật hợp đồng trước code."
+  ],
+  [
+    "1",
+    "Nền tảng và định danh",
+    "TV3 chủ trì, TV2 hỗ trợ",
+    "Cấu hình fail closed, migration, seed demo, token và phân quyền; TC01–02, không lộ hash hoặc khóa thiết bị."
+  ],
+  [
+    "2",
+    "Trạm ngăn và pin",
+    "TV2 trạm/ngăn, TV4 pin/BMS",
+    "TC03–08; vị trí pin duy nhất, ngăn chưa xác minh không khả dụng; kỹ thuật chỉ trạm được giao."
+  ],
+  [
+    "3",
+    "Thiết bị và bằng chứng",
+    "TV5 chủ trì, TV3 hỗ trợ",
+    "TC17, TC19; ledger bền vững, sự kiện lặp/đảo thứ tự, restart; ACK không thay thế cảm biến."
+  ],
+  [
+    "4",
+    "Xác thực giữ chỗ và thu phí",
+    "TV3 QR/điều phối, TV4 thu phí",
+    "TC09–10, TC14–15; QR một lần, race giữ pin, thanh toán UNKNOWN không thu lại."
+  ],
+  [
+    "5",
+    "Trả pin nhận pin và khôi phục",
+    "TV3 chủ trì, TV4 và TV5 phối hợp",
+    "TC11–12, TC16; kiểm tra pin sai, mất kết nối, đã trả chưa nhận, nhận pin chưa rõ, hoàn tiền đúng quyền."
+  ],
+  [
+    "6",
+    "Giao diện lịch sử và cảnh báo",
+    "TV2, TV3, TV4 theo module; TV5 cảnh báo",
+    "TC05, TC13, TC18–19; web theo trạng thái server, không suy đoán thành công từ timeout."
+  ],
+  [
+    "7",
+    "Tích hợp và nghiệm thu",
+    "TV5 kiểm thử, TV1 bàn giao",
+    "Chạy toàn bộ TC01–19, tiêu chí NFR GĐ1, restore backup, kiểm tra audit; đóng bằng chứng và biên bản demo."
+  ]
+]

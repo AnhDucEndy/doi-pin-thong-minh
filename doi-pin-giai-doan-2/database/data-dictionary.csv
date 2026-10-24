@@ -1,0 +1,241 @@
+﻿Table,Column,Type and constraints,Description
+users,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+users,username,text NOT NULL UNIQUE,Tên đăng nhập chuẩn hóa lowercase
+users,password_hash,text NOT NULL,Argon2id; không lưu mật khẩu gốc
+users,role,role NOT NULL,Không kế thừa ADMIN → TECHNICIAN
+users,state,account_state NOT NULL DEFAULT 'ACTIVE',Khóa/ngừng tài khoản không xóa lịch sử
+users,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+users,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+stations,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+stations,code,text NOT NULL UNIQUE,Mã trạm
+stations,name,text NOT NULL,Tên
+stations,address,text NOT NULL,Địa chỉ hiển thị
+stations,state,station_state NOT NULL DEFAULT 'ACTIVE',Trạng thái hành chính; online tính riêng
+stations,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+stations,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+user_station_assignments,user_id,uuid NOT NULL REFERENCES users(id),Kỹ thuật viên; service kiểm tra role
+user_station_assignments,station_id,uuid NOT NULL REFERENCES stations(id),Trạm được giao
+user_station_assignments,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+user_station_assignments,TABLE CONSTRAINT,"PRIMARY KEY (user_id, station_id)",
+auth_sessions,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+auth_sessions,user_id,uuid NOT NULL REFERENCES users(id),Chủ phiên
+auth_sessions,token_hash,text NOT NULL UNIQUE,Chỉ lưu hash token ngẫu nhiên
+auth_sessions,expires_at,timestamptz NOT NULL,Hết hạn
+auth_sessions,revoked_at,timestamptz,Thu hồi khi khóa/đổi quyền
+auth_sessions,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+login_limits,bucket_key,text PRIMARY KEY,Hash khóa username/IP theo chính sách
+login_limits,failed_count,integer NOT NULL DEFAULT 0 CHECK (failed_count >= 0),Số lần sai
+login_limits,window_started_at,timestamptz NOT NULL,Bắt đầu cửa sổ
+login_limits,locked_until,timestamptz,Khóa tạm
+devices,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+devices,station_id,uuid NOT NULL UNIQUE REFERENCES stations(id),MVP một bộ điều khiển hiện hành mỗi trạm
+devices,serial,text NOT NULL UNIQUE,Mã thiết bị
+devices,key_hash,text NOT NULL,Hash Device-Key
+devices,enabled,boolean NOT NULL DEFAULT true,Vô hiệu hóa danh tính
+devices,last_received_at,timestamptz,Heartbeat gần nhất được chấp nhận
+devices,boot_id,uuid,Phiên khởi động hiện hành
+devices,last_seq,bigint NOT NULL DEFAULT -1,Sequence lớn nhất trong boot hiện hành
+devices,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+devices,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+compartments,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+compartments,station_id,uuid NOT NULL REFERENCES stations(id),Thuộc trạm
+compartments,slot_no,integer NOT NULL CHECK (slot_no > 0),Số ngăn
+compartments,service_state,compartment_state NOT NULL DEFAULT 'BLOCKED',Ban đầu chặn tới khi có snapshot
+compartments,door_state,door_state NOT NULL DEFAULT 'UNKNOWN',Trạng thái cửa độc lập trạng thái phục vụ
+compartments,observed_present,boolean,NULL nếu chưa biết có pin
+compartments,observed_serial,text,Giữ mã quan sát kể cả không nhận diện được
+compartments,observed_at,timestamptz,Thời gian Backend nhận quan sát hợp lệ
+compartments,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+compartments,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+compartments,TABLE CONSTRAINT,"UNIQUE (station_id, slot_no)",
+compartments,TABLE CONSTRAINT,"UNIQUE (id, station_id)",
+batteries,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+batteries,serial,text NOT NULL UNIQUE,Mã pin trong mạng lưới
+batteries,family,text NOT NULL,"Họ pin duy nhất trong demo, vẫn lưu để kiểm tra"
+batteries,lifecycle,battery_state NOT NULL DEFAULT 'REGISTERED',Vòng đời quản lý không đồng nhất SOC
+batteries,location_kind,location_kind NOT NULL DEFAULT 'UNKNOWN',Vị trí đã xác minh
+batteries,compartment_id,uuid REFERENCES compartments(id),Ngăn khi location=COMPARTMENT
+batteries,holder_user_id,uuid REFERENCES users(id),Khách giữ khi location=CUSTOMER
+batteries,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+batteries,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+batteries,TABLE CONSTRAINT,CHECK ((location_kind='COMPARTMENT' AND compartment_id IS NOT NULL AND holder_user_id IS NULL) OR (location_kind='CUSTOMER' AND holder_user_id IS NOT NULL AND compartment_id IS NULL) OR (location_kind='UNKNOWN' AND compartment_id IS NULL AND holder_user_id IS NULL)),
+demo_policies,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+demo_policies,revision,integer NOT NULL UNIQUE CHECK (revision > 0),Phiên bản chính sách
+demo_policies,parameters,jsonb NOT NULL,Thông số theo demo-config.schema.json; không sửa tại chỗ
+demo_policies,review_status,"text NOT NULL CHECK (review_status IN ('PROPOSED','TEAM_CONFIRMED'))",Chỉ ghi TEAM_CONFIRMED khi có xác nhận thật
+demo_policies,confirmed_by,uuid REFERENCES users(id),Người ghi nhận xác nhận
+demo_policies,confirmed_at,timestamptz,Thời điểm xác nhận
+demo_policies,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+credentials,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+credentials,user_id,uuid NOT NULL REFERENCES users(id),Chủ thẻ
+credentials,kind,credential_kind NOT NULL DEFAULT 'RFID',RFID
+credentials,credential_hash,text NOT NULL UNIQUE,Hash giá trị credential demo
+credentials,revoked_at,timestamptz,Thu hồi
+credentials,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+qr_challenges,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+qr_challenges,user_id,uuid NOT NULL REFERENCES users(id),Chủ QR
+qr_challenges,station_id,uuid NOT NULL REFERENCES stations(id),Trạm đích
+qr_challenges,token_hash,text NOT NULL UNIQUE,Hash QR ngẫu nhiên
+qr_challenges,expires_at,timestamptz NOT NULL,Hết hạn
+qr_challenges,consumed_at,timestamptz,Cập nhật nguyên tử khi xác thực
+qr_challenges,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+swap_transactions,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+swap_transactions,customer_id,uuid NOT NULL REFERENCES users(id),Khách hàng
+swap_transactions,station_id,uuid NOT NULL REFERENCES stations(id),Trạm
+swap_transactions,verified_via,"text NOT NULL CHECK (verified_via IN ('QR','RFID'))",Phương thức xác thực
+swap_transactions,qr_challenge_id,uuid UNIQUE REFERENCES qr_challenges(id),Nếu QR
+swap_transactions,credential_id,uuid REFERENCES credentials(id),Nếu RFID
+swap_transactions,state,swap_state NOT NULL DEFAULT 'VERIFIED',Trạng thái nghiệp vụ
+swap_transactions,policy_id,uuid NOT NULL REFERENCES demo_policies(id),Phiên bản chính sách
+swap_transactions,policy_snapshot,jsonb NOT NULL,Snapshot bất biến để không đổi điều kiện giữa lượt
+swap_transactions,old_battery_id,uuid REFERENCES batteries(id),"Pin khách phải trả, xác định khi giữ tài nguyên"
+swap_transactions,new_battery_id,uuid REFERENCES batteries(id),Pin được giữ để cấp
+swap_transactions,return_compartment_id,uuid,Ngăn nhận
+swap_transactions,supply_compartment_id,uuid,Ngăn cấp
+swap_transactions,amount_minor,bigint CHECK (amount_minor > 0),"Phí VND nguyên, chốt khi reserve"
+swap_transactions,currency,text NOT NULL DEFAULT 'VND' CHECK (currency='VND'),Demo chỉ VND
+swap_transactions,consented_at,timestamptz,Chấp thuận phí trước yêu cầu thu
+swap_transactions,reservation_expires_at,timestamptz,Chỉ tự hết hạn khi RESERVED chưa gửi thu
+swap_transactions,return_observed_at,timestamptz,Bằng chứng nhận pin cũ + cửa đóng
+swap_transactions,pickup_observed_at,timestamptz,Bằng chứng lấy pin mới + cửa đóng
+swap_transactions,review_reason,text,Lý do chờ xử lý
+swap_transactions,closed_at,timestamptz,Thời điểm trạng thái kết thúc
+swap_transactions,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+swap_transactions,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+swap_transactions,TABLE CONSTRAINT,"FOREIGN KEY (return_compartment_id, station_id) REFERENCES compartments(id, station_id)",
+swap_transactions,TABLE CONSTRAINT,"FOREIGN KEY (supply_compartment_id, station_id) REFERENCES compartments(id, station_id)",
+swap_transactions,TABLE CONSTRAINT,CHECK ((verified_via='QR' AND qr_challenge_id IS NOT NULL AND credential_id IS NULL) OR (verified_via='RFID' AND credential_id IS NOT NULL AND qr_challenge_id IS NULL)),
+swap_transactions,TABLE CONSTRAINT,CHECK (old_battery_id IS NULL OR new_battery_id IS NULL OR old_battery_id <> new_battery_id),
+swap_transactions,TABLE CONSTRAINT,CHECK (return_compartment_id IS NULL OR supply_compartment_id IS NULL OR return_compartment_id <> supply_compartment_id),
+swap_transactions,TABLE CONSTRAINT,"CHECK (state IN ('VERIFIED','CANCELLED') OR (old_battery_id IS NOT NULL AND new_battery_id IS NOT NULL AND return_compartment_id IS NOT NULL AND supply_compartment_id IS NOT NULL AND amount_minor IS NOT NULL))",
+swap_transactions,TABLE CONSTRAINT,"CHECK ((closed_at IS NOT NULL) = (state IN ('COMPLETED','CANCELLED','CLOSED_COMPENSATED')))",
+swap_transactions,TABLE CONSTRAINT,CHECK (state <> 'COMPLETED' OR (return_observed_at IS NOT NULL AND pickup_observed_at IS NOT NULL)),
+resource_reservations,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+resource_reservations,swap_id,uuid NOT NULL REFERENCES swap_transactions(id),Phiên giữ
+resource_reservations,battery_id,uuid REFERENCES batteries(id),Tài nguyên pin
+resource_reservations,compartment_id,uuid REFERENCES compartments(id),Tài nguyên ngăn
+resource_reservations,released_at,timestamptz,"NULL = giữ độc quyền, không phụ thuộc expiry tự suy diễn"
+resource_reservations,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+resource_reservations,TABLE CONSTRAINT,CHECK ((battery_id IS NOT NULL)::integer + (compartment_id IS NOT NULL)::integer = 1),
+payments,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+payments,swap_id,uuid NOT NULL UNIQUE REFERENCES swap_transactions(id),Một intent/phiên; thất bại chắc chắn kết thúc phiên
+payments,provider_key,uuid NOT NULL UNIQUE,Idempotency key khi gọi mock
+payments,provider_reference,text UNIQUE,Mã phía mock
+payments,state,payment_state NOT NULL DEFAULT 'CREATED',Trạng thái thu độc lập
+payments,amount_minor,bigint NOT NULL CHECK (amount_minor > 0),Phải bằng phí phiên
+payments,currency,text NOT NULL DEFAULT 'VND' CHECK (currency='VND'),Đơn vị
+payments,verified_at,timestamptz,Khi đã xác minh kết quả
+payments,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+payments,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+payments,TABLE CONSTRAINT,CHECK (state <> 'SUCCEEDED' OR verified_at IS NOT NULL),
+refunds,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+refunds,payment_id,uuid NOT NULL UNIQUE REFERENCES payments(id),"Một refund intent cho khoản thu, retry cùng khóa"
+refunds,requested_by,uuid NOT NULL REFERENCES users(id),Admin; service kiểm tra role
+refunds,provider_key,uuid NOT NULL UNIQUE,Idempotency key hoàn
+refunds,provider_reference,text UNIQUE,Mã hoàn bên mock
+refunds,state,refund_state NOT NULL DEFAULT 'REQUESTED',Lỗi/UNKNOWN không được tạo intent mới
+refunds,amount_minor,bigint NOT NULL CHECK (amount_minor > 0),MVP bằng toàn bộ khoản thu
+refunds,verified_at,timestamptz,Xác minh hoàn
+refunds,reason,text NOT NULL,Lý do và kết quả đối soát
+refunds,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+refunds,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+device_events,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+device_events,device_id,uuid NOT NULL REFERENCES devices(id),Danh tính xác minh từ key
+device_events,boot_id,uuid NOT NULL,Boot session
+device_events,seq,bigint NOT NULL CHECK (seq >= 0),Thứ tự trong boot
+device_events,kind,event_kind NOT NULL,Loại sự kiện
+device_events,compartment_id,uuid REFERENCES compartments(id),Ngăn liên quan
+device_events,swap_id,uuid REFERENCES swap_transactions(id),Phiên liên quan nếu có
+device_events,command_id,uuid,Lệnh liên quan nếu có; FK thêm sau
+device_events,observed_at,timestamptz NOT NULL,Timestamp ở thiết bị
+device_events,received_at,timestamptz NOT NULL DEFAULT now(),Timestamp ở Backend
+device_events,payload_hash,text NOT NULL,Chống cùng ID khác nội dung
+device_events,payload,jsonb NOT NULL,Payload theo DeviceEvent trong API
+device_events,processed_at,timestamptz,Chưa có = chưa xử lý
+device_events,processing_error,text,Lý do bị cách ly/từ chối
+device_events,accepted,boolean NOT NULL DEFAULT false,Chỉ accepted mới cập nhật projection
+device_events,TABLE CONSTRAINT,"UNIQUE (device_id, boot_id, seq)",
+battery_telemetry,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+battery_telemetry,event_id,uuid NOT NULL UNIQUE REFERENCES device_events(id),Telemetry event chứa đúng một pin
+battery_telemetry,battery_id,uuid NOT NULL REFERENCES batteries(id),Pin
+battery_telemetry,soc,"numeric(5,2) CHECK (soc BETWEEN 0 AND 100)",Phần trăm; NULL = thiếu
+battery_telemetry,soh,"numeric(5,2) CHECK (soh BETWEEN 0 AND 100)",Phần trăm do BMS demo cung cấp
+battery_telemetry,temperature_c,"numeric(6,2)",Độ C; NULL = thiếu
+battery_telemetry,fault_codes,text[] NOT NULL DEFAULT '{}',Cờ lỗi
+battery_telemetry,measured_at,timestamptz NOT NULL,Thời gian đo
+battery_telemetry,received_at,timestamptz NOT NULL,Thời gian nhận
+battery_telemetry,quality_ok,boolean NOT NULL,"Chỉ true khi đầy đủ, đúng thứ tự, hợp lệ"
+device_commands,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+device_commands,device_id,uuid NOT NULL REFERENCES devices(id),Thiết bị đích
+device_commands,swap_id,uuid NOT NULL REFERENCES swap_transactions(id),Phiên đổi
+device_commands,compartment_id,uuid NOT NULL REFERENCES compartments(id),Ngăn chính xác
+device_commands,kind,command_kind NOT NULL,OPEN_RETURN hoặc OPEN_SUPPLY
+device_commands,state,command_state NOT NULL DEFAULT 'QUEUED',ACK không đủ để OBSERVED
+device_commands,expires_at,timestamptz NOT NULL,Lệnh quá hạn không tác động
+device_commands,payload_hash,text NOT NULL,Băm nội dung lệnh bất biến
+device_commands,payload,jsonb NOT NULL,Thông tin liên động và pin dự kiến
+device_commands,evidence_event_id,uuid REFERENCES device_events(id),Event xác nhận vật lý
+device_commands,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+device_commands,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+device_commands,TABLE CONSTRAINT,"UNIQUE (swap_id, kind)",
+recovery_cases,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+recovery_cases,swap_id,uuid NOT NULL UNIQUE REFERENCES swap_transactions(id),Một hồ sơ theo phiên
+recovery_cases,state,case_state NOT NULL DEFAULT 'OPEN',Tình trạng
+recovery_cases,assigned_to,uuid REFERENCES users(id),Kỹ thuật viên đúng trạm
+recovery_cases,evidence_event_id,uuid REFERENCES device_events(id),Snapshot/lịch sử mới sau reconnect
+recovery_cases,new_pin_delivered,"text NOT NULL DEFAULT 'UNKNOWN' CHECK (new_pin_delivered IN ('YES','NO','UNKNOWN'))",Kết luận dựa dữ liệu thiết bị
+recovery_cases,old_pin_settled,boolean NOT NULL DEFAULT false,Đã hoàn trả/giải quyết quyền giữ pin cũ
+recovery_cases,resolution_note,text,Không đủ chứng cứ thì không resolve
+recovery_cases,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+recovery_cases,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+alerts,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+alerts,station_id,uuid NOT NULL REFERENCES stations(id),Trạm
+alerts,battery_id,uuid REFERENCES batteries(id),Pin liên quan
+alerts,compartment_id,uuid REFERENCES compartments(id),Ngăn liên quan
+alerts,dedup_key,text NOT NULL,"Loại lỗi + tài nguyên, phạm vi trạm"
+alerts,code,text NOT NULL,Mã lỗi ổn định
+alerts,state,alert_state NOT NULL DEFAULT 'OPEN',ACK không gỡ chặn
+alerts,last_event_id,uuid REFERENCES device_events(id),Bằng chứng gần nhất
+alerts,acknowledged_by,uuid REFERENCES users(id),Kỹ thuật viên được giao
+alerts,resolved_by,uuid REFERENCES users(id),Kỹ thuật viên
+alerts,resolution_note,text,Bằng chứng hết lỗi
+alerts,occurrences,integer NOT NULL DEFAULT 1 CHECK (occurrences > 0),Số lần báo
+alerts,version,integer NOT NULL DEFAULT 1 CHECK (version > 0),Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+alerts,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+payment_events,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+payment_events,provider_event_id,text NOT NULL UNIQUE,Chống callback lặp
+payment_events,payment_id,uuid NOT NULL REFERENCES payments(id),Khoản thu
+payment_events,refund_id,uuid REFERENCES refunds(id),Nếu kết quả hoàn
+payment_events,payload_hash,text NOT NULL,Cùng ID khác nội dung là lỗi
+payment_events,payload,jsonb NOT NULL,Kết quả đã xác minh nguồn
+payment_events,processed_at,timestamptz,Thời điểm apply
+payment_events,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+idempotency_records,principal,text NOT NULL,user/device/service ID từ xác thực
+idempotency_records,route,text NOT NULL,Method + path chuẩn hóa
+idempotency_records,key,uuid NOT NULL,Idempotency-Key
+idempotency_records,request_hash,text NOT NULL,Hash body chuẩn hóa
+idempotency_records,response_status,integer,NULL khi đang xử lý
+idempotency_records,response_body,jsonb,Kết quả đầu tiên
+idempotency_records,expires_at,timestamptz NOT NULL,Không xóa trước thời gian replay được hỗ trợ
+idempotency_records,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+idempotency_records,TABLE CONSTRAINT,"PRIMARY KEY (principal, route, key)",
+outbox_messages,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+outbox_messages,aggregate_type,text NOT NULL,swap/payment/refund
+outbox_messages,aggregate_id,uuid NOT NULL,ID nghiệp vụ
+outbox_messages,kind,text NOT NULL,DISPATCH_COMMAND/CHARGE/REFUND
+outbox_messages,dedup_key,text NOT NULL UNIQUE,Key bất biến cho tác động bên ngoài
+outbox_messages,payload,jsonb NOT NULL,Thông điệp
+outbox_messages,attempts,integer NOT NULL DEFAULT 0,Số lần gửi
+outbox_messages,next_attempt_at,timestamptz NOT NULL DEFAULT now(),Lịch thử lại
+outbox_messages,delivered_at,timestamptz,"Đã giao, không đồng nghĩa đã thực hiện"
+outbox_messages,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC
+audit_events,id,uuid PRIMARY KEY,Định danh UUID do ứng dụng sinh
+audit_events,actor_type,"text NOT NULL CHECK (actor_type IN ('USER','DEVICE','SYSTEM','PAYMENT'))",Nguồn
+audit_events,actor_id,text NOT NULL,ID hoặc tên job
+audit_events,aggregate_type,text NOT NULL,Loại đối tượng
+audit_events,aggregate_id,uuid NOT NULL,ID đối tượng
+audit_events,action,text NOT NULL,Lệnh nghiệp vụ
+audit_events,before_data,jsonb,Lọc secret
+audit_events,after_data,jsonb,Lọc secret
+audit_events,correlation_id,uuid NOT NULL,Truy vết
+audit_events,created_at,timestamptz NOT NULL DEFAULT now(),Thời điểm tạo UTC

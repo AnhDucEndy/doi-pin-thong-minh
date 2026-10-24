@@ -1,0 +1,37 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title SM-02 Ngăn tủ • hai miền trạng thái độc lập
+  state "Phục vụ" as Service {
+    [*] --> BLOCKED
+    BLOCKED --> ACTIVE : xác minh snapshot/khắc phục [đủ\nđiều kiện]
+    ACTIVE --> BLOCKED : lỗi / mất bằng chứng
+    ACTIVE --> MAINTENANCE : Admin/kỹ thuật [không có phiên]
+    BLOCKED --> MAINTENANCE : Admin/kỹ thuật [không có phiên]
+    MAINTENANCE --> ACTIVE : kiểm tra xong [đủ điều kiện]
+    MAINTENANCE --> BLOCKED : chưa đủ điều kiện
+    MAINTENANCE --> RETIRED : Admin ngừng [trống; không phiên]
+    RETIRED --> [*]
+  }
+  state "Quan sát cửa" as Door {
+    [*] --> UNKNOWN
+    UNKNOWN --> CLOSED : snapshot hợp lệ
+    UNKNOWN --> OPEN : snapshot hợp lệ
+    CLOSED --> OPEN : quan sát sau lệnh hợp lệ
+    OPEN --> CLOSED : quan sát cửa đóng
+    CLOSED --> UNKNOWN : mất độ mới / reconnect
+    OPEN --> UNKNOWN : mất độ mới / reconnect
+  }
+
+legend bottom
+  Hiện diện pin và ID quan sát lưu riêng.
+  ACTIVE không đồng nghĩa được mở: phải có phiên,
+  đúng ngăn, đúng command_id và liên động hợp lệ.
+  RETIRED không quay lại phục vụ trong MVP.
+endlegend
+@enduml

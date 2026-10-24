@@ -1,0 +1,1287 @@
+{
+  "users": {
+    "description": "F1 tài khoản và vai trò độc lập",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "username",
+        "text NOT NULL UNIQUE",
+        "Tên đăng nhập chuẩn hóa lowercase"
+      ],
+      [
+        "password_hash",
+        "text NOT NULL",
+        "Argon2id; không lưu mật khẩu gốc"
+      ],
+      [
+        "role",
+        "role NOT NULL",
+        "Không kế thừa ADMIN → TECHNICIAN"
+      ],
+      [
+        "state",
+        "account_state NOT NULL DEFAULT 'ACTIVE'",
+        "Khóa/ngừng tài khoản không xóa lịch sử"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "stations": {
+    "description": "F2 danh mục trạm",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "code",
+        "text NOT NULL UNIQUE",
+        "Mã trạm"
+      ],
+      [
+        "name",
+        "text NOT NULL",
+        "Tên"
+      ],
+      [
+        "address",
+        "text NOT NULL",
+        "Địa chỉ hiển thị"
+      ],
+      [
+        "state",
+        "station_state NOT NULL DEFAULT 'ACTIVE'",
+        "Trạng thái hành chính; online tính riêng"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "user_station_assignments": {
+    "description": "F1 phân công kỹ thuật theo trạm",
+    "columns": [
+      [
+        "user_id",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Kỹ thuật viên; service kiểm tra role"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL REFERENCES stations(id)",
+        "Trạm được giao"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY (user_id, station_id)"
+    ]
+  },
+  "auth_sessions": {
+    "description": "F1 phiên web bearer opaque",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "user_id",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Chủ phiên"
+      ],
+      [
+        "token_hash",
+        "text NOT NULL UNIQUE",
+        "Chỉ lưu hash token ngẫu nhiên"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "Hết hạn"
+      ],
+      [
+        "revoked_at",
+        "timestamptz",
+        "Thu hồi khi khóa/đổi quyền"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "login_limits": {
+    "description": "F1 bộ đếm thử sai Backend",
+    "columns": [
+      [
+        "bucket_key",
+        "text PRIMARY KEY",
+        "Hash khóa username/IP theo chính sách"
+      ],
+      [
+        "failed_count",
+        "integer NOT NULL DEFAULT 0 CHECK (failed_count >= 0)",
+        "Số lần sai"
+      ],
+      [
+        "window_started_at",
+        "timestamptz NOT NULL",
+        "Bắt đầu cửa sổ"
+      ],
+      [
+        "locked_until",
+        "timestamptz",
+        "Khóa tạm"
+      ]
+    ],
+    "constraints": []
+  },
+  "devices": {
+    "description": "F2 danh tính thiết bị trạm",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL UNIQUE REFERENCES stations(id)",
+        "MVP một bộ điều khiển hiện hành mỗi trạm"
+      ],
+      [
+        "serial",
+        "text NOT NULL UNIQUE",
+        "Mã thiết bị"
+      ],
+      [
+        "key_hash",
+        "text NOT NULL",
+        "Hash Device-Key"
+      ],
+      [
+        "enabled",
+        "boolean NOT NULL DEFAULT true",
+        "Vô hiệu hóa danh tính"
+      ],
+      [
+        "last_received_at",
+        "timestamptz",
+        "Heartbeat gần nhất được chấp nhận"
+      ],
+      [
+        "boot_id",
+        "uuid",
+        "Phiên khởi động hiện hành"
+      ],
+      [
+        "last_seq",
+        "bigint NOT NULL DEFAULT -1",
+        "Sequence lớn nhất trong boot hiện hành"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "compartments": {
+    "description": "F2 ngăn tủ và quan sát mới nhất",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL REFERENCES stations(id)",
+        "Thuộc trạm"
+      ],
+      [
+        "slot_no",
+        "integer NOT NULL CHECK (slot_no > 0)",
+        "Số ngăn"
+      ],
+      [
+        "service_state",
+        "compartment_state NOT NULL DEFAULT 'BLOCKED'",
+        "Ban đầu chặn tới khi có snapshot"
+      ],
+      [
+        "door_state",
+        "door_state NOT NULL DEFAULT 'UNKNOWN'",
+        "Trạng thái cửa độc lập trạng thái phục vụ"
+      ],
+      [
+        "observed_present",
+        "boolean",
+        "NULL nếu chưa biết có pin"
+      ],
+      [
+        "observed_serial",
+        "text",
+        "Giữ mã quan sát kể cả không nhận diện được"
+      ],
+      [
+        "observed_at",
+        "timestamptz",
+        "Thời gian Backend nhận quan sát hợp lệ"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE (station_id, slot_no)",
+      "UNIQUE (id, station_id)"
+    ]
+  },
+  "batteries": {
+    "description": "F3 hồ sơ và vị trí đã đối soát",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "serial",
+        "text NOT NULL UNIQUE",
+        "Mã pin trong mạng lưới"
+      ],
+      [
+        "family",
+        "text NOT NULL",
+        "Họ pin duy nhất trong demo, vẫn lưu để kiểm tra"
+      ],
+      [
+        "lifecycle",
+        "battery_state NOT NULL DEFAULT 'REGISTERED'",
+        "Vòng đời quản lý không đồng nhất SOC"
+      ],
+      [
+        "location_kind",
+        "location_kind NOT NULL DEFAULT 'UNKNOWN'",
+        "Vị trí đã xác minh"
+      ],
+      [
+        "compartment_id",
+        "uuid REFERENCES compartments(id)",
+        "Ngăn khi location=COMPARTMENT"
+      ],
+      [
+        "holder_user_id",
+        "uuid REFERENCES users(id)",
+        "Khách giữ khi location=CUSTOMER"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "CHECK ((location_kind='COMPARTMENT' AND compartment_id IS NOT NULL AND holder_user_id IS NULL) OR (location_kind='CUSTOMER' AND holder_user_id IS NOT NULL AND compartment_id IS NULL) OR (location_kind='UNKNOWN' AND compartment_id IS NULL AND holder_user_id IS NULL))"
+    ]
+  },
+  "demo_policies": {
+    "description": "QD07 cấu hình bất biến từng phiên bản",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "revision",
+        "integer NOT NULL UNIQUE CHECK (revision > 0)",
+        "Phiên bản chính sách"
+      ],
+      [
+        "parameters",
+        "jsonb NOT NULL",
+        "Thông số theo demo-config.schema.json; không sửa tại chỗ"
+      ],
+      [
+        "review_status",
+        "text NOT NULL CHECK (review_status IN ('PROPOSED','TEAM_CONFIRMED'))",
+        "Chỉ ghi TEAM_CONFIRMED khi có xác nhận thật"
+      ],
+      [
+        "confirmed_by",
+        "uuid REFERENCES users(id)",
+        "Người ghi nhận xác nhận"
+      ],
+      [
+        "confirmed_at",
+        "timestamptz",
+        "Thời điểm xác nhận"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "credentials": {
+    "description": "F4 ánh xạ RFID mô phỏng",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "user_id",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Chủ thẻ"
+      ],
+      [
+        "kind",
+        "credential_kind NOT NULL DEFAULT 'RFID'",
+        "RFID"
+      ],
+      [
+        "credential_hash",
+        "text NOT NULL UNIQUE",
+        "Hash giá trị credential demo"
+      ],
+      [
+        "revoked_at",
+        "timestamptz",
+        "Thu hồi"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "qr_challenges": {
+    "description": "F4 QR dùng một lần",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "user_id",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Chủ QR"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL REFERENCES stations(id)",
+        "Trạm đích"
+      ],
+      [
+        "token_hash",
+        "text NOT NULL UNIQUE",
+        "Hash QR ngẫu nhiên"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "Hết hạn"
+      ],
+      [
+        "consumed_at",
+        "timestamptz",
+        "Cập nhật nguyên tử khi xác thực"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "swap_transactions": {
+    "description": "F5 phiên xác thực và giao dịch đổi cùng một aggregate",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "customer_id",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Khách hàng"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL REFERENCES stations(id)",
+        "Trạm"
+      ],
+      [
+        "verified_via",
+        "text NOT NULL CHECK (verified_via IN ('QR','RFID'))",
+        "Phương thức xác thực"
+      ],
+      [
+        "qr_challenge_id",
+        "uuid UNIQUE REFERENCES qr_challenges(id)",
+        "Nếu QR"
+      ],
+      [
+        "credential_id",
+        "uuid REFERENCES credentials(id)",
+        "Nếu RFID"
+      ],
+      [
+        "state",
+        "swap_state NOT NULL DEFAULT 'VERIFIED'",
+        "Trạng thái nghiệp vụ"
+      ],
+      [
+        "policy_id",
+        "uuid NOT NULL REFERENCES demo_policies(id)",
+        "Phiên bản chính sách"
+      ],
+      [
+        "policy_snapshot",
+        "jsonb NOT NULL",
+        "Snapshot bất biến để không đổi điều kiện giữa lượt"
+      ],
+      [
+        "old_battery_id",
+        "uuid REFERENCES batteries(id)",
+        "Pin khách phải trả, xác định khi giữ tài nguyên"
+      ],
+      [
+        "new_battery_id",
+        "uuid REFERENCES batteries(id)",
+        "Pin được giữ để cấp"
+      ],
+      [
+        "return_compartment_id",
+        "uuid",
+        "Ngăn nhận"
+      ],
+      [
+        "supply_compartment_id",
+        "uuid",
+        "Ngăn cấp"
+      ],
+      [
+        "amount_minor",
+        "bigint CHECK (amount_minor > 0)",
+        "Phí VND nguyên, chốt khi reserve"
+      ],
+      [
+        "currency",
+        "text NOT NULL DEFAULT 'VND' CHECK (currency='VND')",
+        "Demo chỉ VND"
+      ],
+      [
+        "consented_at",
+        "timestamptz",
+        "Chấp thuận phí trước yêu cầu thu"
+      ],
+      [
+        "reservation_expires_at",
+        "timestamptz",
+        "Chỉ tự hết hạn khi RESERVED chưa gửi thu"
+      ],
+      [
+        "return_observed_at",
+        "timestamptz",
+        "Bằng chứng nhận pin cũ + cửa đóng"
+      ],
+      [
+        "pickup_observed_at",
+        "timestamptz",
+        "Bằng chứng lấy pin mới + cửa đóng"
+      ],
+      [
+        "review_reason",
+        "text",
+        "Lý do chờ xử lý"
+      ],
+      [
+        "closed_at",
+        "timestamptz",
+        "Thời điểm trạng thái kết thúc"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "FOREIGN KEY (return_compartment_id, station_id) REFERENCES compartments(id, station_id)",
+      "FOREIGN KEY (supply_compartment_id, station_id) REFERENCES compartments(id, station_id)",
+      "CHECK ((verified_via='QR' AND qr_challenge_id IS NOT NULL AND credential_id IS NULL) OR (verified_via='RFID' AND credential_id IS NOT NULL AND qr_challenge_id IS NULL))",
+      "CHECK (old_battery_id IS NULL OR new_battery_id IS NULL OR old_battery_id <> new_battery_id)",
+      "CHECK (return_compartment_id IS NULL OR supply_compartment_id IS NULL OR return_compartment_id <> supply_compartment_id)",
+      "CHECK (state IN ('VERIFIED','CANCELLED') OR (old_battery_id IS NOT NULL AND new_battery_id IS NOT NULL AND return_compartment_id IS NOT NULL AND supply_compartment_id IS NOT NULL AND amount_minor IS NOT NULL))",
+      "CHECK ((closed_at IS NOT NULL) = (state IN ('COMPLETED','CANCELLED','CLOSED_COMPENSATED')))",
+      "CHECK (state <> 'COMPLETED' OR (return_observed_at IS NOT NULL AND pickup_observed_at IS NOT NULL))"
+    ]
+  },
+  "resource_reservations": {
+    "description": "F5 khóa nghiệp vụ pin/ngăn giữa nhiều request",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "swap_id",
+        "uuid NOT NULL REFERENCES swap_transactions(id)",
+        "Phiên giữ"
+      ],
+      [
+        "battery_id",
+        "uuid REFERENCES batteries(id)",
+        "Tài nguyên pin"
+      ],
+      [
+        "compartment_id",
+        "uuid REFERENCES compartments(id)",
+        "Tài nguyên ngăn"
+      ],
+      [
+        "released_at",
+        "timestamptz",
+        "NULL = giữ độc quyền, không phụ thuộc expiry tự suy diễn"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "CHECK ((battery_id IS NOT NULL)::integer + (compartment_id IS NOT NULL)::integer = 1)"
+    ]
+  },
+  "payments": {
+    "description": "F6 một khoản thu trên mỗi phiên đổi",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "swap_id",
+        "uuid NOT NULL UNIQUE REFERENCES swap_transactions(id)",
+        "Một intent/phiên; thất bại chắc chắn kết thúc phiên"
+      ],
+      [
+        "provider_key",
+        "uuid NOT NULL UNIQUE",
+        "Idempotency key khi gọi mock"
+      ],
+      [
+        "provider_reference",
+        "text UNIQUE",
+        "Mã phía mock"
+      ],
+      [
+        "state",
+        "payment_state NOT NULL DEFAULT 'CREATED'",
+        "Trạng thái thu độc lập"
+      ],
+      [
+        "amount_minor",
+        "bigint NOT NULL CHECK (amount_minor > 0)",
+        "Phải bằng phí phiên"
+      ],
+      [
+        "currency",
+        "text NOT NULL DEFAULT 'VND' CHECK (currency='VND')",
+        "Đơn vị"
+      ],
+      [
+        "verified_at",
+        "timestamptz",
+        "Khi đã xác minh kết quả"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "CHECK (state <> 'SUCCEEDED' OR verified_at IS NOT NULL)"
+    ]
+  },
+  "refunds": {
+    "description": "F6 hoàn toàn bộ phí trong MVP",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "payment_id",
+        "uuid NOT NULL UNIQUE REFERENCES payments(id)",
+        "Một refund intent cho khoản thu, retry cùng khóa"
+      ],
+      [
+        "requested_by",
+        "uuid NOT NULL REFERENCES users(id)",
+        "Admin; service kiểm tra role"
+      ],
+      [
+        "provider_key",
+        "uuid NOT NULL UNIQUE",
+        "Idempotency key hoàn"
+      ],
+      [
+        "provider_reference",
+        "text UNIQUE",
+        "Mã hoàn bên mock"
+      ],
+      [
+        "state",
+        "refund_state NOT NULL DEFAULT 'REQUESTED'",
+        "Lỗi/UNKNOWN không được tạo intent mới"
+      ],
+      [
+        "amount_minor",
+        "bigint NOT NULL CHECK (amount_minor > 0)",
+        "MVP bằng toàn bộ khoản thu"
+      ],
+      [
+        "verified_at",
+        "timestamptz",
+        "Xác minh hoàn"
+      ],
+      [
+        "reason",
+        "text NOT NULL",
+        "Lý do và kết quả đối soát"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "device_events": {
+    "description": "F7 inbox bền vững và bằng chứng vật lý",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "device_id",
+        "uuid NOT NULL REFERENCES devices(id)",
+        "Danh tính xác minh từ key"
+      ],
+      [
+        "boot_id",
+        "uuid NOT NULL",
+        "Boot session"
+      ],
+      [
+        "seq",
+        "bigint NOT NULL CHECK (seq >= 0)",
+        "Thứ tự trong boot"
+      ],
+      [
+        "kind",
+        "event_kind NOT NULL",
+        "Loại sự kiện"
+      ],
+      [
+        "compartment_id",
+        "uuid REFERENCES compartments(id)",
+        "Ngăn liên quan"
+      ],
+      [
+        "swap_id",
+        "uuid REFERENCES swap_transactions(id)",
+        "Phiên liên quan nếu có"
+      ],
+      [
+        "command_id",
+        "uuid",
+        "Lệnh liên quan nếu có; FK thêm sau"
+      ],
+      [
+        "observed_at",
+        "timestamptz NOT NULL",
+        "Timestamp ở thiết bị"
+      ],
+      [
+        "received_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Timestamp ở Backend"
+      ],
+      [
+        "payload_hash",
+        "text NOT NULL",
+        "Chống cùng ID khác nội dung"
+      ],
+      [
+        "payload",
+        "jsonb NOT NULL",
+        "Payload theo DeviceEvent trong API"
+      ],
+      [
+        "processed_at",
+        "timestamptz",
+        "Chưa có = chưa xử lý"
+      ],
+      [
+        "processing_error",
+        "text",
+        "Lý do bị cách ly/từ chối"
+      ],
+      [
+        "accepted",
+        "boolean NOT NULL DEFAULT false",
+        "Chỉ accepted mới cập nhật projection"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE (device_id, boot_id, seq)"
+    ]
+  },
+  "battery_telemetry": {
+    "description": "F3 dữ liệu đo gắn event duy nhất",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "event_id",
+        "uuid NOT NULL UNIQUE REFERENCES device_events(id)",
+        "Telemetry event chứa đúng một pin"
+      ],
+      [
+        "battery_id",
+        "uuid NOT NULL REFERENCES batteries(id)",
+        "Pin"
+      ],
+      [
+        "soc",
+        "numeric(5,2) CHECK (soc BETWEEN 0 AND 100)",
+        "Phần trăm; NULL = thiếu"
+      ],
+      [
+        "soh",
+        "numeric(5,2) CHECK (soh BETWEEN 0 AND 100)",
+        "Phần trăm do BMS demo cung cấp"
+      ],
+      [
+        "temperature_c",
+        "numeric(6,2)",
+        "Độ C; NULL = thiếu"
+      ],
+      [
+        "fault_codes",
+        "text[] NOT NULL DEFAULT '{}'",
+        "Cờ lỗi"
+      ],
+      [
+        "measured_at",
+        "timestamptz NOT NULL",
+        "Thời gian đo"
+      ],
+      [
+        "received_at",
+        "timestamptz NOT NULL",
+        "Thời gian nhận"
+      ],
+      [
+        "quality_ok",
+        "boolean NOT NULL",
+        "Chỉ true khi đầy đủ, đúng thứ tự, hợp lệ"
+      ]
+    ],
+    "constraints": []
+  },
+  "device_commands": {
+    "description": "F5/F7 lệnh mở khóa có ledger chống lặp",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "device_id",
+        "uuid NOT NULL REFERENCES devices(id)",
+        "Thiết bị đích"
+      ],
+      [
+        "swap_id",
+        "uuid NOT NULL REFERENCES swap_transactions(id)",
+        "Phiên đổi"
+      ],
+      [
+        "compartment_id",
+        "uuid NOT NULL REFERENCES compartments(id)",
+        "Ngăn chính xác"
+      ],
+      [
+        "kind",
+        "command_kind NOT NULL",
+        "OPEN_RETURN hoặc OPEN_SUPPLY"
+      ],
+      [
+        "state",
+        "command_state NOT NULL DEFAULT 'QUEUED'",
+        "ACK không đủ để OBSERVED"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "Lệnh quá hạn không tác động"
+      ],
+      [
+        "payload_hash",
+        "text NOT NULL",
+        "Băm nội dung lệnh bất biến"
+      ],
+      [
+        "payload",
+        "jsonb NOT NULL",
+        "Thông tin liên động và pin dự kiến"
+      ],
+      [
+        "evidence_event_id",
+        "uuid REFERENCES device_events(id)",
+        "Event xác nhận vật lý"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "UNIQUE (swap_id, kind)"
+    ]
+  },
+  "recovery_cases": {
+    "description": "FR12 hồ sơ khôi phục thuộc UC10, không là UC mới",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "swap_id",
+        "uuid NOT NULL UNIQUE REFERENCES swap_transactions(id)",
+        "Một hồ sơ theo phiên"
+      ],
+      [
+        "state",
+        "case_state NOT NULL DEFAULT 'OPEN'",
+        "Tình trạng"
+      ],
+      [
+        "assigned_to",
+        "uuid REFERENCES users(id)",
+        "Kỹ thuật viên đúng trạm"
+      ],
+      [
+        "evidence_event_id",
+        "uuid REFERENCES device_events(id)",
+        "Snapshot/lịch sử mới sau reconnect"
+      ],
+      [
+        "new_pin_delivered",
+        "text NOT NULL DEFAULT 'UNKNOWN' CHECK (new_pin_delivered IN ('YES','NO','UNKNOWN'))",
+        "Kết luận dựa dữ liệu thiết bị"
+      ],
+      [
+        "old_pin_settled",
+        "boolean NOT NULL DEFAULT false",
+        "Đã hoàn trả/giải quyết quyền giữ pin cũ"
+      ],
+      [
+        "resolution_note",
+        "text",
+        "Không đủ chứng cứ thì không resolve"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "alerts": {
+    "description": "F7 cảnh báo và hồ sơ xử lý",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "station_id",
+        "uuid NOT NULL REFERENCES stations(id)",
+        "Trạm"
+      ],
+      [
+        "battery_id",
+        "uuid REFERENCES batteries(id)",
+        "Pin liên quan"
+      ],
+      [
+        "compartment_id",
+        "uuid REFERENCES compartments(id)",
+        "Ngăn liên quan"
+      ],
+      [
+        "dedup_key",
+        "text NOT NULL",
+        "Loại lỗi + tài nguyên, phạm vi trạm"
+      ],
+      [
+        "code",
+        "text NOT NULL",
+        "Mã lỗi ổn định"
+      ],
+      [
+        "state",
+        "alert_state NOT NULL DEFAULT 'OPEN'",
+        "ACK không gỡ chặn"
+      ],
+      [
+        "last_event_id",
+        "uuid REFERENCES device_events(id)",
+        "Bằng chứng gần nhất"
+      ],
+      [
+        "acknowledged_by",
+        "uuid REFERENCES users(id)",
+        "Kỹ thuật viên được giao"
+      ],
+      [
+        "resolved_by",
+        "uuid REFERENCES users(id)",
+        "Kỹ thuật viên"
+      ],
+      [
+        "resolution_note",
+        "text",
+        "Bằng chứng hết lỗi"
+      ],
+      [
+        "occurrences",
+        "integer NOT NULL DEFAULT 1 CHECK (occurrences > 0)",
+        "Số lần báo"
+      ],
+      [
+        "version",
+        "integer NOT NULL DEFAULT 1 CHECK (version > 0)",
+        "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "payment_events": {
+    "description": "F6 inbox callback và kết quả đối soát",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "provider_event_id",
+        "text NOT NULL UNIQUE",
+        "Chống callback lặp"
+      ],
+      [
+        "payment_id",
+        "uuid NOT NULL REFERENCES payments(id)",
+        "Khoản thu"
+      ],
+      [
+        "refund_id",
+        "uuid REFERENCES refunds(id)",
+        "Nếu kết quả hoàn"
+      ],
+      [
+        "payload_hash",
+        "text NOT NULL",
+        "Cùng ID khác nội dung là lỗi"
+      ],
+      [
+        "payload",
+        "jsonb NOT NULL",
+        "Kết quả đã xác minh nguồn"
+      ],
+      [
+        "processed_at",
+        "timestamptz",
+        "Thời điểm apply"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "idempotency_records": {
+    "description": "Chống request HTTP lặp theo principal và route",
+    "columns": [
+      [
+        "principal",
+        "text NOT NULL",
+        "user/device/service ID từ xác thực"
+      ],
+      [
+        "route",
+        "text NOT NULL",
+        "Method + path chuẩn hóa"
+      ],
+      [
+        "key",
+        "uuid NOT NULL",
+        "Idempotency-Key"
+      ],
+      [
+        "request_hash",
+        "text NOT NULL",
+        "Hash body chuẩn hóa"
+      ],
+      [
+        "response_status",
+        "integer",
+        "NULL khi đang xử lý"
+      ],
+      [
+        "response_body",
+        "jsonb",
+        "Kết quả đầu tiên"
+      ],
+      [
+        "expires_at",
+        "timestamptz NOT NULL",
+        "Không xóa trước thời gian replay được hỗ trợ"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": [
+      "PRIMARY KEY (principal, route, key)"
+    ]
+  },
+  "outbox_messages": {
+    "description": "Thông điệp ra được ghi cùng commit nghiệp vụ",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "aggregate_type",
+        "text NOT NULL",
+        "swap/payment/refund"
+      ],
+      [
+        "aggregate_id",
+        "uuid NOT NULL",
+        "ID nghiệp vụ"
+      ],
+      [
+        "kind",
+        "text NOT NULL",
+        "DISPATCH_COMMAND/CHARGE/REFUND"
+      ],
+      [
+        "dedup_key",
+        "text NOT NULL UNIQUE",
+        "Key bất biến cho tác động bên ngoài"
+      ],
+      [
+        "payload",
+        "jsonb NOT NULL",
+        "Thông điệp"
+      ],
+      [
+        "attempts",
+        "integer NOT NULL DEFAULT 0",
+        "Số lần gửi"
+      ],
+      [
+        "next_attempt_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Lịch thử lại"
+      ],
+      [
+        "delivered_at",
+        "timestamptz",
+        "Đã giao, không đồng nghĩa đã thực hiện"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  },
+  "audit_events": {
+    "description": "NFR06 nhật ký append-only",
+    "columns": [
+      [
+        "id",
+        "uuid PRIMARY KEY",
+        "Định danh UUID do ứng dụng sinh"
+      ],
+      [
+        "actor_type",
+        "text NOT NULL CHECK (actor_type IN ('USER','DEVICE','SYSTEM','PAYMENT'))",
+        "Nguồn"
+      ],
+      [
+        "actor_id",
+        "text NOT NULL",
+        "ID hoặc tên job"
+      ],
+      [
+        "aggregate_type",
+        "text NOT NULL",
+        "Loại đối tượng"
+      ],
+      [
+        "aggregate_id",
+        "uuid NOT NULL",
+        "ID đối tượng"
+      ],
+      [
+        "action",
+        "text NOT NULL",
+        "Lệnh nghiệp vụ"
+      ],
+      [
+        "before_data",
+        "jsonb",
+        "Lọc secret"
+      ],
+      [
+        "after_data",
+        "jsonb",
+        "Lọc secret"
+      ],
+      [
+        "correlation_id",
+        "uuid NOT NULL",
+        "Truy vết"
+      ],
+      [
+        "created_at",
+        "timestamptz NOT NULL DEFAULT now()",
+        "Thời điểm tạo UTC"
+      ]
+    ],
+    "constraints": []
+  }
+}

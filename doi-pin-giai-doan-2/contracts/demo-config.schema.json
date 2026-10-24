@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proposed demo configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_status",
+    "environment",
+    "station_count",
+    "compartments_per_station",
+    "battery_family",
+    "ownership_mode",
+    "payment_mode",
+    "charge_timing",
+    "refund_mode",
+    "accounts_mode",
+    "rfid_mode",
+    "roles_mode",
+    "fee_minor",
+    "currency",
+    "soc_min_pct",
+    "temperature_max_c",
+    "soh_min_pct",
+    "qr_ttl_seconds",
+    "login_max_failures",
+    "login_window_seconds",
+    "telemetry_interval_seconds",
+    "telemetry_stale_seconds",
+    "reservation_ttl_seconds",
+    "physical_step_timeout_seconds",
+    "command_ttl_seconds",
+    "payment_timeout_seconds",
+    "web_session_ttl_seconds",
+    "verification_ttl_seconds",
+    "dashboard_poll_seconds",
+    "idempotency_retention_hours",
+    "staff_count",
+    "weeks",
+    "hours_per_person_week"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "decision_status": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "const": "simulation_only"
+    },
+    "station_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "compartments_per_station": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "battery_family": {
+      "type": "string"
+    },
+    "ownership_mode": {
+      "type": "string",
+      "const": "NETWORK"
+    },
+    "payment_mode": {
+      "type": "string",
+      "const": "MOCK"
+    },
+    "charge_timing": {
+      "type": "string",
+      "const": "BEFORE_RETURN"
+    },
+    "refund_mode": {
+      "type": "string",
+      "const": "FULL_ADMIN_REVIEWED"
+    },
+    "accounts_mode": {
+      "type": "string",
+      "const": "PRECREATED"
+    },
+    "rfid_mode": {
+      "type": "string",
+      "const": "SIMULATED"
+    },
+    "roles_mode": {
+      "type": "string",
+      "const": "SEPARATE"
+    },
+    "fee_minor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "currency": {
+      "type": "string",
+      "const": "VND"
+    },
+    "soc_min_pct": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "temperature_max_c": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "soh_min_pct": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "qr_ttl_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "login_max_failures": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "login_window_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "telemetry_interval_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "telemetry_stale_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reservation_ttl_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "physical_step_timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "command_ttl_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "payment_timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "web_session_ttl_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "verification_ttl_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "dashboard_poll_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "idempotency_retention_hours": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "staff_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "weeks": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "hours_per_person_week": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

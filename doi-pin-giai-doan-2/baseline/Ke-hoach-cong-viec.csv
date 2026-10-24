@@ -1,0 +1,13 @@
+﻿Task,Ten,Tuan,Chu tri,Phu thuoc,Gio nguoi,Deliverable,Acceptance,Uu tien,TV1,TV2,TV3,TV4,TV5
+W01,Khảo sát và SRS,1–2,TV1,—,24,SRS và bảng quyết định,"Đủ 9 nhóm gốc, phân biệt GT/DX",Must,12,3,3,3,3
+W02,UML và đặc tả,2,TV1,W01,16,Sơ đồ và UC spec,ID nhất quán; review Actor/quyền,Must,10,2,2,1,1
+W03,Kiến trúc và hợp đồng dữ liệu,3,TV3,W02,16,"ERD, API, trạng thái",Duyệt ngoại lệ và cấu trúc trạng thái,Must,2,3,5,4,2
+W04,Nền tảng quyền và tài khoản,4,TV3,W03,20,Auth + UI quản trị,TC01–02 đạt sau triển khai,Must,2,6,8,2,2
+W05,Trạm và ngăn,4,TV2,"W03,W04",24,UI/API trạm,TC03–05 đạt,Must,8,10,2,2,2
+W06,Hồ sơ pin và BMS,4–5,TV4,"W03,W05",24,Dữ liệu pin và màn BMS,TC06–08 đạt,Must,3,5,3,10,3
+W07,QR và RFID,5,TV3,"W04,W05",20,Phiên đổi xác thực,TC09 đạt,Must,2,3,9,3,3
+W08,IoT và cảnh báo,5–8,TV5,"W03,W05",32,Simulator và cảnh báo,TC17–19 đạt,Must,3,3,4,4,18
+W09,Điều phối đổi,6–7,TV3,"W06,W07,W08,W10",48,Luồng đầu–cuối,"TC10–13 đạt, không cấp trùng pin",Must,4,10,15,10,9
+W10,Thu phí và bù trừ mock,5–7,TV4,"W03,W04",24,Payment mock và đối soát,TC14–16 đạt; không thu trùng,Must,2,3,5,12,2
+W11,Tích hợp và kiểm thử,4–9,TV5,Từng lát W04–W10,28,Bộ test và báo lỗi,Các FR và NFR có bằng chứng,Must,6,5,4,5,8
+W12,Hoàn thiện và bàn giao,9–10,TV1,W11,44,Báo cáo và demo tái lập,"Hướng dẫn chạy, thành công và lỗi",Must,10,11,4,8,11

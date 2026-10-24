@@ -1,0 +1,33 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title SM-03a Giao dịch đổi • đường chính
+[*] --> VERIFIED
+VERIFIED --> RESERVED : giữ pin/ngăn nguyên tử [BR01 BR02]
+VERIFIED --> CANCELLED : hết tài nguyên / hết hạn xác thực
+RESERVED --> AWAITING_PAYMENT : khách đồng ý giá / tạo payment +\noutbox
+RESERVED --> CANCELLED : hủy / hết hạn [chưa gửi thu]
+AWAITING_PAYMENT --> AWAITING_RETURN : thu thành công [điều kiện vẫn hợp\nlệ]
+AWAITING_PAYMENT --> CANCELLED : thất bại cuối cùng [không tác động\nvật lý]
+AWAITING_RETURN --> RETURN_ACCEPTED : đúng pin cũ + cửa nhận đóng
+RETURN_ACCEPTED --> AWAITING_PICKUP : điều kiện hợp lệ / tạo OPEN_SUPPLY
+AWAITING_PICKUP --> COMPLETED : pin mới đã lấy + cửa cấp đóng /\ncommit bàn giao
+COMPLETED --> [*]
+CANCELLED --> [*]
+note right of AWAITING_PAYMENT
+  UNKNOWN hoặc điều kiện thay đổi:
+  REVIEW_REQUIRED ở SM-03b.
+end note
+note right of AWAITING_PICKUP
+  Timeout/ACK riêng lẻ không hoàn tất.
+  Các lỗi sau giữ tài nguyên đi SM-03b.
+end note
+legend bottom
+Sơ đồ bắt đầu sau UC09 xác thực thành công.
+endlegend
+@enduml

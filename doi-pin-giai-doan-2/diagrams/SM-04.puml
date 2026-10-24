@@ -1,0 +1,51 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title SM-04 Khoản thu và hoàn tiền • UC12 UC13 UC14
+state "Khoản thu payments" as Pay {
+ [*] --> CREATED
+ CREATED --> PENDING : outbox đã gửi
+ CREATED --> UNKNOWN : không rõ gửi thành công
+ PENDING --> SUCCEEDED : kết quả xác minh thành công
+ PENDING --> FAILED : kết quả cuối cùng thất bại
+ PENDING --> UNKNOWN : timeout / mâu thuẫn
+ UNKNOWN --> SUCCEEDED : đối soát thành công
+ UNKNOWN --> FAILED : đối soát thất bại cuối cùng
+ SUCCEEDED --> [*]
+ FAILED --> [*]
+}
+state "Khoản hoàn refunds" as Ref {
+ state REQUESTED
+ state "PENDING" as RP
+ state "UNKNOWN" as RU
+ state "SUCCEEDED" as RS
+ state "FAILED" as RF
+ [*] --> REQUESTED
+ REQUESTED --> RP : gửi cùng provider_key
+ REQUESTED --> RU : không rõ gửi thành công
+ RP --> RS : xác minh hoàn thành công
+ RP --> RF : xác minh hoàn thất bại
+ RP --> RU : timeout / mâu thuẫn
+ RU --> RS : đối soát
+ RU --> RF : đối soát cuối cùng
+ RF --> RP : Admin thử lại cùng intent [đối tác\ncho phép]
+ RS --> [*]
+}
+
+
+legend bottom
+Refund chỉ được tạo qua UC14 khi đã thu và xác minh chưa giao pin mới.
+  Callback lặp giữ nguyên trạng thái.
+  SUCCEEDED không bị callback FAILED đến muộn ghi đè.
+  Xung đột kết quả cuối: mở đối soát, không thu lần nữa.
+
+  payments vẫn SUCCEEDED sau hoàn.
+  Trạng thái tài chính tổng hợp hiển thị từ cả hai bảng.
+  MVP một khoản hoàn toàn bộ, không hoàn từng phần.
+endlegend
+@enduml

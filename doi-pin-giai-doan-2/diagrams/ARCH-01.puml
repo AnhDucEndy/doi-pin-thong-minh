@@ -1,0 +1,38 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title ARCH-01 Kiến trúc triển khai đề xuất
+node "Trình duyệt" {
+ component "React + TypeScript\nGUI khách / Admin / kỹ thuật" as Web
+}
+rectangle "Ranh giới phần mềm quản lý trung tâm" {
+ node "Backend modular monolith\nFastAPI Python" {
+  component "HTTP API + Auth\nF1 F2 F3 F4 F5 F6 F7" as API
+  component "Worker cùng codebase\noutbox / timeout / inbox" as Worker
+ }
+ database "PostgreSQL 17\nnghiệp vụ + audit + inbox/outbox" as DB
+}
+node "Thiết bị trạm mô phỏng\nActor D" {
+ component "Python simulator\nledger lệnh bền vững" as IoT
+}
+node "Dịch vụ độc lập\nActor P" {
+ component "Payment mock\nintent/result store bền vững" as Mock
+}
+Web --> API : REST HTTPS\npoll trạng thái 3 giây
+API --> DB : transaction / row lock
+Worker --> DB : đọc outbox / ghi kết quả
+IoT --> API : events + poll commands\nDevice-Key
+Worker --> Mock : HTTP charge/refund/query\nService-Key
+Mock --> API : callback xác minh\nPayment-Key
+note bottom of API
+  API và worker cùng F1–F7, chung schema.
+  Không microservices, không broker bắt buộc.
+  Simulator/mock là tiến trình ngoài ranh giới,
+  đúng Actor Giai đoạn 1.
+end note
+@enduml

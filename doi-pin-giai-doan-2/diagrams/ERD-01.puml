@@ -1,0 +1,61 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title ERD-01 Tài khoản và tài sản
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+entity "users" as users {
+  * id : uuid <<PK>>
+  * state : account_state
+}
+entity "user_station_assignments" as user_station_assignments {
+  * user_id : uuid <<FK>>
+  * station_id : uuid <<FK>>
+}
+entity "stations" as stations {
+  * id : uuid <<PK>>
+  * state : station_state
+}
+entity "devices" as devices {
+  * id : uuid <<PK>>
+  * station_id : uuid <<FK>>
+  boot_id : uuid
+}
+entity "compartments" as compartments {
+  * id : uuid <<PK>>
+  * station_id : uuid <<FK>>
+  * service_state : compartment_state
+  * door_state : door_state
+}
+entity "batteries" as batteries {
+  * id : uuid <<PK>>
+  * lifecycle : battery_state
+  * location_kind : location_kind
+  compartment_id : uuid <<FK>>
+  holder_user_id : uuid <<FK>>
+}
+entity "credentials" as credentials {
+  * id : uuid <<PK>>
+  * user_id : uuid <<FK>>
+}
+entity "qr_challenges" as qr_challenges {
+  * id : uuid <<PK>>
+  * user_id : uuid <<FK>>
+  * station_id : uuid <<FK>>
+}
+users ||--o{ user_station_assignments
+stations ||--o{ user_station_assignments
+stations ||--o| devices
+stations ||--o{ compartments
+compartments |o--o| batteries : vị trí hiện hành
+users |o--o| batteries : giữ tối đa một pin
+users ||--o{ credentials
+users ||--o{ qr_challenges
+stations ||--o{ qr_challenges
+@enduml

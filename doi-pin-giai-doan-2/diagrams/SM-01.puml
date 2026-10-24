@@ -1,0 +1,35 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title SM-01 Vòng đời pin • UC06 UC08 BR02 BR10
+state REGISTERED
+state IN_SERVICE
+state QUARANTINED
+state RETIRED
+[*] --> REGISTERED
+REGISTERED --> IN_SERVICE : kỹ thuật xác nhận [đúng trạm; dữ\nliệu hợp lệ]
+REGISTERED --> QUARANTINED : lỗi hoặc chưa xác minh vị trí
+IN_SERVICE --> QUARANTINED : lỗi / dữ liệu không tin cậy
+QUARANTINED --> IN_SERVICE : kỹ thuật phục hồi [hết lỗi; đủ\nchứng cứ]
+REGISTERED --> RETIRED : Admin ngừng [không phiên/không\nkhách giữ]
+IN_SERVICE --> RETIRED : Admin ngừng [không phiên/không\nkhách giữ]
+QUARANTINED --> RETIRED : Admin ngừng [không phiên/không\nkhách giữ]
+RETIRED --> [*]
+
+note right of QUARANTINED
+  ACK cảnh báo không phục hồi.
+  Đổi pin không xóa trạng thái cách ly.
+end note
+legend bottom
+REGISTERED được tạo sau UC06 đăng ký hồ sơ.
+  Khả dụng là giá trị suy ra, không là lifecycle:
+  đúng họ + SOC + dữ liệu mới + không lỗi
+  + ở ngăn ACTIVE/CLOSED + không bị giữ.
+  Vị trí COMPARTMENT/CUSTOMER/UNKNOWN lưu riêng.
+endlegend
+@enduml

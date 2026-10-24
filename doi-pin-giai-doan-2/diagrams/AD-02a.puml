@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title AD-02a Chuẩn bị lượt đổi • UC09 UC10 UC12
+|Khách hàng|
+start
+:Quét QR hoặc RFID mô phỏng;
+|Thiết bị|
+:Gửi credential và danh tính trạm;
+|Backend|
+if (Credential hợp lệ; trạm online?) then (Không)
+:Từ chối, không giữ tài nguyên;
+  stop
+else (Có)
+endif
+:Tạo swap VERIFIED nguyên tử\nQR được tiêu thụ một lần;
+if (Có pin đủ điều kiện
+và ngăn nhận trống?) then (Không)
+:Đóng CANCELLED, thông báo hết pin/ngăn;
+  stop
+else (Có)
+endif
+:Khóa DB theo thứ tự\nkiểm tra lại và giữ tài nguyên;
+:Ghi RESERVED, chốt phí và policy;
+|Khách hàng|
+if (Chấp thuận phí trước hết hạn?) then (Không)
+  |Backend|
+:Hủy trước thu, giải phóng giữ chỗ;
+  stop
+else (Có)
+endif
+|Backend|
+:Ghi consent và AWAITING_PAYMENT\ntạo payment và outbox cùng commit;
+:Thực hiện AD-04a;
+if (Đã xác minh thu thành công?) then (Có)
+:Kiểm tra lại khả dụng\nchuyển AWAITING_RETURN;
+:Tiếp tục AD-02b;
+  stop
+else (Không)
+  if (Thất bại xác định?) then (Có)
+:CANCELLED, giải phóng tài nguyên\nkhi chưa có tác động vật lý;
+  else (Chưa rõ)
+:REVIEW_REQUIRED, giữ tài nguyên\nđối soát trước mọi tác động;
+  endif
+  stop
+endif
+@enduml

@@ -1,0 +1,13 @@
+{
+  "baseline_sha256": "passed",
+  "openapi_validator": "passed",
+  "operations": 50,
+  "fr_coverage": 19,
+  "uc_coverage": 17,
+  "sql_parser": "passed",
+  "sql_statements": 278,
+  "config_schema": "passed",
+  "source_and_image_pairs": 16,
+  "database_executed": false,
+  "application_tests_executed": false
+}

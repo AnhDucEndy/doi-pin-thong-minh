@@ -1,0 +1,32 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #374151
+skinparam roundcorner 8
+title SM-03b Giao dịch đổi • gián đoạn và bù trừ
+state "AWAITING_PAYMENT / AWAITING_RETURN\nRETURN_ACCEPTED / AWAITING_PICKUP" as Active
+Active --> REVIEW_REQUIRED : mất mạng / lỗi / timeout / mâu\nthuẫn
+REVIEW_REQUIRED --> AWAITING_RETURN : thu xác minh thành công [chưa tác\nđộng; đủ điều kiện]
+REVIEW_REQUIRED --> AWAITING_PICKUP : pin cũ nhận đúng [chưa phát\nOPEN_SUPPLY; đủ điều kiện]
+REVIEW_REQUIRED --> COMPLETED : đối soát [đủ bằng chứng cả hai pin\n+ thu]
+REVIEW_REQUIRED --> CANCELLED : thu thất bại cuối cùng [chưa tác\nđộng vật lý]
+REVIEW_REQUIRED --> COMPENSATING : Admin hoàn [đã thu; chắc chắn chưa\ngiao pin mới]
+COMPENSATING --> CLOSED_COMPENSATED : refund SUCCEEDED [pin cũ giải\nquyết; chứng cứ đầy đủ]
+COMPLETED --> [*]
+CANCELLED --> [*]
+CLOSED_COMPENSATED --> [*]
+
+
+legend bottom
+  Đã phát OPEN_SUPPLY mà chưa rõ kết quả:
+  không mở lại hoặc cấp thêm; chỉ đối soát.
+  Giữ tài nguyên khi chưa rõ vị trí/tài chính.
+
+  Hoàn UNKNOWN/FAILED: giữ trạng thái;
+  đối soát/retry cùng intent sau xác minh.
+  Không đổi sang COMPLETED bằng thao tác tay.
+endlegend
+@enduml
