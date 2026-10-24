@@ -104,8 +104,8 @@ def pin_at(session, db, slot):
     return session.execute(select(pins).where(pins.c.compartment_id == slot['id'])).mappings().first()
 
 
-def quality(session, db, pin, device, now, policy, issue=True):
-    if not pin or pin['lifecycle'] != 'IN_SERVICE' or pin['family'] != policy['battery_family']:
+def quality(session, db, pin, device, now, policy, issue=True, require_service=True):
+    if not pin or (require_service and pin['lifecycle'] != 'IN_SERVICE') or pin['family'] != policy['battery_family']:
         return False
     readings, events = db.table('battery_telemetry'), db.table('device_events')
     # Select newest first, then validate: never fall back to an older good sample.
@@ -114,6 +114,8 @@ def quality(session, db, pin, device, now, policy, issue=True):
     if not reading or not reading['quality_ok'] or reading['fault_codes'] or any(reading[k] is None for k in ('soc', 'soh', 'temperature_c')):
         return False
     if any(not reading[k].is_finite() for k in ('soc', 'soh', 'temperature_c')):
+        return False
+    if not (0 <= reading['soc'] <= 100 and 0 <= reading['soh'] <= 100):
         return False
     event = session.execute(select(events).where(events.c.id == reading['event_id'])).mappings().first()
     if not (event and event['accepted'] and event['processed_at'] and event['kind'] == 'TELEMETRY'
@@ -138,16 +140,29 @@ def availability(session, db, station, policy, now):
         active = active_swaps(session, db, station['id'])
         for slot in rows:
             pin = pin_at(session, db, slot)
-            if (not pin or pin['location_kind'] != 'COMPARTMENT' or pin['holder_user_id'] is not None
-                or pin['serial'] != slot['observed_serial'] or not fresh(slot['observed_at'], now, policy)
-                or held(session, db, slot['id'], pin['id'])
-                or any(s['new_battery_id'] == pin['id'] or slot['id'] in (s['return_compartment_id'], s['supply_compartment_id']) for s in active)
-                or has_alert(session, db, station['id'], slot['id'], pin['id'])
-                or not quality(session, db, pin, device, now, policy)):
-                continue
-            count += 1
+            if eligible(session, db, pin, policy, now, slot, station, device, active):
+                count += 1
     return {'station_id': station['id'], 'name': station['name'], 'address': station['address'],
             'operational_state': operating, 'available_count': count, 'as_of': now}
+
+
+def eligible(session, db, pin, policy, now, slot=None, station=None, device=None, swaps=None):
+    """One BR02 projection for F2 counts and F3 response metadata; never a physical delivery proof."""
+    if not pin or pin['location_kind'] != 'COMPARTMENT' or pin['holder_user_id'] is not None:
+        return False
+    slot = slot or get_row(session, db, 'compartments', pin['compartment_id'])
+    station = station or get_row(session, db, 'stations', slot['station_id'])
+    device = device or available_device(session, db, station['id'])
+    if station['state'] != 'ACTIVE' or not online(session, db, device, now, policy):
+        return False
+    swaps = active_swaps(session, db, station['id']) if swaps is None else swaps
+    return bool(slot['service_state'] == 'ACTIVE' and slot['door_state'] == 'CLOSED'
+        and slot['observed_present'] is True and pin['serial'] == slot['observed_serial']
+        and fresh(slot['observed_at'], now, policy) and not held(session, db, slot['id'], pin['id'])
+        and not any(pin['id'] in (s['new_battery_id'], s['old_battery_id']) or slot['id'] in
+            (s['return_compartment_id'], s['supply_compartment_id']) for s in swaps)
+        and not has_alert(session, db, station['id'], slot['id'], pin['id'])
+        and quality(session, db, pin, device, now, policy))
 
 
 def asset_audit(session, db, actor, kind, action, identity, before=None, after=None):

@@ -2,7 +2,7 @@
 
 Cập nhật: 24/10/2026 (Asia/Bangkok).
 
-**Phase 2 – F2 hoàn tất: quản lý trạm/thiết bị/ngăn và tra cứu khả dụng. Chưa triển khai F3 hoặc Phase 3.** Kế thừa Phase 1 đã nghiệm thu. Phase 0 được người dùng xác nhận hoàn thành; P0-01/02/03 đã giải quyết theo [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md).
+**Phase 3 – F3 hoàn tất trong phạm vi Battery/BMS; dừng trước Phase 4 IoT.** Kế thừa Phase 1–2. Phase 0 được người dùng xác nhận hoàn thành; P0-01/02/03 đã giải quyết theo [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md).
 
 ## Tiến độ
 
@@ -11,14 +11,17 @@ Cập nhật: 24/10/2026 (Asia/Bangkok).
 | 0 Baseline/hợp đồng | Hoàn tất | 15 static checks ban đầu; validator chuẩn chạy bổ sung ở Phase 1 |
 | 1 Nền tảng/định danh | Passed | 18 tests, build web, 5 HTTP smoke checks; bằng chứng bên dưới |
 | 2 F2 Trạm/thiết bị/ngăn | Passed | 55 Passed / 0 Failed; build + 14 HTTP checks Passed; xem PHASE2_IMPLEMENTATION.md |
-| F3 Pin/BMS (phần còn lại của nhóm 2 handoff) | Not Run | Ngoài phạm vi người dùng giao lượt này |
-| 3 Thiết bị/bằng chứng | Not Run | Chưa triển khai |
-| 4 Xác thực tại trạm/giữ chỗ/thu | Not Run | Chưa triển khai |
-| 5 Trả/nhận/khôi phục | Not Run | Chưa triển khai |
-| 6 Hoàn thiện UI/lịch sử/cảnh báo | Not Run | Chỉ có UI tài khoản thuộc Phase 1 |
-| 7 Tích hợp/nghiệm thu toàn hệ thống | Not Run | Không suy ra từ TC01/02 |
+| 3 F3 Pin/BMS (phần còn lại của nhóm 2 handoff) | Passed trong phạm vi F3 | 103 tests Passed: 18 Phase 1 + 37 Phase 2 + 48 F3; build, 16 HTTP checks, UI đọc ba vai trò |
+| 4 IoT/thiết bị/bằng chứng | Not Run | Chưa triển khai pipeline/simulator; không đồng nhất với mã nhóm 3 của handoff gốc |
+| 5 QR/RFID và reservation | Not Run | Chưa triển khai |
+| 6 Payment Mock | Not Run | Chưa triển khai |
+| 7 Quy trình đổi pin | Not Run | Chưa triển khai |
+| 8 Exception/Reconciliation | Not Run | Chưa triển khai quy trình đối soát tổng thể |
+| Tích hợp/nghiệm thu toàn hệ thống | Not Run | Không suy ra từ kiểm thử từng module |
 
 ## Kết quả mới nhất: Phase 2 – F2
+
+**Cập nhật Phase 3:** xem [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md), [JUnit](PHASE3_TEST_RESULTS.xml), [HTTP smoke](PHASE3_HTTP_SMOKE_RESULTS.json), [validator](PHASE3_CONTRACT_VALIDATION.json), [DB check](PHASE3_DATABASE_CHECK.json). Không có migration cấu trúc mới, head 0002_user_approval; seed thêm 10 mẫu BMS chưa xác minh, bảo toàn hồ sơ/vị trí có sẵn. TC06 chuyển custody qua quy trình đổi và TC07 nhận telemetry qua thiết bị vẫn Not Run ngoài phạm vi F3. Các bảng/mục Phase 1–2 dưới đây là lịch sử nghiệm thu; Phase 3 dùng số thứ tự theo yêu cầu mới, không sửa mã module trong handoff.
 
 Chi tiết API, file, lệnh, kiểm thử và giới hạn: [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md). Bằng chứng: [JUnit](PHASE2_TEST_RESULTS.xml), [HTTP smoke](PHASE2_HTTP_SMOKE_RESULTS.json), [validator](PHASE2_CONTRACT_VALIDATION.json), [môi trường test](PHASE2_TEST_ENVIRONMENT.json), [dung lượng](PHASE2_DISK_USAGE.json). Không sửa baseline; migration giữ 0002_user_approval; không xóa/reset DB/volume. Các mục Phase 1 bên dưới giữ làm lịch sử, không dùng để suy ra phạm vi F2.
 

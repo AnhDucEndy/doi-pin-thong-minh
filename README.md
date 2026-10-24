@@ -1,6 +1,6 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1 + Phase 2 F2: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC và quản lý trạm, thiết bị, ngăn tủ theo QD01–QD09. F3, telemetry ingestion, đổi pin và thanh toán chưa triển khai. Báo cáo nghiệm thu F2: [docs/PHASE2_IMPLEMENTATION.md](docs/PHASE2_IMPLEMENTATION.md).
+Phase 1 + F2 + F3: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, quản lý trạm/ngăn và hồ sơ pin/BMS theo QD01–QD09. Pipeline telemetry, simulator, đổi pin và thanh toán chưa triển khai. Báo cáo mới: [docs/PHASE3_IMPLEMENTATION.md](docs/PHASE3_IMPLEMENTATION.md); lịch sử F2: [docs/PHASE2_IMPLEMENTATION.md](docs/PHASE2_IMPLEMENTATION.md).
 
 ## Chuẩn bị
 
@@ -31,6 +31,8 @@ Giữ nguyên `.env` và volume. Bổ sung `DEVICE_KEY_DERIVATION_SECRET` ngẫu
 Sau đăng nhập, chọn **Trạm và ngăn tủ**. Customer chỉ thấy khả dụng tổng hợp; Technician xem và bảo trì ngăn đúng trạm; Admin quản lý trạm/thiết bị/ngăn. Ngăn seed BLOCKED/cửa UNKNOWN; khả dụng bằng 0 khi chưa có dữ liệu hợp lệ. RESTORE cần SNAPSHOT mới đã xử lý, không có nút mở cửa. Admin có mục Tài khoản riêng giữ chức năng Phase 1.
 
 ## Khởi tạo lần đầu
+
+Đã có Phase 2: chạy `tools/dev.ps1 migrate` để cập nhật grants F3 (head vẫn 0002), rồi `tools/dev.ps1 seed`; không chạy DDL gốc. Seed chỉ bổ sung mẫu SOC/SOH/nhiệt độ **chưa xác minh**, không đổi vị trí/lifecycle/cửa/heartbeat. Chọn menu **Pin và BMS**, **Xem hồ sơ và BMS** để xem dữ liệu; Admin đăng ký/ngừng pin, Technician đúng trạm kích hoạt/cách ly/phục hồi bằng SNAPSHOT hợp lệ. Mẫu seed không phải bằng chứng để kích hoạt/phục hồi; khả dụng vẫn 0 cho đến khi có đủ chứng cứ của module thiết bị. Không có form sửa BMS hoặc vị trí pin đang phục vụ.
 
 Các lệnh sau tạo DB/container/volume nếu chưa có; cần đồng ý trước khi dùng trên máy mới. Sự đồng ý đã có cho lượt triển khai hiện tại.
 

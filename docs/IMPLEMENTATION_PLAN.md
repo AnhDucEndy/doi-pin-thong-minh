@@ -4,6 +4,8 @@ Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–Q
 
 ## Nguồn và thứ tự ưu tiên
 
+Cập nhật phạm vi thực hiện: Phase 3 được người dùng giao là F3 (FR06–08, UC06–08, TC06–08), hoàn thành phần pin/BMS của nhóm 2 trong handoff. Bước tiếp theo là Phase 4 IoT theo cách đánh số của người dùng. Các số nhóm trong CODEX_HANDOFF.md gốc giữ nguyên; không lấy tên phase mới để đổi FR/UC/TC. Kết quả Phase 3 ở PHASE3_IMPLEMENTATION.md; chưa thực hiện pipeline thiết bị hoặc chuyển custody qua đổi pin.
+
 - Đọc `../AGENTS.md` và `../doi-pin-giai-doan-2/CODEX_START_HERE.md` trước mỗi phase.
 - QD và cấu hình: phụ lục `handoff/DECISIONS_APPROVED_2026-10-23.md`, `handoff/decisions.approved.json`, `contracts/demo-config.approved.yaml` trong bộ thiết kế là nguồn mới nhất.
 - Nghiệp vụ: DOCX GĐ1, FR01–FR19, UC01–UC17, BR01–BR12 và bảng truy vết baseline.

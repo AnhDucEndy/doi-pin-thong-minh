@@ -1,0 +1,7 @@
+{
+  "existing_profiles_and_locations_preserved": true,
+  "seed_twice": "Passed",
+  "migration": "0002_user_approval",
+  "new_samples": 10,
+  "samples_are_physical_proof": false
+}

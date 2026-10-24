@@ -31,11 +31,12 @@ def main():
             cursor.execute(sql.SQL('GRANT USAGE ON SCHEMA {} TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT SELECT ON ALL TABLES IN SCHEMA {} TO doi_pin_runtime').format(sql.Identifier(schema)))
             for name in ('users', 'auth_sessions', 'login_limits', 'user_station_assignments', 'idempotency_records',
-                         'stations', 'devices', 'compartments'):
+                         'stations', 'devices', 'compartments', 'batteries'):
                 cursor.execute(sql.SQL('GRANT INSERT, UPDATE ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
             cursor.execute(sql.SQL('GRANT DELETE ON {}.user_station_assignments TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT INSERT ON {}.audit_events TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT UPDATE (state, review_reason, version) ON {}.swap_transactions TO doi_pin_runtime').format(sql.Identifier(schema)))
+            cursor.execute(sql.SQL('GRANT UPDATE (state, resolved_by, resolution_note, last_event_id, version) ON {}.alerts TO doi_pin_runtime').format(sql.Identifier(schema)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

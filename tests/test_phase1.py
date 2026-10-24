@@ -250,6 +250,7 @@ def test_phase1_contract_and_no_future_endpoints(client):
         '/v1/users/{user_id}/station-assignments'}
     f2_paths = {path for path, methods in SPEC['paths'].items()
                 if any(set(op.get('x-fr', [])) & {'FR03', 'FR04', 'FR05'} for op in methods.values())}
+    f2_paths |= {'/v1/batteries', '/v1/batteries/{battery_id}/actions', '/v1/batteries/{battery_id}/telemetry'}
     assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths
     for path, methods in paths.items():
         if path == '/health':

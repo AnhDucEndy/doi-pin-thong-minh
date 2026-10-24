@@ -1,0 +1,7 @@
+{
+  "schema": "phase3_test_94a9b9b71728",
+  "postgresql": "17.11 (Debian 17.11-1.pgdg13+2)",
+  "migration_empty_and_upgrade": "Passed",
+  "production_schema_modified_by_tests": false,
+  "schema_retained": true
+}

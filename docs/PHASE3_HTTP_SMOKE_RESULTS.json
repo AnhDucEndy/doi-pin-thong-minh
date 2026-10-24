@@ -1,0 +1,22 @@
+{
+  "result": "Passed",
+  "asset_mutations": false,
+  "checks": [
+    "Frontend HTML 200",
+    "Phase 3 health / PostgreSQL connected",
+    "admin: scoped battery list",
+    "admin: S01 telemetry 200",
+    "admin: S02 telemetry 200",
+    "Missing battery 404",
+    "Invalid family 422 / no asset created",
+    "admin: logout",
+    "technician: scoped battery list",
+    "technician: S01 telemetry 200",
+    "technician: S02 telemetry 403",
+    "technician: logout",
+    "customer: scoped battery list",
+    "customer: S01 telemetry 403",
+    "customer: S02 telemetry 403",
+    "customer: logout"
+  ]
+}
