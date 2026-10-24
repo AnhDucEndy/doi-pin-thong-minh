@@ -30,7 +30,7 @@ try {
         seed { & $pythonExe -m app.seed }
         backend { & $pythonExe -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log --no-proxy-headers }
         frontend { & npm.cmd --prefix apps/web run dev }
-        test { & $pythonExe -m pytest -q --basetemp=.cache/pytest-tmp --junitxml=docs/PHASE1_TEST_RESULTS.xml }
+        test { & $pythonExe -m pytest -q --basetemp=.cache/pytest-tmp --junitxml=docs/PHASE2_TEST_RESULTS.xml }
         validate { & $pythonExe tools/validate_contracts.py docs/CONTRACT_VALIDATION.json }
     }
     if ($LASTEXITCODE -ne 0) { throw "Action $Action failed (exit $LASTEXITCODE)." }

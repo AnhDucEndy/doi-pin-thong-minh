@@ -245,9 +245,12 @@ def test_phase1_contract_and_no_future_endpoints(client):
     from openapi_spec_validator import validate_spec
     validate_spec(client.app.openapi())
     paths = client.app.openapi()['paths']
-    assert set(path for path in paths if path.startswith('/v1/')) == {
+    phase1_paths = {
         '/v1/auth/login', '/v1/auth/logout', '/v1/me', '/v1/users', '/v1/users/{user_id}',
         '/v1/users/{user_id}/station-assignments'}
+    f2_paths = {path for path, methods in SPEC['paths'].items()
+                if any(set(op.get('x-fr', [])) & {'FR03', 'FR04', 'FR05'} for op in methods.values())}
+    assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths
     for path, methods in paths.items():
         if path == '/health':
             continue

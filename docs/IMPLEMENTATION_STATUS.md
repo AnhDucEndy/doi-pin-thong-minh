@@ -2,7 +2,7 @@
 
 Cập nhật: 24/10/2026 (Asia/Bangkok).
 
-**Phase 1 hoàn tất và đã kiểm thử thành công. Dừng tại Phase 1, chưa bắt đầu Phase 2.** Phase 0 được người dùng xác nhận hoàn thành; P0-01/02/03 đã giải quyết theo [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md).
+**Phase 2 – F2 hoàn tất: quản lý trạm/thiết bị/ngăn và tra cứu khả dụng. Chưa triển khai F3 hoặc Phase 3.** Kế thừa Phase 1 đã nghiệm thu. Phase 0 được người dùng xác nhận hoàn thành; P0-01/02/03 đã giải quyết theo [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md).
 
 ## Tiến độ
 
@@ -10,12 +10,17 @@ Cập nhật: 24/10/2026 (Asia/Bangkok).
 | --- | --- | --- |
 | 0 Baseline/hợp đồng | Hoàn tất | 15 static checks ban đầu; validator chuẩn chạy bổ sung ở Phase 1 |
 | 1 Nền tảng/định danh | Passed | 18 tests, build web, 5 HTTP smoke checks; bằng chứng bên dưới |
-| 2 Trạm/ngăn/pin | Not Run | Chưa triển khai endpoint |
+| 2 F2 Trạm/thiết bị/ngăn | Passed | 55 Passed / 0 Failed; build + 14 HTTP checks Passed; xem PHASE2_IMPLEMENTATION.md |
+| F3 Pin/BMS (phần còn lại của nhóm 2 handoff) | Not Run | Ngoài phạm vi người dùng giao lượt này |
 | 3 Thiết bị/bằng chứng | Not Run | Chưa triển khai |
 | 4 Xác thực tại trạm/giữ chỗ/thu | Not Run | Chưa triển khai |
 | 5 Trả/nhận/khôi phục | Not Run | Chưa triển khai |
 | 6 Hoàn thiện UI/lịch sử/cảnh báo | Not Run | Chỉ có UI tài khoản thuộc Phase 1 |
 | 7 Tích hợp/nghiệm thu toàn hệ thống | Not Run | Không suy ra từ TC01/02 |
+
+## Kết quả mới nhất: Phase 2 – F2
+
+Chi tiết API, file, lệnh, kiểm thử và giới hạn: [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md). Bằng chứng: [JUnit](PHASE2_TEST_RESULTS.xml), [HTTP smoke](PHASE2_HTTP_SMOKE_RESULTS.json), [validator](PHASE2_CONTRACT_VALIDATION.json), [môi trường test](PHASE2_TEST_ENVIRONMENT.json), [dung lượng](PHASE2_DISK_USAGE.json). Không sửa baseline; migration giữ 0002_user_approval; không xóa/reset DB/volume. Các mục Phase 1 bên dưới giữ làm lịch sử, không dùng để suy ra phạm vi F2.
 
 ## Môi trường đã xác minh
 

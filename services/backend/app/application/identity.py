@@ -19,10 +19,10 @@ class DomainError(Exception):
         self.status, self.code, self.message = status, code, message
 
 
-def audit(session, db, actor, action, aggregate, before=None, after=None):
+def audit(session, db, actor, action, aggregate, before=None, after=None, aggregate_type='user'):
     # Callers pass only public projections; never token/password/hash.
     session.execute(insert(db.table('audit_events')).values(
-        id=uuid4(), actor_type='USER', actor_id=str(actor), aggregate_type='user',
+        id=uuid4(), actor_type='USER', actor_id=str(actor), aggregate_type=aggregate_type,
         aggregate_id=aggregate, action=action, before_data=jsonable_encoder(before),
         after_data=jsonable_encoder(after), correlation_id=uuid4()))
 

@@ -26,7 +26,7 @@ from app.seed import seed
 
 @pytest.fixture(scope='session')
 def environment():
-    schema = 'phase1_test_' + uuid4().hex[:12]
+    schema = 'phase2_test_' + uuid4().hex[:12]
     previous = os.environ.get('DATABASE_SCHEMA')
     os.environ['DATABASE_SCHEMA'] = schema
     subprocess.run([sys.executable, str(ROOT / 'tools/provision_database.py'), 'roles'], check=True)
@@ -51,7 +51,7 @@ def environment():
                 'production_schema_modified_by_tests': False, 'schema_retained': True}
     with owner.connect() as conn:
         evidence['postgresql'] = conn.scalar(text('SHOW server_version'))
-    (ROOT / 'docs/TEST_ENVIRONMENT.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'docs/PHASE2_TEST_ENVIRONMENT.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
     yield {'settings': settings, 'owner': owner, 'seed_db': db, 'passwords': passwords, 'keys': keys}
     db.engine.dispose()
     owner.dispose()
@@ -65,13 +65,21 @@ def environment():
 def client(environment):
     app = create_app(environment['settings'])
     with TestClient(app) as client:
-        connection = app.state.db.engine.connect()
+        # Authenticate test fixture connection as the bootstrap role, then run every API
+        # request as the real runtime role. F2 fixtures can briefly reset the role to
+        # insert evidence into future-module tables inside this same rollback transaction.
+        fixture_engine = create_engine(os.environ['DATABASE_ADMIN_URL'], hide_parameters=True,
+            connect_args={'options': f'-csearch_path={environment["settings"].schema},public -cstatement_timeout=15000 -clock_timeout=5000'})
+        connection = fixture_engine.connect()
         transaction = connection.begin()
+        connection.exec_driver_sql('SET LOCAL ROLE doi_pin_runtime')
+        app.state.test_connection = connection
         app.state.db.sessions = sessionmaker(bind=connection, expire_on_commit=False,
                                             join_transaction_mode='create_savepoint')
         yield client
         transaction.rollback()
         connection.close()
+        fixture_engine.dispose()
 
 
 @pytest.fixture

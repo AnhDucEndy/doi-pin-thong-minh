@@ -1,6 +1,6 @@
 # Kế hoạch triển khai hệ thống đổi pin thông minh
 
-Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–QD09 đã được người dùng duyệt ngày 23/10/2026. Phase 1 đã được giao và triển khai; kết quả nghiệm thu nằm trong IMPLEMENTATION_STATUS.md. Các phase sau vẫn là kế hoạch.
+Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–QD09 đã được người dùng duyệt ngày 23/10/2026. Phase 1 đã được giao và triển khai; kết quả nghiệm thu nằm trong IMPLEMENTATION_STATUS.md. Phase 2 – F2 được triển khai theo yêu cầu tiếp theo: chỉ trạm/thiết bị/ngăn (FR03–05, TC03–05). F3 pin/BMS trong cùng nhóm handoff vẫn chưa triển khai. Các phase sau vẫn là kế hoạch.
 
 ## Nguồn và thứ tự ưu tiên
 

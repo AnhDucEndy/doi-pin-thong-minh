@@ -1,0 +1,20 @@
+{
+  "result": "Passed",
+  "checks": [
+    "Frontend HTML 200",
+    "Backend health / PostgreSQL connected",
+    "admin: two stations / availability projection",
+    "admin: S01 compartments 200",
+    "admin: S02 compartments 200",
+    "admin: logout 200",
+    "customer: two stations / availability projection",
+    "customer: S01 compartments 403",
+    "customer: S02 compartments 403",
+    "customer: logout 200",
+    "technician: two stations / availability projection",
+    "technician: S01 compartments 200",
+    "technician: S02 compartments 403",
+    "technician: logout 200"
+  ],
+  "asset_mutations": false
+}

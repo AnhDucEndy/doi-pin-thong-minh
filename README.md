@@ -1,6 +1,6 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1: nền tảng FastAPI, React/TypeScript/Vite, PostgreSQL 17, Alembic, seed demo và Authentication/RBAC. Phạm vi mô phỏng đã duyệt QD01–QD09. Các nghiệp vụ đổi pin/thanh toán/thiết bị thuộc phase sau, chưa có endpoint.
+Phase 1 + Phase 2 F2: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC và quản lý trạm, thiết bị, ngăn tủ theo QD01–QD09. F3, telemetry ingestion, đổi pin và thanh toán chưa triển khai. Báo cáo nghiệm thu F2: [docs/PHASE2_IMPLEMENTATION.md](docs/PHASE2_IMPLEMENTATION.md).
 
 ## Chuẩn bị
 
@@ -23,6 +23,12 @@ Không tạo lại venv nếu đã hoạt động. `requirements.in` mô tả gi
 Copy `.env.example` thành `.env` nếu chưa có, thay toàn bộ REPLACE_* bằng secret ngẫu nhiên riêng. Các URL phải khớp password tương ứng; nếu dùng ký tự đặc biệt, URL-encode phần password. Không ghi mật khẩu thật vào README hoặc terminal chia sẻ.
 
 `.env` hiện tại trong workspace đã được tạo bằng secret ngẫu nhiên và bị Git ignore; không copy đè nếu đã có DB. Biến POSTGRES_PASSWORD chỉ khởi tạo mật khẩu lần đầu của volume trống; thay file env không tự đổi mật khẩu DB đã có.
+
+## Cập nhật từ Phase 1 lên F2
+
+Giữ nguyên `.env` và volume. Bổ sung `DEVICE_KEY_DERIVATION_SECRET` ngẫu nhiên tối thiểu 32 ký tự vào `.env` (xem `.env.example`), giữ ổn định để retry đăng ký thiết bị trả cùng khóa. Không in/chia sẻ secret. Chạy `tools/dev.ps1 migrate` để bảo đảm head và cập nhật DB grants; `tools/dev.ps1 seed` chạy lại an toàn. Không có migration cấu trúc mới.
+
+Sau đăng nhập, chọn **Trạm và ngăn tủ**. Customer chỉ thấy khả dụng tổng hợp; Technician xem và bảo trì ngăn đúng trạm; Admin quản lý trạm/thiết bị/ngăn. Ngăn seed BLOCKED/cửa UNKNOWN; khả dụng bằng 0 khi chưa có dữ liệu hợp lệ. RESTORE cần SNAPSHOT mới đã xử lý, không có nút mở cửa. Admin có mục Tài khoản riêng giữ chức năng Phase 1.
 
 ## Khởi tạo lần đầu
 

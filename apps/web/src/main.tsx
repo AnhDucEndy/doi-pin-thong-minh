@@ -1,7 +1,8 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { StrictMode, useCallback, useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
+import { Stations } from './Stations';
 
 type Role = 'ADMIN' | 'CUSTOMER' | 'TECHNICIAN';
 type User = { id: string; username: string; role: Role; state: 'ACTIVE' | 'LOCKED' | 'INACTIVE'; version: number; created_at: string };
@@ -9,6 +10,7 @@ const roles: Record<Role, string> = { ADMIN: 'Quản trị viên', CUSTOMER: 'Kh
 const states = { ACTIVE: 'Hoạt động', LOCKED: 'Đã khóa', INACTIVE: 'Ngừng sử dụng' };
 
 function App() {
+  const [view, setView] = useState<'stations' | 'accounts'>('stations');
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -16,7 +18,7 @@ function App() {
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
 
-  async function api(path: string, method = 'GET', data?: unknown, mutationKey?: string) {
+  const api = useCallback(async (path: string, method = 'GET', data?: unknown, mutationKey?: string) => {
     const response = await fetch(path, { method, headers: {
       'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(mutationKey ? { 'Idempotency-Key': mutationKey } : {}),
@@ -35,10 +37,10 @@ function App() {
         RESOURCE_CONFLICT: 'Tên tài khoản đã tồn tại hoặc dữ liệu đang được sử dụng.',
         FORBIDDEN: 'Bạn không có quyền thực hiện thao tác này.',
       };
-      throw new Error(messages[result.code] ?? 'Chưa thể hoàn tất thao tác. Vui lòng thử lại.');
+      throw new Error(messages[result.code] ?? `API từ chối thao tác (${result.code ?? response.status}). Hãy kiểm tra quyền, phiên bản và điều kiện trạng thái.`);
     }
     return result;
-  }
+  }, [token]);
 
   async function loadUsers() {
     let cursor: string | null = null;
@@ -98,7 +100,8 @@ function App() {
       {notice && <div className="message success" role="status">{notice}</div>}
       {!user ? <div className="login-layout"><section className="card login-card"><span className="eyebrow">CHÀO MỪNG TRỞ LẠI</span><h2>Đăng nhập</h2><form onSubmit={signIn}><label>Tên tài khoản<input name="username" autoComplete="username" required maxLength={100} autoFocus/></label><label>Mật khẩu<input name="password" type="password" autoComplete="current-password" required maxLength={256}/></label><button className="primary" disabled={busy}>{busy ? 'Đang xác thực…' : 'Đăng nhập →'}</button></form><p className="hint">Sử dụng tài khoản đã được quản trị viên cấp.</p></section><aside><span className="large-bolt">ϟ</span><h2>Đúng người.<br/>Đúng quyền truy cập.</h2><p>Mỗi vai trò có một không gian riêng. Thông tin tài khoản được bảo vệ xuyên suốt phiên làm việc.</p><div className="role-tags">{Object.values(roles).map(role => <span key={role}>{role}</span>)}</div></aside></div> : <>
         <section className="card profile"><div><span className="eyebrow">PHIÊN CỦA BẠN</span><h2>{roles[user.role]}</h2><p><span className="badge">{states[user.state]}</span> <span className="hint">@{user.username}</span></p></div><button onClick={signOut}>Đăng xuất</button></section>
-        {user.role === 'ADMIN' ? <section className="admin-grid"><div className="card"><span className="eyebrow">CẤP QUYỀN TRUY CẬP</span><h2>Tạo tài khoản</h2><form onSubmit={createUser}><label>Tên tài khoản<input name="username" required minLength={3} maxLength={100} autoComplete="off"/></label><label>Mật khẩu ban đầu<input name="password" type="password" required minLength={12} maxLength={256} autoComplete="new-password"/><small>Tối thiểu 12 ký tự.</small></label><label>Vai trò<select name="role">{Object.entries(roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><button className="primary" disabled={busy}>Tạo tài khoản</button></form></div><div className="card user-list"><div className="section-heading"><div><span className="eyebrow">QUẢN TRỊ</span><h2>Danh sách tài khoản</h2></div><button disabled={busy} onClick={() => loadUsers().catch(e => setError(e.message))}>Tải lại</button></div><div className="table-scroll"><table><thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{users.map(target => <tr key={target.id}><td><strong>{target.username}</strong></td><td><select aria-label={`Vai trò của ${target.username}`} value={target.role} disabled={busy} onChange={event => { if (confirm(`Đổi vai trò của ${target.username}? Các phiên hiện tại sẽ kết thúc.`)) changeUser(target, { role: event.target.value as Role }); }} >{Object.entries(roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td><td><span className={target.state === 'ACTIVE' ? 'badge' : 'badge muted'}>{states[target.state]}</span></td><td><button disabled={busy} onClick={() => { if (confirm(`${target.state === 'ACTIVE' ? 'Khóa' : 'Mở khóa'} tài khoản ${target.username}?`)) changeUser(target, { state: target.state === 'ACTIVE' ? 'LOCKED' : 'ACTIVE' }); }}>{target.state === 'ACTIVE' ? 'Khóa' : 'Mở khóa'}</button></td></tr>)}</tbody></table></div></div></section> : <section className="card"><h2>Thông tin truy cập</h2><p>{user.role === 'CUSTOMER' ? 'Bạn đang đăng nhập bằng tài khoản khách hàng của mình.' : 'Bạn đang đăng nhập bằng tài khoản kỹ thuật viên. Quyền thao tác được giới hạn theo trạm được phân công.'}</p></section>}
+        <nav className="module-nav"><button onClick={() => setView('stations')}>Trạm và ngăn tủ</button>{user.role === 'ADMIN' && <button onClick={() => setView('accounts')}>Tài khoản</button>}</nav>
+        {view === 'stations' ? <Stations api={api} role={user.role}/> : user.role === 'ADMIN' ? <section className="admin-grid"><div className="card"><span className="eyebrow">CẤP QUYỀN TRUY CẬP</span><h2>Tạo tài khoản</h2><form onSubmit={createUser}><label>Tên tài khoản<input name="username" required minLength={3} maxLength={100} autoComplete="off"/></label><label>Mật khẩu ban đầu<input name="password" type="password" required minLength={12} maxLength={256} autoComplete="new-password"/><small>Tối thiểu 12 ký tự.</small></label><label>Vai trò<select name="role">{Object.entries(roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><button className="primary" disabled={busy}>Tạo tài khoản</button></form></div><div className="card user-list"><div className="section-heading"><div><span className="eyebrow">QUẢN TRỊ</span><h2>Danh sách tài khoản</h2></div><button disabled={busy} onClick={() => loadUsers().catch(e => setError(e.message))}>Tải lại</button></div><div className="table-scroll"><table><thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{users.map(target => <tr key={target.id}><td><strong>{target.username}</strong></td><td><select aria-label={`Vai trò của ${target.username}`} value={target.role} disabled={busy} onChange={event => { if (confirm(`Đổi vai trò của ${target.username}? Các phiên hiện tại sẽ kết thúc.`)) changeUser(target, { role: event.target.value as Role }); }} >{Object.entries(roles).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td><td><span className={target.state === 'ACTIVE' ? 'badge' : 'badge muted'}>{states[target.state]}</span></td><td><button disabled={busy} onClick={() => { if (confirm(`${target.state === 'ACTIVE' ? 'Khóa' : 'Mở khóa'} tài khoản ${target.username}?`)) changeUser(target, { state: target.state === 'ACTIVE' ? 'LOCKED' : 'ACTIVE' }); }}>{target.state === 'ACTIVE' ? 'Khóa' : 'Mở khóa'}</button></td></tr>)}</tbody></table></div></div></section> : <section className="card"><h2>Thông tin truy cập</h2><p>{user.role === 'CUSTOMER' ? 'Bạn đang đăng nhập bằng tài khoản khách hàng của mình.' : 'Bạn đang đăng nhập bằng tài khoản kỹ thuật viên. Quyền thao tác được giới hạn theo trạm được phân công.'}</p></section>}
       </>}
     </main><footer><span>ĐỔI PIN · Hệ thống quản lý trạm</span><span>Dữ liệu và thiết bị mô phỏng</span></footer>
   </div>;

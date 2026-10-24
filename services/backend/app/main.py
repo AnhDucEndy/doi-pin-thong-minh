@@ -31,7 +31,7 @@ def create_app(settings=None):
         yield
         app.state.db.engine.dispose()
 
-    app = FastAPI(title='Đổi pin · Phase 1', version='0.1.0', lifespan=lifespan)
+    app = FastAPI(title='Đổi pin · Phase 2 F2', version='0.2.0', lifespan=lifespan)
     app.state.settings = settings
 
     def error_response(status, code, message):
@@ -97,7 +97,7 @@ def create_app(settings=None):
     def health(request: Request, current=Depends(session, scope='function')):
         approved_policy(settings.policy_path)
         version = current.scalar(text('SHOW server_version'))
-        return {'status': 'ok', 'phase': 1, 'database': 'connected', 'postgresql_version': version}
+        return {'status': 'ok', 'phase': 2, 'database': 'connected', 'postgresql_version': version}
 
     @app.post('/v1/auth/login', response_model=LoginResponse, operation_id='login', tags=['FR01'])
     def authenticate(body: LoginRequest, request: Request, current=Depends(session, scope='function')):
@@ -206,6 +206,9 @@ def create_app(settings=None):
             return public_user(row)
         return mutation(request, current, actor, key, body.model_dump(), 200, execute)
 
+    from app.api.assets import build_router
+    app.include_router(build_router(session, principal, admin, mutation))
+
     def contract_openapi():
         if app.openapi_schema:
             return app.openapi_schema
@@ -213,8 +216,9 @@ def create_app(settings=None):
         original = yaml.safe_load((ROOT / 'doi-pin-giai-doan-2/contracts/openapi.yaml').read_text(encoding='utf-8-sig'))
         spec = deepcopy(original)
         spec['info'] = {'title': app.title, 'version': app.version,
-                        'description': 'Phase 1 implemented operations only; GD2 contract and implementation decisions apply.'}
-        spec['paths'] = {path: original['paths'][path] for path in generated['paths'] if path.startswith('/v1/')}
+                        'description': 'Phase 1 and F2 implemented operations; original GD2 contract applies.'}
+        spec['paths'] = {path: {method: original['paths'][path][method] for method in methods}
+                         for path, methods in generated['paths'].items() if path.startswith('/v1/')}
         spec['paths']['/health'] = generated['paths']['/health']
         app.openapi_schema = spec
         return spec
