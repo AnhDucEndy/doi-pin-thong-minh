@@ -32,7 +32,7 @@ try {
         worker { & $pythonExe -m app.workers.device }
         simulator { & $pythonExe -m simulators.device.main }
         frontend { & npm.cmd --prefix apps/web run dev }
-        test { & $pythonExe -m pytest -q --basetemp=.cache/pytest-tmp --junitxml=docs/PHASE4_TEST_RESULTS.xml }
+        test { & $pythonExe -m pytest -q --basetemp=.cache/pytest-tmp --junitxml=docs/PHASE5_REGRESSION.xml }
         validate { & $pythonExe tools/validate_contracts.py docs/CONTRACT_VALIDATION.json }
     }
     if ($LASTEXITCODE -ne 0) { throw "Action $Action failed (exit $LASTEXITCODE)." }

@@ -1,0 +1,3 @@
+Browser tab: 1, Title: "Đổi Pin · Quản lý trạm và pin", URL: "http://127.0.0.1:5174/".
+There has been no change in the accessibility tree.
+The focused UI element is 0 AXWebArea Đổi Pin · Quản lý trạm và pin, URL: 127.0.0.1:5174/

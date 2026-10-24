@@ -1,0 +1,11 @@
+{
+  "unit": "MiB",
+  "directories": {
+    ".venv": 95.84,
+    "apps/web/node_modules": 60.77,
+    "apps/web/dist": 0.28,
+    ".cache": 148.2,
+    ".local": 13.47,
+    "docs": 0.92
+  }
+}

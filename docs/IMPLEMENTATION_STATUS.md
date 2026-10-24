@@ -1,6 +1,8 @@
 # Trạng thái triển khai hệ thống đổi pin thông minh
 
-Cập nhật: 24/10/2026 (Asia/Bangkok).
+Cập nhật: 25/10/2026 (Asia/Bangkok).
+
+**Phase5 hoàn tất trong phạm vi QR/RFID và reservation trước thanh toán.** Base a18e64f đã commit/push được xác minh lúc bắt đầu; bản sửa BMS không còn là thay đổi rời. Regression mới **227 Passed =175 cũ+52 Phase5**, HTTP28, E2E Phase5 thật8 (TTL120s/worker restart), E2E IoT hồi quy8, build/contracts và Browser phần QR/giữ/hủy/RFID/role đều Passed như báo cáo. Không migration mới/seed lại/reset DB; grants Phase5 đã áp dụng. Clipboard OS/camera/full Browser scenarios không tuyên bố Passed; không có API per-QR revoke trong baseline. Chi tiết [PHASE5_IMPLEMENTATION.md](PHASE5_IMPLEMENTATION.md). Dừng trước Phase6; các đoạn Phase4/BMS bên dưới giữ làm lịch sử.
 
 **Bản sửa P4-A01 ở working tree, chưa commit:** hai probe lỗi và toàn bộ bảy probe nghiệm thu đã Passed; 21 ca timestamp/sequence Passed. Regression sau sửa trước gián đoạn đã hoàn tất **175 Passed**; lượt tiếp tục chạy lại 2/7/21 ca và E2E tiến trình thật **8 Passed**, không sửa source/test/fixture. Mẫu SOC cũ bị EVENT_OUT_OF_ORDER, availability giữ false. Không migration, không sửa demo/baseline, chưa Phase5; chờ người dùng xem xét commit. Chi tiết [PHASE4_BMS_FIX.md](PHASE4_BMS_FIX.md). Ghi nhận Failed dưới đây được giữ làm lịch sử trước sửa.
 
@@ -17,7 +19,7 @@ Cập nhật: 24/10/2026 (Asia/Bangkok).
 | 2 F2 Trạm/thiết bị/ngăn | Passed | 55 Passed / 0 Failed; build + 14 HTTP checks Passed; xem PHASE2_IMPLEMENTATION.md |
 | 3 F3 Pin/BMS (phần còn lại của nhóm 2 handoff) | Passed trong phạm vi F3 | 103 tests Passed: 18 Phase 1 + 37 Phase 2 + 48 F3; build, 16 HTTP checks, UI đọc ba vai trò |
 | 4 IoT/thiết bị/bằng chứng | Passed trong phạm vi giao tiếp | 147 tests = 103 hồi quy + 44 IoT; 8 E2E tiến trình thật; 13 HTTP checks local; GUI ACK trên schema test |
-| 5 QR/RFID và reservation | Not Run | Chưa triển khai |
+| 5 QR/RFID và reservation | Passed phạm vi đã giao | FR09/10, phần cancel/read FR12/13; 52 tests mới, tổng227; HTTP28, E2E8+IoT8; Browser phần đã mô tả |
 | 6 Payment Mock | Not Run | Chưa triển khai |
 | 7 Quy trình đổi pin | Not Run | Chưa triển khai |
 | 8 Exception/Reconciliation | Not Run | Chưa triển khai quy trình đối soát tổng thể |

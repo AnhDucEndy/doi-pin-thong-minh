@@ -253,6 +253,9 @@ def test_phase1_contract_and_no_future_endpoints(client):
     f2_paths |= {'/v1/batteries', '/v1/batteries/{battery_id}/actions', '/v1/batteries/{battery_id}/telemetry'}
     f2_paths |= {'/v1/device/events','/v1/device/commands','/v1/alerts','/v1/alerts/{alert_id}/acknowledge','/v1/alerts/{alert_id}/resolve'}
     f2_paths.add('/v1/dashboard')
+    f2_paths |= {'/v1/users/{user_id}/credentials', '/v1/credentials/{credential_id}/revoke',
+        '/v1/qr-challenges', '/v1/device/verifications', '/v1/swaps', '/v1/swaps/{swap_id}',
+        '/v1/swaps/{swap_id}/reserve', '/v1/swaps/{swap_id}/cancel'}
     assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths
     for path, methods in paths.items():
         if path == '/health':

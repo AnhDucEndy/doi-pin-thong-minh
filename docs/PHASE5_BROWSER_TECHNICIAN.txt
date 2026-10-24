@@ -1,0 +1,36 @@
+Browser tab: 1, Title: "Đổi Pin · Quản lý trạm và pin", URL: "http://127.0.0.1:5174/".
+0 AXWebArea Đổi Pin · Quản lý trạm và pin, URL: 127.0.0.1:5174/
+	1 container root
+		2 container
+			3 link Description: ϟ ĐỔI PIN MẠNG LƯỚI THÔNG MINH, Value: 127.0.0.1:5174/
+			4 text Môi trường mô phỏng
+		5 container
+			6 text CỔNG THÔNG TIN
+			7 heading Xin chào, technician., Value: 1
+				8 text Xin chào, technician.
+			9 text Quản lý phiên truy cập và tài khoản trong phạm vi quyền của bạn. PHIÊN CỦA BẠN
+			27 heading Kỹ thuật viên, Value: 2
+				28 text Kỹ thuật viên
+			29 container
+				30 text Hoạt động @ technician
+			31 button Đăng xuất
+			32 button Trạm và ngăn tủ
+			33 button Pin và BMS
+			34 button Thiết bị và IoT
+			35 heading Mạng lưới trạm, Value: 2
+				36 text Mạng lưới trạm
+			37 button Tải lại
+			38 container
+				39 heading Trạm mô phỏng 1, Value: 3
+					40 text Trạm mô phỏng 1
+				41 text Địa điểm demo 1 ONLINE  ·  1  pin đủ điều kiện
+				42 button Xem trạm và ngăn
+			43 container
+				44 heading Trạm mô phỏng 2, Value: 3
+					45 text Trạm mô phỏng 2
+				46 text Địa điểm demo 2 ONLINE  ·  0  pin đủ điều kiện
+				47 button Xem trạm và ngăn
+		25 container
+			26 text ĐỔI PIN · Hệ thống quản lý trạm Dữ liệu và thiết bị mô phỏng
+
+The focused UI element is 0 AXWebArea Đổi Pin · Quản lý trạm và pin, URL: 127.0.0.1:5174/

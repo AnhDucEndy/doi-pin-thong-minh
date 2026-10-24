@@ -223,6 +223,8 @@ def tick(db,policy,now=None):
         with db.sessions.begin() as session:processed+=int(process_one(session,db,identity,policy,now))
     for device in devices:
         with db.sessions.begin() as session:expire_station(session,db,device,policy,now)
+    from app.application.reservations import expire
+    expire(db, now)
     return processed
 
 

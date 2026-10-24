@@ -1,6 +1,8 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1–4: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker và simulator bền vững theo QD01–QD09. QR/RFID, reservation API, payment mock và quy trình đổi pin chưa triển khai. Báo cáo mới: [docs/PHASE4_IMPLEMENTATION.md](docs/PHASE4_IMPLEMENTATION.md).
+Phase 1–5: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker, QR một lần, RFID mô phỏng và reservation trước thanh toán theo QD01–QD09. Báo cáo mới: [docs/PHASE5_IMPLEMENTATION.md](docs/PHASE5_IMPLEMENTATION.md). Payment mock và quy trình đổi pin đầy đủ chưa triển khai.
+
+Từ Phase4 lên Phase5: giữ .env/DB/ledger, chạy `tools/dev.ps1 migrate` để cập nhật grants (không migration cấu trúc mới, head0002), khởi động lại Backend và worker. Frontend thêm qrcode theo package-lock; dùng npm ci trong apps/web nếu dependency mới chưa có. Menu **QR/RFID và giữ tài nguyên** dành Customer/Admin. Reader mô phỏng chạy bằng `.venv/Scripts/python.exe -m simulators.device.authenticate --station S01 --method QR` (hoặc RFID), PYTHONPATH=services/backend; nhập credential ẩn trong terminal, không truyền token qua argv và không đưa Device-Key lên browser. Hướng dẫn demo/test schema riêng trong báo cáo Phase5; không có nút mở cửa/thu phí trước Phase6–7.
 
 ## Chuẩn bị
 

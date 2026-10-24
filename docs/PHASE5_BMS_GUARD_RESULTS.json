@@ -1,0 +1,32 @@
+{
+  "schema": "phase5_test_04fca619cc62",
+  "newer_measurement": {
+    "seq": 5,
+    "soc": 10,
+    "observed_at": "2026-10-24T17:02:21.153732+00:00"
+  },
+  "older_arrival": {
+    "seq": 6,
+    "soc": 90,
+    "observed_at": "2026-10-24T17:02:19.212450+00:00",
+    "accepted": false,
+    "processing_error": "EVENT_OUT_OF_ORDER"
+  },
+  "before_available": "false",
+  "after_available": "false",
+  "latest_api_reading": {
+    "id": "92cacc67-34c0-4e06-a766-760a717abdaa",
+    "event_id": "732634b7-577b-4952-b327-b73b4929bf38",
+    "battery_id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+    "soc": 10.0,
+    "soh": 95.0,
+    "temperature_c": 25.0,
+    "fault_codes": [],
+    "measured_at": "2026-10-24T17:02:21.153732Z",
+    "received_at": "2026-10-24T17:02:23.163975Z",
+    "quality_ok": true
+  },
+  "lifecycle": "IN_SERVICE",
+  "test_only": true,
+  "transaction_rolled_back_by_fixture": true
+}

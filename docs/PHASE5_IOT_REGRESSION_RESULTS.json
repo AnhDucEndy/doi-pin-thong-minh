@@ -1,0 +1,22 @@
+{
+  "result": "Passed",
+  "schema": "phase4_e2e_a4228faac4",
+  "checks": [
+    "Two real simulator processes: snapshot/heartbeat/BMS accepted; no auto activation",
+    "Real ACK: ACKNOWLEDGED, door still CLOSED, custody unchanged",
+    "Real NACK: REJECTED, reservation preserved",
+    "Real deadline: ACK without physical evidence -> UNKNOWN / REVIEW_REQUIRED",
+    "Real heartbeat timeout -> offline; resources retained",
+    "Simulator restart/new boot with ledger: no command re-execution",
+    "Hot telemetry quarantine; later good data cannot auto restore",
+    "Seed remains unverified; demo schema untouched; no reservation released"
+  ],
+  "production_schema_modified": false,
+  "test_schema_retained": true,
+  "ledger_directory": ".local\\phase4_e2e_a4228faac4",
+  "logs_directory": ".cache\\phase4_e2e_a4228faac4",
+  "command_states": {
+    "ack_timeout": "UNKNOWN",
+    "nack": "REJECTED"
+  }
+}

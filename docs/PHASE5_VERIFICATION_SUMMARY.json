@@ -1,0 +1,21 @@
+{
+  "pytest": {
+    "tests": 227,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "groups": {
+    "tests.test_phase1": 18,
+    "tests.test_phase2": 37,
+    "tests.test_phase3": 48,
+    "tests.test_phase4": 44,
+    "tests.test_phase4_acceptance": 7,
+    "tests.test_phase4_bms_ordering": 21,
+    "tests.test_phase5": 52
+  },
+  "http_checks": 28,
+  "phase5_real_process_e2e_checks": 8,
+  "iot_regression_e2e_checks": 8,
+  "browser": "Passed for QR issue/VERIFIED/reserve/cancel, RFID create/revoke and role menu; clipboard bridge/camera not verified"
+}

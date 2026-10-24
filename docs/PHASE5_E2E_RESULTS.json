@@ -1,0 +1,19 @@
+{
+  "result": "Passed",
+  "checks": [
+    "API+worker+simulator: genuine accepted BMS/snapshot and Technician activation/restore",
+    "QR delivery retry is identical; token never logged",
+    "Two Backend processes race one QR: exactly one VERIFIED, replay rejected",
+    "Reservation retry across processes: exactly three holds, zero payment/outbox/command",
+    "Role and device/user credential separation",
+    "Real 120-second TTL after worker restart: release once; replay cannot resurrect",
+    "RFID reused across closed sessions; revoked RFID rejected",
+    "Primary demo asset/evidence/reservation fingerprints unchanged"
+  ],
+  "schema": "phase5_e2e_4ffedbef8c",
+  "production_schema_modified": false,
+  "two_backend_processes": true,
+  "real_reservation_ttl_seconds": 120,
+  "ledger_directory": ".local\\phase5_e2e_4ffedbef8c",
+  "logs_directory": ".cache\\phase5_e2e_4ffedbef8c"
+}

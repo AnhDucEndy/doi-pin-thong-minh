@@ -1,0 +1,8 @@
+{
+  "openapi_validator": "Passed",
+  "approved_json_schema": "Passed",
+  "sql_parser": "Passed",
+  "sql_statements": 278,
+  "original_design_hashes": "Passed",
+  "database_executed_by_this_script": false
+}

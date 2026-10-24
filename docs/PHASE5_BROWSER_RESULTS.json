@@ -1,0 +1,17 @@
+{
+  "browser_qr_verified": true,
+  "adapter_delivery": "Exact idempotency replay of Browser-issued challenge; clipboard bridge returned empty",
+  "swap_id": "9eb13410-0819-4ca0-8102-98e9b42af7b6",
+  "state": "VERIFIED",
+  "schema": "phase5_e2e_4ffedbef8c",
+  "result": "Passed",
+  "browser_reserve": "RESERVED",
+  "browser_cancel": "CANCELLED",
+  "browser_rfid_create_revoke": "Passed",
+  "browser_technician_menu": "Passed",
+  "browser_copy_bridge": "Not Run: clipboard API bridge returned empty",
+  "hardware_camera_scan": "Not Run",
+  "released_hold_count": 3,
+  "migration_head": "0002_user_approval",
+  "payment_outbox_commands_created": 0
+}

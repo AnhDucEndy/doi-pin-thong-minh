@@ -31,7 +31,7 @@ def create_app(settings=None):
         yield
         app.state.db.engine.dispose()
 
-    app = FastAPI(title='Đổi pin · Phase 4 IoT', version='0.4.0', lifespan=lifespan)
+    app = FastAPI(title='Đổi pin · Phase 5 QR/RFID & Reservation', version='0.5.0', lifespan=lifespan)
     app.state.settings = settings
 
     def error_response(status, code, message):
@@ -97,7 +97,7 @@ def create_app(settings=None):
     def health(request: Request, current=Depends(session, scope='function')):
         approved_policy(settings.policy_path)
         version = current.scalar(text('SHOW server_version'))
-        return {'status': 'ok', 'phase': 4, 'database': 'connected', 'postgresql_version': version}
+        return {'status': 'ok', 'phase': 5, 'database': 'connected', 'postgresql_version': version}
 
     @app.post('/v1/auth/login', response_model=LoginResponse, operation_id='login', tags=['FR01'])
     def authenticate(body: LoginRequest, request: Request, current=Depends(session, scope='function')):
@@ -212,6 +212,8 @@ def create_app(settings=None):
     app.include_router(battery_router(session, principal, admin, mutation))
     from app.api.device import build_router as device_router
     app.include_router(device_router(session,principal,mutation))
+    from app.api.reservations import build_router as reservation_router
+    app.include_router(reservation_router(session, principal, admin, mutation))
 
     def contract_openapi():
         if app.openapi_schema:
@@ -220,7 +222,7 @@ def create_app(settings=None):
         original = yaml.safe_load((ROOT / 'doi-pin-giai-doan-2/contracts/openapi.yaml').read_text(encoding='utf-8-sig'))
         spec = deepcopy(original)
         spec['info'] = {'title': app.title, 'version': app.version,
-                        'description': 'Phase 1-4 implemented operations, including device inbox/polling and alerts; original GD2 contract applies.'}
+                        'description': 'Phase 1-5 implemented operations; QR/RFID verification and pre-payment reservation only; original GD2 contract applies.'}
         spec['paths'] = {path: {method: original['paths'][path][method] for method in methods}
                          for path, methods in generated['paths'].items() if path.startswith('/v1/')}
         spec['paths']['/health'] = generated['paths']['/health']

@@ -26,7 +26,7 @@ from app.seed import seed
 
 @pytest.fixture(scope='session')
 def environment():
-    schema = 'phase4_test_' + uuid4().hex[:12]
+    schema = 'phase5_test_' + uuid4().hex[:12]
     previous = os.environ.get('DATABASE_SCHEMA')
     os.environ['DATABASE_SCHEMA'] = schema
     subprocess.run([sys.executable, str(ROOT / 'tools/provision_database.py'), 'roles'], check=True)
@@ -51,7 +51,7 @@ def environment():
                 'production_schema_modified_by_tests': False, 'schema_retained': True}
     with owner.connect() as conn:
         evidence['postgresql'] = conn.scalar(text('SHOW server_version'))
-    (ROOT / 'docs/PHASE4_TEST_ENVIRONMENT.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'docs/PHASE5_TEST_ENVIRONMENT.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
     yield {'settings': settings, 'owner': owner, 'seed_db': db, 'passwords': passwords, 'keys': keys}
     db.engine.dispose()
     owner.dispose()
