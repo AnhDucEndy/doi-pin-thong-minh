@@ -6,7 +6,7 @@ import hmac
 import os
 from uuid import uuid4
 
-from sqlalchemy import and_, or_, select, update
+from sqlalchemy import and_, func, or_, select, update
 from app.application.identity import DomainError, audit, utcnow
 from app.config import ConfigNotReady
 from app.infrastructure.db import advisory_lock
@@ -104,6 +104,19 @@ def pin_at(session, db, slot):
     return session.execute(select(pins).where(pins.c.compartment_id == slot['id'])).mappings().first()
 
 
+def latest_accepted_measurement(session, db, battery_id):
+    """Per-pin measurement watermark across boots, including unsafe accepted samples.
+
+    Seed/unprocessed/rejected evidence cannot establish this watermark. Do not
+    filter quality_ok: a newer bad measurement must still supersede older good data.
+    """
+    readings, events = db.table('battery_telemetry'), db.table('device_events')
+    return session.scalar(select(func.max(readings.c.measured_at))
+        .select_from(readings.join(events, readings.c.event_id == events.c.id))
+        .where(readings.c.battery_id == battery_id, events.c.kind == 'TELEMETRY',
+               events.c.accepted.is_(True), events.c.processed_at.is_not(None)))
+
+
 def quality(session, db, pin, device, now, policy, issue=True, require_service=True):
     if not pin or (require_service and pin['lifecycle'] != 'IN_SERVICE') or pin['family'] != policy['battery_family']:
         return False
@@ -122,6 +135,11 @@ def quality(session, db, pin, device, now, policy, issue=True, require_service=T
             and event['device_id'] == device['id'] and event['boot_id'] == device['boot_id']
             and event['compartment_id'] == pin['compartment_id']
             and fresh(reading['received_at'], now, policy) and fresh(reading['measured_at'], now, policy)):
+        return False
+    # Fail closed for historical out-of-order rows accepted before the worker fix.
+    # Keep received_at selection/TTL and never fall back to an older good sample.
+    latest_measurement = latest_accepted_measurement(session, db, pin['id'])
+    if latest_measurement is not None and reading['measured_at'] < latest_measurement:
         return False
     # New Phase 4 FAULT evidence invalidates an older good sample, even when it is still within TTL.
     fault = session.execute(select(events.c.received_at).where(events.c.device_id == device['id'],

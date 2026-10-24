@@ -2,6 +2,10 @@
 
 Cập nhật: 24/10/2026 (Asia/Bangkok).
 
+**Bản sửa P4-A01 ở working tree, chưa commit:** hai probe lỗi và toàn bộ bảy probe nghiệm thu đã Passed; 21 ca timestamp/sequence Passed. Regression sau sửa trước gián đoạn đã hoàn tất **175 Passed**; lượt tiếp tục chạy lại 2/7/21 ca và E2E tiến trình thật **8 Passed**, không sửa source/test/fixture. Mẫu SOC cũ bị EVENT_OUT_OF_ORDER, availability giữ false. Không migration, không sửa demo/baseline, chưa Phase5; chờ người dùng xem xét commit. Chi tiết [PHASE4_BMS_FIX.md](PHASE4_BMS_FIX.md). Ghi nhận Failed dưới đây được giữ làm lịch sử trước sửa.
+
+**Nghiệm thu độc lập Phase 4 sau commit a8a1d48: chưa đủ điều kiện chuyển Phase 5.** Bộ cũ chạy lại 147 Passed; 7 probe mới có 5 Passed / 2 Failed cùng phát hiện P4-A01: telemetry measured_at cũ hơn nhưng seq tăng có thể thay mẫu SOC mới10 bằng mẫu cũ90 và làm X-Battery-Available false→true. E2E8, HTTP13+14+16, build/contracts và Browser đọc ba vai trò Passed phần đã kiểm. Không sửa nghiệp vụ; xem [PHASE4_ACCEPTANCE.md](PHASE4_ACCEPTANCE.md). Những dòng hoàn tất/bằng chứng bên dưới là trạng thái bàn giao trước nghiệm thu bổ sung, không phải kết luận mới.
+
 **Phase 4 – IoT Simulator & Device Communication hoàn tất trong phạm vi đã giao; dừng trước Phase 5.** Phase 0–3 được kế thừa, không xây dựng lại. P0-01/02/03 giữ nguyên theo IMPLEMENTATION_DECISIONS.md.
 
 ## Tiến độ

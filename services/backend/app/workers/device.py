@@ -147,6 +147,11 @@ def apply(session,db,device,event,policy,now):
                 if state=='UNKNOWN':review(session,db,device['station_id'],'REBOOT_COMMAND_UNKNOWN')
     elif kind=='TELEMETRY':
         pin=assets.get_row(session,db,'batteries',UUID(payload['battery_id']))
+        # Sequence orders transport events within a boot, not BMS measurements.
+        # The station/pin locks held by process_one serialize this check + insert.
+        measured_at=assets.latest_accepted_measurement(session,db,pin['id'])
+        if measured_at is not None and event['observed_at']<=measured_at:
+            raise DomainError(422,'EVENT_OUT_OF_ORDER')
         slot=assets.get_row(session,db,'compartments',event['compartment_id'])
         complete=all(payload[k] is not None for k in ('soc','soh','temperature_c'))
         matches=slot['observed_present'] is True and slot['observed_serial']==pin['serial']
