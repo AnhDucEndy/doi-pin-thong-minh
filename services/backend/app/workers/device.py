@@ -61,6 +61,11 @@ def station_locks(session,db,station_id):
 
 
 def observation(session,db,device,event,slot_id,payload,expected_command=False):
+    # The station/resource locks are already held. A higher transport sequence
+    # (including a fresh boot) cannot supersede newer physical evidence.
+    latest=assets.latest_observation(session,db,device['id'],slot_id)
+    if latest and event['observed_at']<=latest['observed_at']:
+        raise DomainError(422,'EVENT_OUT_OF_ORDER')
     slot=assets.get_row(session,db,'compartments',slot_id)
     table=db.table('compartments')
     session.execute(update(table).where(table.c.id==slot_id).values(door_state=payload['door_state'],

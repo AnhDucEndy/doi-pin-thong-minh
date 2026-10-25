@@ -6,7 +6,8 @@ import hmac
 import os
 from uuid import uuid4
 
-from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy import and_, cast, func, or_, select, update
+from sqlalchemy.dialects.postgresql import JSONPATH
 from app.application.identity import DomainError, audit, utcnow
 from app.config import ConfigNotReady
 from app.infrastructure.db import advisory_lock
@@ -104,6 +105,48 @@ def pin_at(session, db, slot):
     return session.execute(select(pins).where(pins.c.compartment_id == slot['id'])).mappings().first()
 
 
+def observations(db, device_id, slot_id):
+    """Accepted physical observations, across boots; heartbeat/ACK are not evidence."""
+    events = db.table('device_events')
+    return select(events).where(events.c.device_id == device_id, events.c.accepted.is_(True),
+        events.c.processed_at.is_not(None), or_(
+            and_(events.c.kind == 'SNAPSHOT', func.jsonb_path_exists(events.c.payload,
+                cast('$.slots[*] ? (@.compartment_id like_regex "^' + str(slot_id) + '$" flag "i")', JSONPATH))),
+            and_(events.c.kind.in_(['DOOR', 'PRESENCE']), events.c.compartment_id == slot_id)))
+
+
+def latest_observation(session, db, device_id, slot_id):
+    events = db.table('device_events')
+    return session.execute(observations(db, device_id, slot_id)
+        .order_by(events.c.observed_at.desc(), events.c.received_at.desc(), events.c.id.desc())
+        .limit(1)).mappings().first()
+
+
+def observation_payload(event, slot_id):
+    if event['kind'] != 'SNAPSHOT':
+        return event['payload']
+    return next(s for s in event['payload']['slots'] if s['compartment_id'].lower() == str(slot_id).lower())
+
+
+def current_observation(session, db, device, slot):
+    """Fail closed for projections written by older versions; never repair history here.
+
+    The slot timestamp remains receipt time for TTL, not the physical ordering key.
+    Conflicting observations at one instant cannot prove a CLOSED door.
+    """
+    if not device:
+        return False
+    latest = latest_observation(session, db, device['id'], slot['id'])
+    if not latest or latest['boot_id'] != device['boot_id'] or latest['received_at'] != slot['observed_at']:
+        return False
+    expected = {'door_state': slot['door_state'], 'present': slot['observed_present'],
+                'observed_serial': slot['observed_serial']}
+    events = db.table('device_events')
+    ties = session.execute(observations(db, device['id'], slot['id'])
+        .where(events.c.observed_at == latest['observed_at'])).mappings()
+    return all(all(observation_payload(e, slot['id']).get(k) == v for k, v in expected.items()) for e in ties)
+
+
 def latest_accepted_measurement(session, db, battery_id):
     """Per-pin measurement watermark across boots, including unsafe accepted samples.
 
@@ -184,6 +227,7 @@ def eligible(session, db, pin, policy, now, slot=None, station=None, device=None
     return bool(slot['service_state'] == 'ACTIVE' and slot['door_state'] == 'CLOSED'
         and slot['observed_present'] is True and pin['serial'] == slot['observed_serial']
         and fresh(slot['observed_at'], now, policy) and not held(session, db, slot['id'], pin['id'])
+        and current_observation(session, db, device, slot)
         and not any(pin['id'] in (s['new_battery_id'], s['old_battery_id']) or slot['id'] in
             (s['return_compartment_id'], s['supply_compartment_id']) for s in swaps)
         and not has_alert(session, db, station['id'], slot['id'], pin['id'])

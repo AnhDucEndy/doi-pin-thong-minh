@@ -1,0 +1,39 @@
+{
+  "schema": "phase5_test_3d7957f9dc81",
+  "new_open_observed_at": "2026-10-24T17:27:29.837781+00:00",
+  "old_closed_observed_at": "2026-10-24T17:27:29.837781+00:00",
+  "old_sequence": 3,
+  "old_event_accepted": true,
+  "processing_error": null,
+  "door_before": "OPEN",
+  "door_after": "CLOSED",
+  "reserve_status": 200,
+  "reserve_state": "RESERVED",
+  "holds": [
+    {
+      "id": "3eae1209-6555-45d1-a443-35d447b04a70",
+      "swap_id": "3a40cfc8-d7d5-4eca-8cea-f6e7de2bbd1f",
+      "battery_id": null,
+      "compartment_id": "66835bcb-ee68-57c1-8b94-a7f9d9ef1cbd",
+      "released_at": null,
+      "created_at": "2026-10-24 17:27:29.155384+00:00"
+    },
+    {
+      "id": "1b0e6a5b-4bf1-4f83-8d31-f61cdc96a843",
+      "swap_id": "3a40cfc8-d7d5-4eca-8cea-f6e7de2bbd1f",
+      "battery_id": null,
+      "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3",
+      "released_at": null,
+      "created_at": "2026-10-24 17:27:29.155384+00:00"
+    },
+    {
+      "id": "cca656a4-cad9-4ae9-a3fb-ed265806342e",
+      "swap_id": "3a40cfc8-d7d5-4eca-8cea-f6e7de2bbd1f",
+      "battery_id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+      "compartment_id": null,
+      "released_at": null,
+      "created_at": "2026-10-24 17:27:29.155384+00:00"
+    }
+  ],
+  "physical_commands_created": 0
+}

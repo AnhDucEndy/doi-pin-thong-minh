@@ -24,6 +24,7 @@ import httpx
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--serve',action='store_true')
+    parser.add_argument('--http-smoke',action='store_true',help='Run existing HTTP checks before stopping this isolated fixture')
     parser.add_argument('--http-fixture',help='Ignored connection.json from this tool, test schemas only')
     args=parser.parse_args()
     if args.http_fixture:
@@ -130,6 +131,9 @@ def main():
             connection={'schema':schema,'api':'http://127.0.0.1:8003','passwords':passwords,'device_keys':keys}
             (directory/'connection.json').write_text(json.dumps(connection),encoding='utf-8')
             print(f'{len(checks)} real-process E2E checks Passed; schema={schema}',flush=True)
+            if args.http_smoke:
+                http_checks(directory/'connection.json')
+                assert fingerprints(demo)==before
             if args.serve:
                 print(f'Browser fixture ready; stop by creating .cache/{schema}/STOP',flush=True)
                 while not (directory/'STOP').exists():time.sleep(.5)

@@ -1,0 +1,172 @@
+{
+  "schema": "phase5_test_6dcbc630bfe8",
+  "newer_open": {
+    "event_id": "6a868a49-91c1-44ae-8f44-ca7a2e75d50d",
+    "boot_id": "762d8a03-e667-485c-8ee8-f8f0298cc4a0",
+    "seq": 2,
+    "kind": "SNAPSHOT",
+    "observed_at": "2026-10-25T03:59:40.461276+00:00",
+    "payload": {
+      "slots": [
+        {
+          "compartment_id": "66835bcb-ee68-57c1-8b94-a7f9d9ef1cbd",
+          "door_state": "OPEN",
+          "present": false,
+          "observed_serial": null
+        },
+        {
+          "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B002"
+        },
+        {
+          "compartment_id": "88243559-6a4f-5dc7-9e6e-57b88e28fce4",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B003"
+        },
+        {
+          "compartment_id": "ced8a924-0322-50ec-ab1f-76a7757649cf",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B004"
+        },
+        {
+          "compartment_id": "c59f0d45-d830-58b7-ab64-be863a69ec38",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B005"
+        },
+        {
+          "compartment_id": "b59861b4-932d-5855-9159-af09b9c7e013",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B006"
+        }
+      ],
+      "command_ledger": []
+    }
+  },
+  "older_closed": {
+    "event_id": "99ad8d18-196d-4ef4-86d8-e438706e3e60",
+    "boot_id": "762d8a03-e667-485c-8ee8-f8f0298cc4a0",
+    "seq": 3,
+    "kind": "SNAPSHOT",
+    "observed_at": "2026-10-25T03:59:39.461276+00:00",
+    "payload": {
+      "slots": [
+        {
+          "compartment_id": "66835bcb-ee68-57c1-8b94-a7f9d9ef1cbd",
+          "door_state": "CLOSED",
+          "present": false,
+          "observed_serial": null
+        },
+        {
+          "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B002"
+        },
+        {
+          "compartment_id": "88243559-6a4f-5dc7-9e6e-57b88e28fce4",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B003"
+        },
+        {
+          "compartment_id": "ced8a924-0322-50ec-ab1f-76a7757649cf",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B004"
+        },
+        {
+          "compartment_id": "c59f0d45-d830-58b7-ab64-be863a69ec38",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B005"
+        },
+        {
+          "compartment_id": "b59861b4-932d-5855-9159-af09b9c7e013",
+          "door_state": "CLOSED",
+          "present": true,
+          "observed_serial": "S01-B006"
+        }
+      ],
+      "command_ledger": []
+    }
+  },
+  "accepted": true,
+  "processing_error": null,
+  "received_at": "2026-10-25 03:59:40.530377+00:00",
+  "processed_at": "2026-10-25 03:59:40.535070+00:00",
+  "door_after": "CLOSED",
+  "response_status": 200,
+  "response": {
+    "id": "3dbd88b8-862a-43df-b7c3-eedb2ec41829",
+    "customer_id": "70125423-732b-5896-b084-8aae73a72f08",
+    "station_id": "73fcf82e-ed0c-51d5-8c4b-fc1b5ca17d41",
+    "verified_via": "QR",
+    "state": "RESERVED",
+    "policy_id": "39eb3c76-674e-5aeb-ad8d-7c34eb512ee4",
+    "old_battery_id": "e9ff7522-1cb5-5cd1-994b-fae37bbef3c9",
+    "new_battery_id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+    "return_compartment_id": "66835bcb-ee68-57c1-8b94-a7f9d9ef1cbd",
+    "supply_compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3",
+    "amount_minor": 9000,
+    "currency": "VND",
+    "consented_at": null,
+    "reservation_expires_at": "2026-10-25T04:01:40.591079+00:00",
+    "return_observed_at": null,
+    "pickup_observed_at": null,
+    "review_reason": null,
+    "closed_at": null,
+    "version": 2,
+    "created_at": "2026-10-25T03:59:40.444008+00:00"
+  },
+  "holds": [
+    {
+      "id": "ddde9e51-af65-421d-9122-cbe4951c64fa",
+      "swap_id": "3dbd88b8-862a-43df-b7c3-eedb2ec41829",
+      "battery_id": null,
+      "compartment_id": "66835bcb-ee68-57c1-8b94-a7f9d9ef1cbd",
+      "released_at": null,
+      "created_at": "2026-10-25 03:59:40.157915+00:00"
+    },
+    {
+      "id": "993914c7-c696-42ed-9f1a-1c4dd72e74b7",
+      "swap_id": "3dbd88b8-862a-43df-b7c3-eedb2ec41829",
+      "battery_id": null,
+      "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3",
+      "released_at": null,
+      "created_at": "2026-10-25 03:59:40.157915+00:00"
+    },
+    {
+      "id": "8c5e638d-bb73-4b1b-929b-4d3bf7e80f32",
+      "swap_id": "3dbd88b8-862a-43df-b7c3-eedb2ec41829",
+      "battery_id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+      "compartment_id": null,
+      "released_at": null,
+      "created_at": "2026-10-25 03:59:40.157915+00:00"
+    }
+  ],
+  "commands_count": 0,
+  "event_audit": [
+    {
+      "id": "08371813-b533-49a4-bfe1-420cd21517b6",
+      "actor_type": "DEVICE",
+      "actor_id": "b44c84f0-cef5-5d8d-944d-29f029a38581",
+      "aggregate_type": "device_event",
+      "aggregate_id": "99ad8d18-196d-4ef4-86d8-e438706e3e60",
+      "action": "DEVICE_EVENT_PROCESSED",
+      "before_data": null,
+      "after_data": {
+        "kind": "SNAPSHOT",
+        "error": null,
+        "accepted": true
+      },
+      "correlation_id": "945e6afd-844f-48ff-abdc-bd4a2f3d90fd",
+      "created_at": "2026-10-25 03:59:40.157915+00:00"
+    }
+  ]
+}

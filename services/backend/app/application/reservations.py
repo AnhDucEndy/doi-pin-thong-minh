@@ -204,6 +204,7 @@ def reserve(session, db, actor, identity, version):
     active = assets.active_swaps(session, db, row['station_id'])
     returns = [s for s in slot_rows if s['service_state'] == 'ACTIVE' and s['door_state'] == 'CLOSED'
         and s['observed_present'] is False and s['observed_serial'] is None and assets.fresh(s['observed_at'], now, policy)
+        and assets.current_observation(session, db, device, s)
         and not any(p['compartment_id'] == s['id'] for p in pin_rows)
         and not assets.held(session, db, s['id'])
         and not assets.has_alert(session, db, row['station_id'], s['id'])
