@@ -1,5 +1,7 @@
 # Kế hoạch triển khai hệ thống đổi pin thông minh
 
+Cập nhật Phase6 (25/10/2026): F6 chính thức FR14/UC12/TC14, FR15/UC13/TC15; consent/payment/outbox/provider ledger/callback/query được triển khai tiếp từ29f4352. Không refund/physical swap. Các kết quả cuối ở [PHASE6_IMPLEMENTATION.md](PHASE6_IMPLEMENTATION.md); các phần kế hoạch cũ giữ làm lịch sử, không sửa baseline.
+
 Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–QD09 đã được người dùng duyệt ngày 23/10/2026. Phase 1 đã được giao và triển khai; kết quả nghiệm thu nằm trong IMPLEMENTATION_STATUS.md. Phase 2 – F2 được triển khai theo yêu cầu tiếp theo: chỉ trạm/thiết bị/ngăn (FR03–05, TC03–05). F3 pin/BMS trong cùng nhóm handoff vẫn chưa triển khai. Các phase sau vẫn là kế hoạch.
 
 ## Nguồn và thứ tự ưu tiên

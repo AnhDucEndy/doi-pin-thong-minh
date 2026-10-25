@@ -1,6 +1,14 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1–5: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker, QR một lần, RFID mô phỏng và reservation trước thanh toán theo QD01–QD09. Báo cáo mới: [docs/PHASE5_IMPLEMENTATION.md](docs/PHASE5_IMPLEMENTATION.md). Payment mock và quy trình đổi pin đầy đủ chưa triển khai.
+Phase 1–6: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker, QR/RFID, reservation và Mock Payment theo QD01–QD09. Báo cáo mới: [docs/PHASE6_IMPLEMENTATION.md](docs/PHASE6_IMPLEMENTATION.md). Quy trình đổi pin vật lý đầy đủ chưa triển khai.
+
+## Phase 6 — Thanh toán mô phỏng
+
+Giữ .env, DB và ledger hiện có. Chạy `.venv/Scripts/python.exe tools/init_payment_env.py` để chỉ bổ sung cấu hình còn thiếu; `tools/dev.ps1 migrate` cập nhật grants trên các bảng đã có (head0002, không DDL/migration mới). Không cần cài dependency mới. Mở terminal riêng cho `tools/dev.ps1 payment` (private provider8001), `tools/dev.ps1 payment-worker`; tùy chọn `tools/dev.ps1 payment-callbacks` để gửi callback HTTP từ ledger. Backend, device worker và Frontend giữ lệnh đang dùng.
+
+Customer mở **QR/RFID và giữ tài nguyên**, giữ đủ pin+hai ngăn qua evidence hợp lệ, xem quote rồi **Đồng ý phí và thanh toán mô phỏng**. Phí từ Backend/policy approved là9.000VND. Admin có thể **Đối soát cùng khoản thu** PENDING/UNKNOWN. UNKNOWN giữ tài nguyên và chỉ query cùng provider_key. SUCCEEDED chỉ xác nhận thu phí mô phỏng; chưa mở cửa, giao pin hoặc hoàn tất Swap. Cửa/BMS đổi hoặc cũ sau thu khiến phiên REVIEW_REQUIRED. Không bật kịch bản lỗi trên DB demo; dùng `tools/smoke_phase6.py` để chạy success/failure/mất response/restart trên schema và ledger test riêng.
+
+Giữ `.local/payment/ledger.sqlite3` cùng DB; không xóa ledger để retry. Không có cổng thanh toán thật hoặc API cho Browser chọn kết quả. Các đoạn hướng dẫn phase trước bên dưới là lịch sử nâng cấp, không thay thế báo cáo Phase6.
 
 Từ Phase4 lên Phase5: giữ .env/DB/ledger, chạy `tools/dev.ps1 migrate` để cập nhật grants (không migration cấu trúc mới, head0002), khởi động lại Backend và worker. Frontend thêm qrcode theo package-lock; dùng npm ci trong apps/web nếu dependency mới chưa có. Menu **QR/RFID và giữ tài nguyên** dành Customer/Admin. Reader mô phỏng chạy bằng `.venv/Scripts/python.exe -m simulators.device.authenticate --station S01 --method QR` (hoặc RFID), PYTHONPATH=services/backend; nhập credential ẩn trong terminal, không truyền token qua argv và không đưa Device-Key lên browser. Hướng dẫn demo/test schema riêng trong báo cáo Phase5; không có nút mở cửa/thu phí trước Phase6–7.
 

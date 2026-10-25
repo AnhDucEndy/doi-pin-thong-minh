@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][ValidateSet('database','provision','migrate','seed','backend','frontend','test','validate','status','worker','simulator')][string]$Action)
+param([Parameter(Mandatory=$true)][ValidateSet('database','provision','migrate','seed','backend','frontend','test','validate','status','worker','simulator','payment','payment-worker','payment-callbacks')][string]$Action)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
@@ -30,6 +30,9 @@ try {
         seed { & $pythonExe -m app.seed }
         backend { & $pythonExe -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log --no-proxy-headers }
         worker { & $pythonExe -m app.workers.device }
+        payment { & $pythonExe -m simulators.payment.main }
+        payment-worker { & $pythonExe -m app.workers.payment }
+        payment-callbacks { & $pythonExe -m simulators.payment.callbacks }
         simulator { & $pythonExe -m simulators.device.main }
         frontend { & npm.cmd --prefix apps/web run dev }
         test { & $pythonExe -m pytest -q --basetemp=.cache/pytest-tmp --junitxml=docs/PHASE5_REGRESSION.xml }

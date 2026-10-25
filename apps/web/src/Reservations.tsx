@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import QRCode from 'qrcode';
+import { Payment } from './Payment';
 
 type Api = (path:string, method?:string, data?:unknown, key?:string)=>Promise<any>;
 const closed = ['CANCELLED','COMPLETED','CLOSED_COMPENSATED'];
@@ -38,7 +39,7 @@ export function Reservations({api,role}:{api:Api;role:string}) {
       {s.review_reason&&<p>{s.review_reason}</p>}{s.new_battery_id&&<p>Pin cấp: {s.new_battery_id} · Ngăn nhận: {s.return_compartment_id} · Ngăn cấp: {s.supply_compartment_id}</p>}
       {role==='CUSTOMER'&&s.state==='VERIFIED'&&<button disabled={busy} onClick={()=>void change(s,'reserve')}>Giữ pin và hai ngăn</button>}
       {role==='CUSTOMER'&&['VERIFIED','RESERVED'].includes(s.state)&&<button disabled={busy} onClick={()=>void change(s,'cancel')}>Hủy trước thanh toán</button>}
-      {s.state==='RESERVED'&&<p className="hint">Đã giữ tài nguyên. Chức năng chấp thuận/thu phí thuộc Phase 6.</p>}
+      {(s.state==='RESERVED'||s.consented_at)&&<Payment api={api} role={role} swap={s}/>}
     </article>)}
   </section>;
 }

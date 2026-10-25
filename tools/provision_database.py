@@ -42,6 +42,9 @@ def main():
             cursor.execute(sql.SQL('GRANT INSERT ON {}.battery_telemetry TO doi_pin_runtime').format(sql.Identifier(schema)))
             for name in ('credentials', 'qr_challenges', 'swap_transactions', 'resource_reservations'):
                 cursor.execute(sql.SQL('GRANT INSERT, UPDATE ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
+            for name in ('payments', 'payment_events', 'outbox_messages'):
+                cursor.execute(sql.SQL('GRANT INSERT, UPDATE ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
+            cursor.execute(sql.SQL('GRANT INSERT ON {}.recovery_cases TO doi_pin_runtime').format(sql.Identifier(schema)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

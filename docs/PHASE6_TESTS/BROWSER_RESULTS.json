@@ -1,0 +1,15 @@
+{
+  "scope": "Isolated Phase6 fixture via Vite5174/backend8010",
+  "passed": [
+    "Customer reads SUCCEEDED, Backend fee 9000 VND, receipt, no swap completion claim",
+    "Admin reads same paid intent, no consent or repeated charge action",
+    "Technician has no Customer reservation/payment menu"
+  ],
+  "not_run": [
+    "Browser click consent to provider success",
+    "Browser FAILED/UNKNOWN interactions",
+    "Admin reconcile button interaction"
+  ],
+  "demo_accounts_used": false,
+  "credentials_exposed": false
+}

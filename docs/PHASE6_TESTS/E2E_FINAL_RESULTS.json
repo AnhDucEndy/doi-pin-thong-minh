@@ -1,0 +1,45 @@
+{
+  "result": "Passed",
+  "checks": [
+    "failure: two Backend processes create exactly one intent/outbox",
+    "failure: verified outcome and swap transition, no actuator or second charge",
+    "failure: real authenticated callback delivery, inbox processed, restart no duplicate",
+    "lost-response: two Backend processes create exactly one intent/outbox",
+    "lost-response: worker restart queries same charge, keeps stale assets under review",
+    "lost-response: verified outcome and swap transition, no actuator or second charge",
+    "lost-response: real authenticated callback delivery, inbox processed, restart no duplicate",
+    "success: two Backend processes create exactly one intent/outbox",
+    "success: final state driven by verified HTTP callback before any reconciliation query",
+    "success: verified outcome and swap transition, no actuator or second charge",
+    "success: real authenticated callback delivery, inbox processed, restart no duplicate",
+    "Primary demo financial/assets/evidence unchanged"
+  ],
+  "scenarios": [
+    {
+      "scenario": "failure",
+      "schema": "phase5_test_5c4fd2a5ccb3",
+      "ledger": ".local\\phase6_e2e_03cde7821d\\payment.sqlite3",
+      "logs": ".cache\\phase6_e2e_03cde7821d",
+      "payment_state": "FAILED",
+      "swap_state": "CANCELLED"
+    },
+    {
+      "scenario": "lost-response",
+      "schema": "phase5_test_f026400f27a6",
+      "ledger": ".local\\phase6_e2e_7b5696f346\\payment.sqlite3",
+      "logs": ".cache\\phase6_e2e_7b5696f346",
+      "payment_state": "SUCCEEDED",
+      "swap_state": "REVIEW_REQUIRED"
+    },
+    {
+      "scenario": "success",
+      "schema": "phase5_test_1c2cc6b379cd",
+      "ledger": ".local\\phase6_e2e_fd20dd0989\\payment.sqlite3",
+      "logs": ".cache\\phase6_e2e_fd20dd0989",
+      "payment_state": "SUCCEEDED",
+      "swap_state": "AWAITING_RETURN"
+    }
+  ],
+  "production_modified": false,
+  "test_schemas_and_ledgers_retained": true
+}
