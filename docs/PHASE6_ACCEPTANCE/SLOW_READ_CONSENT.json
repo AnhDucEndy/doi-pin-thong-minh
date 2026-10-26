@@ -1,0 +1,11 @@
+{
+  "http_status": 202,
+  "code": null,
+  "swap": "AWAITING_PAYMENT",
+  "payments": 1,
+  "outbox_messages": 1,
+  "payment_events": 0,
+  "device_commands": 0,
+  "holds": 3,
+  "elapsed_seconds": 16.048406
+}

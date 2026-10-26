@@ -1,0 +1,5 @@
+{
+  "original": "tests/test_phase6_acceptance.py",
+  "sha256": "5e8eebaa5d9535c5ea5ee2b42aba8607236a970eb250db794848c9d483d52dc7",
+  "reason": "User authorized two-stage regression correction; retain original contradictory assertion and all previous results."
+}

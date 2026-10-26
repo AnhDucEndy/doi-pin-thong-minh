@@ -1,0 +1,5 @@
+{
+  "sha256": "240d8472e39d6d6f8343620e12bb90819b7c2547a9f38a2a266e23d51e744668",
+  "source": "tests\\test_phase6_blocker_fix.py",
+  "reason": "Preserve pre-fix characterization before converting to bounded-exhaustion regression."
+}

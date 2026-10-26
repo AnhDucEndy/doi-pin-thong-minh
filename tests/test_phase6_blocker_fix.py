@@ -1,0 +1,220 @@
+"""Regression for P6-A01/A02; historical acceptance evidence is preserved separately."""
+from datetime import timedelta
+from uuid import UUID, uuid4
+from concurrent.futures import ThreadPoolExecutor
+import os
+import subprocess
+import sys
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import select, update, func
+
+from app.application import assets, payments
+from app.application.identity import utcnow, DomainError
+from app.main import create_app
+from app.config import ROOT
+from app.workers import payment as worker
+from test_phase2 import owner
+from test_phase4 import DEVICE, row
+from test_phase6 import book, consent, payment, callback, counts, private_keys, outcome
+from test_phase5 import reserve, verified, race_environment, login
+
+
+@pytest.mark.parametrize('stage', ['consent', 'settlement'])
+@pytest.mark.parametrize('kind', ['door', 'bms', 'both'])
+@pytest.mark.parametrize('offset', [-1, 0, 1])
+def test_freshness_decision_boundary(client, environment, auth, monkeypatch, stage, kind, offset):
+    actor = auth('customer'); swap = book(client, environment, actor)
+    if stage == 'settlement':
+        assert consent(client, actor, swap).status_code == 202
+        assert callback(client, payment(client, actor, swap)).status_code == 202
+    start = utcnow(); aged = start - timedelta(seconds=14)
+    # Age genuine accepted fixture evidence consistently, never fabricate an
+    # accepted flag, serial or lifecycle. Other clocks remain fresh.
+    with owner(client) as (s, db):
+        if kind in ('door', 'both'):
+            e = assets.latest_observation(s, db, DEVICE, UUID(swap['return_compartment_id']))
+            events = db.table('device_events')
+            s.execute(update(events).where(events.c.id == e['id']).values(received_at=aged))
+            slots = db.table('compartments')
+            s.execute(update(slots).where(slots.c.station_id == UUID(swap['station_id'])).values(observed_at=aged))
+        if kind in ('bms', 'both'):
+            readings = db.table('battery_telemetry'); events = db.table('device_events')
+            reading = s.execute(select(readings).where(readings.c.battery_id == UUID(swap['new_battery_id']))
+                .order_by(readings.c.received_at.desc(), readings.c.id.desc()).limit(1)).mappings().one()
+            s.execute(update(readings).where(readings.c.battery_id == UUID(swap['new_battery_id']),
+                readings.c.id != reading['id']).values(received_at=start-timedelta(seconds=60)))
+            s.execute(update(readings).where(readings.c.id == reading['id']).values(received_at=aged, measured_at=aged))
+            s.execute(update(events).where(events.c.id == reading['event_id']).values(received_at=aged, observed_at=aged))
+    clock = [start]
+    original = assets.quality
+    def checked(*a, **k):
+        result = original(*a, **k)
+        assert result, 'Fixture must be eligible before decision-time delay'
+        clock[0] = aged + timedelta(seconds=15, microseconds=offset)
+        return result
+    monkeypatch.setattr(assets, 'quality', checked)
+    monkeypatch.setattr(payments, 'utcnow', lambda: clock[0])
+    if stage == 'consent':
+        response = consent(client, actor, swap)
+        assert response.status_code == (202 if offset <= 0 else 409)
+        assert counts(client.app.state.db)['payments'] == int(offset <= 0)
+    else:
+        worker.process_events(client.app.state.db)
+        assert payment(client, actor, swap)['state'] == 'SUCCEEDED'
+        assert row(client, 'swap_transactions', UUID(swap['id']))['state'] == (
+            'AWAITING_RETURN' if offset <= 0 else 'REVIEW_REQUIRED')
+        assert counts(client.app.state.db)['holds'] == 3
+    assert counts(client.app.state.db)['device_commands'] == 0
+
+
+def two_payments(http, env, actor, db=None):
+    first = book(http, env, actor, db)
+    assert consent(http, actor, first).status_code == 202
+    worker.tick(http.app.state.db, transport=lambda p, query=False: outcome(p, query, 'FAILED'))
+    a = payment(http, actor, first)
+    second = reserve(http, actor, verified(http, env, actor)).json()
+    assert second['state'] == 'RESERVED'
+    assert consent(http, actor, second).status_code == 202
+    return a, second, payment(http, actor, second)
+
+
+def audit_count(db, identity, action):
+    with db.sessions() as s:
+        t = db.table('audit_events')
+        return s.scalar(select(func.count()).select_from(t).where(t.c.aggregate_id == UUID(identity), t.c.action == action))
+
+
+def test_conflicting_then_valid_callback_two_distinct_decisions(client, environment, auth):
+    actor = auth('customer'); a, swap, b = two_payments(client, environment, actor)
+    db = client.app.state.db; event = uuid4().hex
+    assert callback(client, b, provider_event_id=event, provider_reference=a['provider_reference']).status_code == 202
+    worker.process_events(db)
+    assert payment(client, actor, swap)['state'] == 'UNKNOWN'
+    assert row(client, 'swap_transactions', UUID(swap['id']))['state'] == 'REVIEW_REQUIRED'
+    assert counts(db)['holds'] == 3 and counts(db)['device_commands'] == 0
+    assert audit_count(db, b['id'], 'PAYMENT_RESULT_REJECTED') == 1
+    assert callback(client, b, provider_event_id=event, provider_reference=a['provider_reference']).json()['duplicate']
+    worker.process_events(db)
+    assert audit_count(db, b['id'], 'PAYMENT_RESULT_REJECTED') == 1
+    assert callback(client, b).status_code == 202
+    worker.process_events(db); worker.process_events(db)
+    assert payment(client, actor, swap)['state'] == 'SUCCEEDED'
+    assert audit_count(db, b['id'], 'PAYMENT_SUCCEEDED') == 1
+    assert row(client, 'payments', UUID(a['id']))['provider_reference'] == a['provider_reference']
+    with db.sessions() as s:
+        assert all(s.scalars(select(db.table('payment_events').c.processed_at)))
+
+
+def test_two_workers_continue_past_conflict_and_restart(race_environment):
+    env = race_environment
+    with TestClient(create_app(env['settings'])) as http:
+        actor = login(http, env); a, swap, b = two_payments(http, env, actor, env['seed_db'])
+        callback(http, b, provider_reference=a['provider_reference'])
+        callback(http, b)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            list(pool.map(lambda _: worker.process_events(env['seed_db']), range(2)))
+        for _ in range(2):
+            result = subprocess.run([sys.executable, '-m', 'app.workers.payment', '--once'], cwd=ROOT,
+                env=dict(os.environ, DATABASE_SCHEMA=env['settings'].schema), capture_output=True,
+                timeout=20, creationflags=subprocess.CREATE_NO_WINDOW)
+            assert result.returncode == 0
+        assert payment(http, actor, swap)['state'] == 'SUCCEEDED'
+        assert audit_count(env['seed_db'], b['id'], 'PAYMENT_RESULT_REJECTED') == 1
+        assert audit_count(env['seed_db'], b['id'], 'PAYMENT_SUCCEEDED') == 1
+        assert counts(env['seed_db'])['holds'] == 3 and counts(env['seed_db'])['device_commands'] == 0
+
+
+def test_actual_unique_violation_rolls_back_savepoint_before_rejection(client, environment, auth, monkeypatch):
+    actor = auth('customer'); a, swap, b = two_payments(client, environment, actor)
+    callback(client, b)
+    original = payments._apply_result; injected = []
+    def concurrent_legacy_write(s, db, current, p, result, now):
+        if not injected and result['result'] == 'SUCCEEDED':
+            injected.append(True)
+            # Force the actual PostgreSQL UNIQUE failure after the precheck.
+            # This write must also disappear with the failed savepoint.
+            t = db.table('payments')
+            s.execute(update(t).where(t.c.id == UUID(a['id'])).values(provider_reference=result['provider_reference']))
+        return original(s, db, current, p, result, now)
+    monkeypatch.setattr(payments, '_apply_result', concurrent_legacy_write)
+    worker.process_events(client.app.state.db)
+    assert injected and payment(client, actor, swap)['state'] == 'UNKNOWN'
+    assert row(client, 'payments', UUID(a['id']))['provider_reference'] == a['provider_reference']
+    assert audit_count(client.app.state.db, b['id'], 'PAYMENT_RESULT_REJECTED') == 1
+    callback(client, b); worker.process_events(client.app.state.db)
+    assert payment(client, actor, swap)['state'] == 'SUCCEEDED'
+
+
+def test_rejection_and_inbox_ack_rollback_together(client, environment, auth, monkeypatch):
+    actor = auth('customer'); a, swap, b = two_payments(client, environment, actor)
+    callback(client, b, provider_reference=a['provider_reference'])
+    original = payments.record
+    def failing_audit(*args, **kwargs):
+        if args[3] == 'PAYMENT_RESULT_REJECTED': raise DomainError(422, 'TEST_AUDIT_FAILURE')
+        return original(*args, **kwargs)
+    monkeypatch.setattr(payments, 'record', failing_audit)
+    with pytest.raises(DomainError): worker.process_events(client.app.state.db)
+    assert payment(client, actor, swap)['state'] == 'CREATED'
+    assert row(client, 'swap_transactions', UUID(swap['id']))['state'] == 'AWAITING_PAYMENT'
+    with client.app.state.db.sessions() as s:
+        assert s.scalar(select(client.app.state.db.table('payment_events').c.processed_at)) is None
+    monkeypatch.setattr(payments, 'record', original)
+    worker.process_events(client.app.state.db)
+    assert payment(client, actor, swap)['state'] == 'UNKNOWN'
+
+
+def test_query_receipt_conflict_keeps_same_key_until_valid_result(client, environment, auth):
+    actor = auth('customer'); a, swap, b = two_payments(client, environment, actor)
+    start = utcnow(); calls = []
+    def provider(p, query=False):
+        calls.append((query, p['provider_key']))
+        return {**outcome(p), 'provider_reference': a['provider_reference']} if len(calls) == 1 else outcome(p)
+    worker.tick(client.app.state.db, now=start, transport=provider)
+    assert payment(client, actor, swap)['state'] == 'UNKNOWN'
+    assert counts(client.app.state.db)['holds'] == 3
+    worker.tick(client.app.state.db, now=start+timedelta(seconds=31), transport=provider)
+    assert calls == [(False, b['provider_key']), (True, b['provider_key'])]
+    assert payment(client, actor, swap)['state'] == 'SUCCEEDED'
+
+
+@pytest.mark.parametrize('module', ['payment', 'device'])
+def test_persistent_lock_timeout_exhausts_budget_preserving_inbox(race_environment, module):
+    """Persistent contention must stop after bounded retries, retaining durable work."""
+    import json
+    env = race_environment
+    with TestClient(create_app(env['settings'])) as http:
+        actor = login(http, env)
+        swap = book(http, env, actor, env['seed_db'])
+        assert consent(http, actor, swap).status_code == 202
+        p = payment(http, actor, swap)
+        assert callback(http, p).status_code == 202
+        db = env['seed_db']
+        # Same schema/station as worker: not cross-suite namespace collision.
+        with db.sessions.begin() as holder:
+            assets.station_lock(holder, db, UUID(swap['station_id']))
+            process = subprocess.run([sys.executable, '-m', 'app.workers.' + module, '--once'],
+                cwd=ROOT, env=dict(os.environ, DATABASE_SCHEMA=env['settings'].schema),
+                capture_output=True, text=True, encoding='utf-8', errors='replace',
+                timeout=40, creationflags=subprocess.CREATE_NO_WINDOW)
+        assert process.returncode != 0 and 'LockNotAvailable' in process.stderr
+        assert process.stderr.count('worker_lock_retry') == 2
+        assert 'worker_lock_exhausted' in process.stderr
+        assert payment(http, actor, swap)['state'] == 'CREATED'
+        assert counts(db)['holds'] == 3 and counts(db)['device_commands'] == 0
+        with db.sessions() as s:
+            assert s.scalar(select(db.table('payment_events').c.processed_at)) is None
+        restart = subprocess.run([sys.executable, '-m', 'app.workers.payment', '--once'],
+            cwd=ROOT, env=dict(os.environ, DATABASE_SCHEMA=env['settings'].schema),
+            capture_output=True, timeout=40, creationflags=subprocess.CREATE_NO_WINDOW)
+        assert restart.returncode == 0
+        assert payment(http, actor, swap)['state'] == 'SUCCEEDED'
+        assert audit_count(db, p['id'], 'PAYMENT_SUCCEEDED') == 1
+        result = {'module': module, 'schema': env['settings'].schema,
+                  'same_schema_contention': True, 'worker_exit': process.returncode,
+                  'error': 'LockNotAvailable', 'before_manual_restart': 'CREATED',
+                  'unprocessed_callback_preserved': True, 'holds': 3,
+                  'manual_payment_restart_exit': restart.returncode,
+                  'after_manual_restart': 'SUCCEEDED', 'automatic_recovery': False}
+        (ROOT/'docs/PHASE6_FIX'/('LOCK_TIMEOUT_' + module + '.json')).write_text(
+            json.dumps(result, indent=2) + '\n', encoding='utf-8')

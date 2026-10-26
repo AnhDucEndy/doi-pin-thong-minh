@@ -1,0 +1,230 @@
+"""Independent F6 acceptance. PostgreSQL fixtures only; never alter business source.
+
+Assertions derive from BR02/BR07, SM-04 and transaction invariants. In particular,
+elapsed wall time is real in the slow-read probes; no fixture timestamps are moved.
+"""
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
+import json
+import time
+from uuid import UUID, uuid4
+from threading import Event
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import select, func
+
+from app.application import assets, payments
+from app.application.identity import utcnow
+from app.config import ROOT, approved_policy
+from app.main import create_app
+from app.workers import payment as worker
+from test_phase4 import row, send, snapshot_packet, telemetry, DEVICE
+from test_phase5 import verified, reserve, race_environment, login
+from test_phase6 import (book, consent, payment, callback, counts, outcome,
+                         private_keys)
+
+
+def evidence(name, data):
+    out = ROOT / 'docs/PHASE6_ACCEPTANCE'
+    out.mkdir(exist_ok=True)
+    (out / (name + '.json')).write_text(json.dumps(data, default=str, indent=2) + '\n', encoding='utf-8')
+
+
+def state(http, actor, swap):
+    db = http.app.state.db
+    current = row(http, 'swap_transactions', UUID(swap['id']))
+    return {'payment': payment(http, actor, swap)['state'], 'swap': current['state'],
+            'reason': current['review_reason'], **counts(db)}
+
+
+@pytest.mark.parametrize('stage', ['consent', 'settlement'])
+def test_freshness_rechecked_after_slow_resource_read(client, environment, auth, monkeypatch, stage):
+    actor = auth('customer'); swap = book(client, environment, actor)
+    if stage == 'settlement':
+        assert consent(client, actor, swap).status_code == 202
+        assert callback(client, payment(client, actor, swap)).status_code == 202
+    original = assets.get_row
+    delayed = []
+    def slow_read(session, db, name, identity, *args, **kwargs):
+        if name == 'compartments' and not delayed:
+            delayed.append(utcnow())
+            time.sleep(approved_policy()['telemetry_stale_seconds'] + 1)
+        return original(session, db, name, identity, *args, **kwargs)
+    monkeypatch.setattr(assets, 'get_row', slow_read)
+    if stage == 'consent':
+        response = consent(client, actor, swap)
+        actual = {'http_status': response.status_code, 'code': response.json().get('code'),
+                  'swap': row(client, 'swap_transactions', UUID(swap['id']))['state'],
+                  **counts(client.app.state.db)}
+    else:
+        worker.process_events(client.app.state.db)
+        actual = state(client, actor, swap)
+    actual['elapsed_seconds'] = (utcnow() - delayed[0]).total_seconds()
+    evidence('SLOW_READ_' + stage.upper(), actual)
+    if stage == 'consent':
+        assert response.status_code == 409 and actual['payments'] == 0, actual
+    else:
+        assert actual['payment'] == 'SUCCEEDED' and actual['swap'] == 'REVIEW_REQUIRED', actual
+        assert actual['holds'] == 3 and actual['device_commands'] == 0
+
+
+@pytest.mark.parametrize('kind', ['bms', 'return_door', 'supply_door'])
+def test_new_bad_evidence_and_old_good_replay_after_consent(client, environment, auth, kind):
+    actor = auth('customer'); swap = book(client, environment, actor)
+    assert consent(client, actor, swap).status_code == 202
+    boot = str(row(client, 'devices', DEVICE)['boot_id'])
+    if kind == 'bms':
+        bad = telemetry(boot, 2, soc=10)
+        old = telemetry(boot, 3, soc=90)
+    else:
+        bad = snapshot_packet(boot, 2)
+        index = 0 if kind == 'return_door' else 1
+        bad['payload']['slots'][index]['door_state'] = 'OPEN'
+        old = snapshot_packet(boot, 3)
+    from datetime import datetime
+    old['observed_at'] = (datetime.fromisoformat(bad['observed_at']) - timedelta(seconds=1)).isoformat()
+    assert send(client, environment, bad).status_code == 202
+    assert row(client, 'device_events', UUID(bad['event_id']))['accepted'] is True
+    assert send(client, environment, old).status_code == 202
+    assert row(client, 'device_events', UUID(old['event_id']))['processing_error'] == 'EVENT_OUT_OF_ORDER'
+    p = payment(client, actor, swap)
+    identity = uuid4().hex
+    assert callback(client, p, provider_event_id=identity).status_code == 202
+    worker.process_events(client.app.state.db)
+    before = state(client, actor, swap)
+    assert before['payment'] == 'SUCCEEDED' and before['swap'] == 'REVIEW_REQUIRED'
+    assert before['holds'] == 3 and before['device_commands'] == 0
+    assert callback(client, p, provider_event_id=identity).json()['duplicate'] is True
+    worker.process_events(client.app.state.db)
+    assert state(client, actor, swap) == before
+
+
+def test_inbox_duplicate_payload_conflict_before_processing(client, environment, auth):
+    actor = auth('customer'); swap = book(client, environment, actor)
+    consent(client, actor, swap); p = payment(client, actor, swap); event = uuid4().hex
+    assert callback(client, p, provider_event_id=event).status_code == 202
+    assert callback(client, p, provider_event_id=event).json()['duplicate'] is True
+    assert callback(client, p, provider_event_id=event, result='FAILED').json()['code'] == 'EVENT_ID_CONFLICT'
+    assert payment(client, actor, swap)['state'] == 'CREATED'
+    worker.process_events(client.app.state.db)
+    before = state(client, actor, swap)
+    worker.process_events(client.app.state.db)
+    assert state(client, actor, swap) == before
+    assert before['payment_events'] == 1 and before['payment'] == 'SUCCEEDED'
+
+
+def test_two_callback_consumers_apply_one_terminal_transition(race_environment):
+    env = race_environment
+    with TestClient(create_app(env['settings'])) as http:
+        actor = login(http, env); swap = book(http, env, actor, env['seed_db'])
+        consent(http, actor, swap); p = payment(http, actor, swap); event = uuid4().hex
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            replies = list(pool.map(lambda _: callback(http, p, provider_event_id=event), range(2)))
+        assert sorted(r.json()['duplicate'] for r in replies) == [False, True]
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            list(pool.map(lambda _: worker.process_events(env['seed_db']), range(2)))
+        db = env['seed_db']
+        with db.sessions() as s:
+            a = db.table('audit_events')
+            assert s.scalar(select(func.count()).select_from(a).where(
+                a.c.aggregate_id == UUID(p['id']), a.c.action == 'PAYMENT_SUCCEEDED')) == 1
+        assert payment(http, actor, swap)['state'] == 'SUCCEEDED'
+        assert counts(db)['holds'] == 3 and counts(db)['device_commands'] == 0
+
+
+def test_duplicate_provider_reference_cannot_poison_worker(race_environment):
+    import os
+    import subprocess
+    import sys
+    env = race_environment
+    # Separate commits give inbox events their true arrival order and allow a real
+    # worker subprocess to read the fault. This schema is retained as evidence.
+    with TestClient(create_app(env['settings'])) as client:
+        actor = login(client, env); first = book(client, env, actor, env['seed_db'])
+        consent(client, actor, first)
+        worker.tick(client.app.state.db, transport=lambda p, query=False: outcome(p, query, 'FAILED'))
+        settled = payment(client, actor, first)
+        second_response = reserve(client, actor, verified(client, env, actor))
+        assert second_response.status_code == 200 and second_response.json()['state'] == 'RESERVED'
+        second = second_response.json(); assert consent(client, actor, second).status_code == 202
+        p = payment(client, actor, second)
+        response = callback(client, p, provider_reference=settled['provider_reference'])
+        assert callback(client, p).status_code == 202
+        errors = []
+        for _ in range(2):
+            try:
+                worker.process_events(client.app.state.db)
+            except Exception as exc:
+                errors.append(type(exc).__name__)
+        exits = []
+        for attempt in range(2):
+            process = subprocess.run([sys.executable, '-m', 'app.workers.payment', '--once'],
+                cwd=ROOT, env=dict(os.environ, DATABASE_SCHEMA=env['settings'].schema),
+                capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=20,
+                creationflags=subprocess.CREATE_NO_WINDOW)
+            exits.append(process.returncode)
+            out = ROOT / 'docs/PHASE6_ACCEPTANCE'; out.mkdir(exist_ok=True)
+            (out / f'POISON_WORKER_{attempt}.log').write_text(process.stdout + process.stderr, encoding='utf-8')
+        actual = {'schema': env['settings'].schema, 'http_status': response.status_code,
+                  'worker_errors': errors, 'worker_process_exit_codes': exits,
+                  'first_payment': payment(client, actor, first)['state'], **state(client, actor, second)}
+        with client.app.state.db.sessions() as s:
+            events = client.app.state.db.table('payment_events')
+            actual['unprocessed_events'] = s.scalar(select(func.count()).select_from(events).where(events.c.processed_at.is_(None)))
+        evidence('REFERENCE_COLLISION', actual)
+        assert not errors and exits == [0, 0], actual
+        assert actual['payment'] != 'SUCCEEDED'
+
+
+@pytest.mark.parametrize('result', ['PENDING', 'SUCCEEDED', 'FAILED'])
+def test_callback_queued_before_dispatch_is_not_a_second_charge(client, environment, auth, result):
+    actor = auth('customer'); swap = book(client, environment, actor)
+    consent(client, actor, swap); p = payment(client, actor, swap)
+    callback(client, p, result=result)
+    calls = []
+    def query(payload, query=False):
+        calls.append(query)
+        return outcome(payload, query, result)
+    worker.tick(client.app.state.db, transport=query)
+    assert all(calls), 'A provider callback already proves dispatch: only same-key query is allowed'
+    assert counts(client.app.state.db)['payments'] == 1
+    assert counts(client.app.state.db)['device_commands'] == 0
+
+
+@pytest.mark.parametrize('kind', ['door', 'bms'])
+def test_callback_waits_for_committing_bad_device_evidence(race_environment, monkeypatch, kind):
+    from app.workers import device
+    env = race_environment
+    with TestClient(create_app(env['settings'])) as http:
+        actor = login(http, env); swap = book(http, env, actor, env['seed_db'])
+        assert consent(http, actor, swap).status_code == 202
+        p = payment(http, actor, swap)
+        boot = str(row(http, 'devices', DEVICE)['boot_id'])
+        event = telemetry(boot, 2, soc=10) if kind == 'bms' else snapshot_packet(boot, 2)
+        if kind == 'door': event['payload']['slots'][0]['door_state'] = 'OPEN'
+        assert send(http, env, event, process_it=False).status_code == 202
+        assert callback(http, p).status_code == 202
+        acquired, release = Event(), Event()
+        original = device.station_locks
+        def gate(*args, **kwargs):
+            original(*args, **kwargs)
+            acquired.set()
+            assert release.wait(4)
+        monkeypatch.setattr(device, 'station_locks', gate)
+        def update_device():
+            with env['seed_db'].sessions.begin() as session:
+                device.process_one(session, env['seed_db'], UUID(event['event_id']), approved_policy())
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            updating = pool.submit(update_device)
+            assert acquired.wait(4)
+            settling = pool.submit(worker.process_events, env['seed_db'])
+            try:
+                time.sleep(.15)
+                assert not settling.done(), 'Settlement must wait for station evidence transaction'
+            finally:
+                release.set()
+            updating.result(); settling.result()
+        actual = state(http, actor, swap)
+        assert actual['payment'] == 'SUCCEEDED' and actual['swap'] == 'REVIEW_REQUIRED'
+        assert actual['holds'] == 3 and actual['device_commands'] == 0

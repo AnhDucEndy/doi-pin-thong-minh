@@ -5,6 +5,7 @@ from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import insert, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.exc import IntegrityError
 
 from app.application import assets, reservations
 from app.application.identity import DomainError, utcnow
@@ -63,13 +64,27 @@ def resources_valid(session, db, swap, now):
     receiving, supplying = slots[ids[0]], slots[ids[1]]
     at_return = session.execute(select(db.table('batteries').c.id).where(
         db.table('batteries').c.compartment_id == receiving['id'])).first()
-    return bool(not at_return and receiving['observed_present'] is False and receiving['observed_serial'] is None
+    valid = bool(not at_return and receiving['observed_present'] is False and receiving['observed_serial'] is None
         and old['location_kind'] == 'CUSTOMER' and old['holder_user_id'] == swap['customer_id']
         and old['family'] == policy['battery_family'] and new['location_kind'] == 'COMPARTMENT'
         and new['compartment_id'] == supplying['id'] and new['holder_user_id'] is None
         and supplying['observed_present'] is True and supplying['observed_serial'] == new['serial']
         and not assets.has_alert(session, db, station['id'], supplying['id'], new['id'])
         and assets.quality(session, db, new, device, now, policy))
+    if not valid:
+        return False
+    # Station/resource locks stabilize evidence, not the clock. Read the BMS
+    # timestamps under those same locks, then sample time AFTER the final DB
+    # read. Recheck both doors, heartbeat and both BMS clocks at this decision
+    # point; do not extend receipt TTL or replace physical measurement time.
+    readings = db.table('battery_telemetry')
+    reading = session.execute(select(readings.c.received_at, readings.c.measured_at)
+        .where(readings.c.battery_id == new['id'])
+        .order_by(readings.c.received_at.desc(), readings.c.id.desc()).limit(1)).mappings().first()
+    decision_at = utcnow()
+    return bool(reading and all(assets.fresh(value, decision_at, policy) for value in (
+        device['last_received_at'], receiving['observed_at'], supplying['observed_at'],
+        reading['received_at'], reading['measured_at'])))
 
 
 def consent(session, db, actor, identity, body):
@@ -132,6 +147,43 @@ def receive(session, db, body):
 
 
 def apply_result(session, db, swap, payment, result, now):
+    """Serialize receipt ownership across stations and isolate permanent conflicts.
+
+    The caller commits this disposition/audit with inbox processed_at (or the
+    outbox attempt). A rejected receipt is not a successful settlement. Unknown
+    outcomes retain holds and may only query the existing provider key.
+    """
+    reference = result.get('provider_reference')
+    if reference and result.get('result') in ('PENDING', 'SUCCEEDED', 'FAILED'):
+        advisory_lock(session, 'payment-receipt:' + reference)
+        table = db.table('payments')
+        other = session.scalar(select(table.c.id).where(table.c.provider_reference == reference,
+                                                       table.c.id != payment['id']))
+        if other:
+            reject_receipt(session, db, swap, payment, result, now)
+            return
+    try:
+        # A legacy writer not taking the receipt lock can still race us. Keep
+        # the UNIQUE constraint; roll back the failed SQL/savepoint BEFORE any
+        # durable rejection write, leaving the outer inbox transaction usable.
+        with session.begin_nested():
+            _apply_result(session, db, swap, payment, result, now)
+    except IntegrityError as error:
+        if getattr(getattr(error.orig, 'diag', None), 'constraint_name', None) != 'payments_provider_reference_key':
+            raise  # Do not silently acknowledge unrelated DB/programming faults.
+        reject_receipt(session, db, swap, payment, result, now)
+
+
+def reject_receipt(session, db, swap, payment, result, now):
+    if payment['state'] not in ('SUCCEEDED', 'FAILED'):
+        _apply_result(session, db, swap, payment, {'result': 'UNKNOWN'}, now)
+    record(session, db, payment, 'PAYMENT_RESULT_REJECTED', {
+        'code': 'PAYMENT_RESULT_MISMATCH', 'reason': 'PROVIDER_REFERENCE_CONFLICT',
+        'provider_event_id': result.get('provider_event_id'),
+        'provider_reference': result.get('provider_reference'), 'received_result': result.get('result')})
+
+
+def _apply_result(session, db, swap, payment, result, now):
     state = result['result']
     if state not in ('PENDING', 'SUCCEEDED', 'FAILED'):
         state = 'UNKNOWN'

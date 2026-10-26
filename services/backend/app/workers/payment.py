@@ -14,6 +14,7 @@ from app.application import assets, payments
 from app.application.identity import utcnow
 from app.config import ConfigNotReady, Settings
 from app.infrastructure.db import Database
+from app.workers.retry import run_tick
 
 
 def provider_request(payload, query=False):
@@ -95,7 +96,7 @@ def main():
     db = Database(Settings.from_env())
     try:
         while True:
-            tick(db)
+            run_tick(lambda: tick(db), 'payment')
             if args.once:
                 break
             time.sleep(1)

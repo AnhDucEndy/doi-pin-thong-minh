@@ -1,0 +1,13 @@
+{
+  "module": "device",
+  "schema": "phase5_test_7886b8ff7f98",
+  "same_schema_contention": true,
+  "worker_exit": 1,
+  "error": "LockNotAvailable",
+  "before_manual_restart": "CREATED",
+  "unprocessed_callback_preserved": true,
+  "holds": 3,
+  "manual_payment_restart_exit": 0,
+  "after_manual_restart": "SUCCEEDED",
+  "automatic_recovery": false
+}

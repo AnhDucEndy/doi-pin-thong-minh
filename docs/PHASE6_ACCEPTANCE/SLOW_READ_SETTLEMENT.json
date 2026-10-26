@@ -1,0 +1,11 @@
+{
+  "payment": "SUCCEEDED",
+  "swap": "AWAITING_RETURN",
+  "reason": null,
+  "payments": 1,
+  "outbox_messages": 1,
+  "payment_events": 1,
+  "device_commands": 0,
+  "holds": 3,
+  "elapsed_seconds": 16.045994
+}

@@ -1,1 +1,4 @@
 doi-pin-giai-doan-2/** -text
+# Preserve exact bytes of historical acceptance evidence.
+docs/PHASE6_FIX/HISTORICAL_P6_A02/test_phase6_acceptance.py.txt -text -diff
+docs/PHASE6_FIX/HISTORICAL_P6_A03/test_phase6_blocker_fix.py.txt -text -diff

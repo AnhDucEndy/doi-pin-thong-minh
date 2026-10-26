@@ -10,6 +10,7 @@ from app.application.device import audit, check_scope, TERMINAL
 from app.application.identity import DomainError, utcnow
 from app.config import Settings, approved_policy
 from app.infrastructure.db import Database
+from app.workers.retry import run_tick
 
 
 def review(session,db,station_id,reason):
@@ -238,7 +239,7 @@ def main():
     db=Database(Settings.from_env())
     try:
         while True:
-            tick(db,approved_policy())
+            run_tick(lambda: tick(db,approved_policy()), 'device')
             if args.once:break
             time.sleep(1)
     finally:db.engine.dispose()
