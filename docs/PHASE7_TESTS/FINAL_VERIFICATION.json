@@ -1,0 +1,88 @@
+{
+  "pytest": {
+    "run": "full_02",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "393",
+      "time": "444.406",
+      "timestamp": "2026-10-27T22:46:41.443539+07:00",
+      "hostname": "DESKTOP-NL92CML"
+    },
+    "phase7_cases": 18,
+    "prior_phase1_6_cases": 375,
+    "sha256": "cab86723b94653213797ecf6eec1b63698010763d7a80582342ae332ac06e8d3"
+  },
+  "browser": {
+    "date": "2026-10-28",
+    "fixture_only": true,
+    "frontend": "http://127.0.0.1:5174",
+    "backend": "http://127.0.0.1:8020",
+    "passed": [
+      "Customer login, verified Payment and COMPLETED with both custody timestamps",
+      "Admin reads completed session without manual complete action",
+      "Technician has no Swap/Reservation menu",
+      "Live AWAITING_PICKUP to COMPLETED after Backend evidence",
+      "AWAITING_RETURN despite Payment SUCCEEDED and ACK",
+      "Physical timeout to REVIEW_REQUIRED/COMMAND_TIMEOUT, no custody completion",
+      "Wrong-return scenario remains REVIEW_REQUIRED; no false completion"
+    ],
+    "not_run": [
+      "Specific wrong-return message before later DEVICE_OFFLINE replaced current reason",
+      "Full QR issuance/reserve/consent by Browser in this run; created by fixture HTTP",
+      "Mobile layouts and full accessibility audit"
+    ],
+    "evidence": {
+      "admin_completed.png": "9b1a2ad2c3b6ac2224834690f7127f694a38012090919892f054c8cb2e5268a3",
+      "admin_completed.txt": "de66f579b2011117ee9256df9cd44e84db006682165adc2b44bf976ba7e8584f",
+      "customer_ack_timeout.png": "919f899166bfc13f6b003b00ec36fa4ef7c03bd85af69fac31d2499f380303f5",
+      "customer_ack_timeout.txt": "b45bbec8d608e59813d0c0e24bd612c925368b1054dd72c0bbff62932cdb9351",
+      "customer_awaiting_return.png": "09001fc5f82df046ba582c83f393b2f073b8ad0897aa4ebb20365458c4d33d9e",
+      "customer_awaiting_return.txt": "5c8fe6418035c8540635feb7ea9f8fec007e0774e72afc73e0bade2cad4b3b22",
+      "customer_completed.png": "2397b0203fd9baeb46a663f89411c9b0d25ec9212c0bb2167fa61648263bbe0e",
+      "customer_completed.txt": "ca6d56172bf45360c5787d666090e2f662a7576c7f99246eb3a252c871a7f8ed",
+      "customer_live.txt": "b9cb1bf1e6b0b53a4156dac9292f612e936cc9d84f29a753ec4c9c7d42cbaa12",
+      "customer_live_completed.png": "70666dcb9ce68ef725aa6afa3c7fac8f1f0834654ba4dfd285a11055fcb4a97e",
+      "customer_live_completed.txt": "683f1f2ee239407f3cb79311236dffe693aeb1d876d1a8ddca5b2132f57768f2",
+      "customer_wrong_return.png": "b73ee1db8e39dead45bd33ddfd3738ba0c9bbb7d207b2e9684141994c295d06a",
+      "customer_wrong_return.txt": "2dabdae105991b817bee24160fb762613ced8c02c785f093c4edfc5b59bd8bba",
+      "technician_scope.png": "c9abe296ea38bed2c6ec8fdfbf4d3dbee7098e3d8ceeda32e11a9644b29e8191",
+      "technician_scope.txt": "4f136d1f49a2b94e02d619401456ba08d992e79be663a7755b88856607d5bf22"
+    }
+  },
+  "e2e": {
+    "payment_regression_01/reports/PHASE6_TESTS/E2E_FINAL_RESULTS.json": {
+      "result": "Passed",
+      "checks": 12,
+      "sha256": "371d16a16cea652cc459edb0109aa2c053b5f4c207efe85b6e4a7998cb0af4a6"
+    },
+    "receipt_regression_01/reports/PHASE6_FIX/RECEIPT_E2E.json": {
+      "result": "Passed",
+      "checks": 5,
+      "sha256": "26fd447df6dbc7efad2d01e354ae95e8d8be7aca77871ba2c96b0976dc551ae9"
+    },
+    "iot_regression_01/reports/PHASE4_E2E_RESULTS.json": {
+      "result": "Passed",
+      "checks": 8,
+      "sha256": "78e962ea6cba956db2b189391ed47fc222c4d8b6fe8cd0a883b251a1e8344764"
+    },
+    "reservation_http_01/reports/PHASE5_E2E_RESULTS.json": {
+      "result": "Passed",
+      "checks": 8,
+      "sha256": "1a191a6c64cce8a1579fca5975f69198d4f5607b3e476a562f333eac87641314"
+    },
+    "reservation_http_01/reports/PHASE5_HTTP_SMOKE_RESULTS.json": {
+      "result": "Passed",
+      "checks": 28,
+      "sha256": "34bf1c63f2250c9dd7072328ee9a19a3f429d11239b3ebb9b3bcb6b589d1fa95"
+    },
+    "final_e2e_05/reports/PHASE7_TESTS/E2E_RESULTS.json": {
+      "result": "Passed",
+      "checks": 17,
+      "sha256": "ec0b79300061f41a2f5de7d833c28c8438df5024bd9da0624ef0f352c83dcb95"
+    }
+  },
+  "scope": "Phase7; no Phase8; isolated PostgreSQL schemas, retained runtime ledgers"
+}

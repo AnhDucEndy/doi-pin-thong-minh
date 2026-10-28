@@ -1,5 +1,7 @@
 # Trạng thái triển khai hệ thống đổi pin thông minh
 
+**28/10/2026 — Phase7 đạt cổng kỹ thuật, sẵn sàng nghiệm thu độc lập.** Full XML393Passed/0Failed/0Errors/0Skipped =375Phase1–6+18Phase7; targeted22Passed; SwapE2E17checks; hồi quy chạy mới Payment12/receipt5/IoT8/Reservation8/HTTP28Passed. Validator/hash/dependencies/TypeScript/VitePassed. Browser thật trên fixture kiểm chờ trả/chờ lấy/hoàn tất/ACK-timeout-review và quyền menu Admin/Technician; full QR→consent bằng UI, mobile, thông báo riêng sai pin trước offline còn NotRun. Custody/inbox/audit nguyên tử, giữ tài nguyên khi review, timeout15/60s và freshness15s theo phê duyệt. Không migration/dependency mới; không sửa baseline/demo/ledger, không Phase8/push. Source/tests/runner/docs sẽ commit theo yêu cầu sau staged review. Xem [PHASE7_IMPLEMENTATION.md](PHASE7_IMPLEMENTATION.md) và tổng hợp/hash PHASE7_TESTS/FINAL_VERIFICATION.json. Các kết luận Phase6 trở về trước bên dưới là lịch sử.
+
 Cập nhật: 26/10/2026 (Asia/Bangkok).
 
 **Người dùng đã chấp thuận nghiệm thu bản sửa Phase6 trong phạm vi kỹ thuật đã kiểm chứng và yêu cầu tạo commit riêng.** P6-A01/A02/A03 đã đạt kiểm chứng; 375 pytest/0Failed, targeted12, E2E12/5/8/8 và HTTP28 Passed. Browser NotRun, giới hạn retry cạn vẫn được giữ rõ. Bản gốc P6-A02 và bằng chứng trước sửa được bảo toàn; ca regression hiện hành vẫn chạy hai thời điểm, không skip/xfail. Xem [bằng chứng chọn commit](PHASE6_FIX/COMMIT_EVIDENCE.md). Không tự push hoặc chuyển Phase7; các trạng thái chờ duyệt bên dưới là lịch sử.

@@ -30,6 +30,8 @@ class Simulator:
         self.conn=sqlite3.connect(path);self.conn.row_factory=sqlite3.Row
         self.conn.executescript('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; CREATE TABLE IF NOT EXISTS slots(id TEXT PRIMARY KEY,body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS commands(id TEXT PRIMARY KEY,hash TEXT NOT NULL,status TEXT NOT NULL,effects INTEGER NOT NULL,body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY,body TEXT NOT NULL,sent INTEGER NOT NULL DEFAULT 0,receipt TEXT);')
         self.code,self.scenario=code,scenario;self.boot=str(uuid4());self.seq=0;self.policy=approved_policy()
+        prior=self.conn.execute('SELECT body FROM events ORDER BY rowid DESC LIMIT 1').fetchone()
+        self.last_observed=datetime.fromisoformat(json.loads(prior['body'])['observed_at']) if prior else None
         self.http=httpx.Client(base_url=base_url,headers={'X-Device-Key':key},timeout=10,transport=transport,trust_env=False)
         for slot in range(1,7):
             body={'compartment_id':str(demo_id(f'{code}:slot:{slot}')),'door_state':'CLOSED','present':slot>1,
@@ -43,9 +45,18 @@ class Simulator:
     def save_slot(self,slot):
         self.conn.execute('UPDATE slots SET body=? WHERE id=?',(json.dumps(slot),slot['compartment_id']));self.conn.commit()
     def emit(self,kind,payload,**references):
-        body={'event_id':str(uuid4()),'boot_id':self.boot,'seq':self.seq,'kind':kind,'observed_at':now(),'payload':payload,**references}
+        # Windows clock resolution can give presence and close the same instant.
+        # Wait for a real later sample; never invent a future measurement time or
+        # weaken the backend's strict ordering rule. Clock rollback fails closed.
+        deadline=time.monotonic()+1
+        observed=now()
+        while self.last_observed and datetime.fromisoformat(observed)<=self.last_observed:
+            if time.monotonic()>=deadline:raise RuntimeError('SIMULATOR_CLOCK_NOT_ADVANCING')
+            time.sleep(.001);observed=now()
+        body={'event_id':str(uuid4()),'boot_id':self.boot,'seq':self.seq,'kind':kind,'observed_at':observed,'payload':payload,**references}
         self.seq+=1
         self.conn.execute('INSERT INTO events(id,body) VALUES (?,?)',(body['event_id'],json.dumps(body)));self.conn.commit()
+        self.last_observed=datetime.fromisoformat(observed)
         return body
     def snapshot(self):
         slots=[{k:v for k,v in s.items() if k in ('compartment_id','door_state','present','observed_serial')} for s in self.slots()]
@@ -115,6 +126,8 @@ class Simulator:
         self.emit('DOOR',observation(),**refs)
         slot['present']=command['kind']=='OPEN_RETURN'
         slot['observed_serial']=command['payload']['expected_serial'] if slot['present'] else None
+        if self.scenario=='wrong-return' and command['kind']=='OPEN_RETURN':
+            slot['observed_serial']='SIMULATED-WRONG-BATTERY'
         slot['battery_id']=command['payload'].get('expected_battery_id') if slot['present'] else None
         self.save_slot(slot);self.emit('PRESENCE',observation(),**refs)
         slot['door_state']='CLOSED';slot['lock_released']=False;self.save_slot(slot);self.emit('DOOR',observation(),**refs)
@@ -146,7 +159,7 @@ def main():
     parser.add_argument('--station',choices=['S01','S02','both'],default='both')
     parser.add_argument('--url',default='http://127.0.0.1:8000')
     parser.add_argument('--ledger-dir',default=str(ROOT/'.local/device'))
-    parser.add_argument('--scenario',choices=['normal','low-soc','low-soh','hot','missing-bms','fault','ack-only','nack','physical','crash-after-ledger','offline'],default='normal')
+    parser.add_argument('--scenario',choices=['normal','low-soc','low-soh','hot','missing-bms','fault','ack-only','nack','physical','wrong-return','crash-after-ledger','offline'],default='normal')
     parser.add_argument('--cycles',type=int,default=0,help='0 means run until Ctrl+C')
     parser.add_argument('--inspect',action='store_true',help='Read local physical/command ledger without sending events')
     args=parser.parse_args();codes=['S01','S02'] if args.station=='both' else [args.station]

@@ -104,7 +104,8 @@ def main():
         nack,nack_swap=fixture_command('S02',True)
         wait(lambda:row('device_commands',nack['id'])['state']=='REJECTED','Real NACK lifecycle')
         checks.append('Real NACK: REJECTED, reservation preserved')
-        wait(lambda:row('device_commands',ack['id'])['state']=='UNKNOWN','ACK without evidence times out',20)
+        wait(lambda:row('device_commands',ack['id'])['state']=='UNKNOWN','ACK without evidence times out',
+            approved_policy()['physical_step_timeout_seconds']+10)
         assert row('swap_transactions',swap)['state']=='REVIEW_REQUIRED'
         checks.append('Real deadline: ACK without physical evidence -> UNKNOWN / REVIEW_REQUIRED')
         stop(first);stop(second);print('Simulators stopped; waiting for approved 15-second offline threshold',flush=True)

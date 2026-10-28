@@ -13,7 +13,10 @@ sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 label, mode, *args = sys.argv[1:]
 if not label.replace('_', '').isalnum() or mode not in ('pytest', 'script'):
     raise ValueError('Use LABEL pytest [args] or LABEL script path [args]')
-OUT = ROOT/'docs/PHASE6_FIX'/label
+report_root = os.environ.get('TEST_REPORT_ROOT', 'PHASE6_FIX')
+if report_root not in ('PHASE6_FIX', 'PHASE7_TESTS'):
+    raise ValueError('Unsupported report directory')
+OUT = ROOT/'docs'/report_root/label
 OUT.mkdir(parents=True, exist_ok=False)
 temp = ROOT/'.cache'/('p6-fix-'+uuid4().hex[:10]); temp.mkdir()
 os.environ.update(PYTHONPATH=str(ROOT/'services/backend'), PYTHONIOENCODING='utf-8', TEMP=str(temp), TMP=str(temp))

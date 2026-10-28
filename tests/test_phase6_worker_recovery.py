@@ -74,7 +74,21 @@ def test_payment_and_device_processes_recover_same_schema(race_environment, tmp_
             assert payment(http, actor, swap)['state'] == 'SUCCEEDED'
             assert row(http, 'device_events', UUID(event['event_id']))['accepted'] is True
             assert audit_count(db, p['id'], 'PAYMENT_SUCCEEDED') == 1
-            assert counts(db)['holds'] == 3 and counts(db)['device_commands'] == 0
+            assert counts(db)['holds'] == 3
+            # Phase7 now schedules OPEN_RETURN after verified settlement. Depending
+            # on which --once worker acquires the station lock first, it is either
+            # queued here or left for the next tick. Neither order proves custody.
+            with db.sessions() as s:
+                commands = list(s.execute(select(db.table('device_commands'))).mappings())
+            assert len(commands) <= 1
+            for command in commands:
+                assert command['swap_id'] == UUID(swap['id']) and command['kind'] == 'OPEN_RETURN'
+                assert command['state'] == 'QUEUED' and command['evidence_event_id'] is None
+            current = row(http, 'swap_transactions', UUID(swap['id']))
+            assert current['state'] == 'AWAITING_RETURN'
+            assert current['return_observed_at'] is None and current['pickup_observed_at'] is None
+            assert row(http, 'batteries', current['old_battery_id'])['holder_user_id'] == current['customer_id']
+            assert row(http, 'batteries', current['new_battery_id'])['compartment_id'] == current['supply_compartment_id']
             assert callback(http, p).status_code == 202
             worker.process_events(db)
             assert audit_count(db, p['id'], 'PAYMENT_SUCCEEDED') == 1

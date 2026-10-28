@@ -1,6 +1,12 @@
 # Hệ thống quản lý trạm đổi pin thông minh
 
-Phase 1–6: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker, QR/RFID, reservation và Mock Payment theo QD01–QD09. Báo cáo mới: [docs/PHASE6_IMPLEMENTATION.md](docs/PHASE6_IMPLEMENTATION.md). Quy trình đổi pin vật lý đầy đủ chưa triển khai.
+Phase 1–7: FastAPI, React/TypeScript/Vite, PostgreSQL 17, Authentication/RBAC, trạm/ngăn, Battery/BMS, HTTP device inbox/worker, QR/RFID, reservation, Mock Payment và quy trình bàn giao pin mô phỏng theo QD01–QD09. Báo cáo và kết quả kiểm chứng: [docs/PHASE7_IMPLEMENTATION.md](docs/PHASE7_IMPLEMENTATION.md). Chưa triển khai Phase8 hoặc phần cứng/thanh toán thật.
+
+## Phase 7 — Bàn giao pin mô phỏng
+
+Device worker hiện điều phối OPEN_RETURN/OPEN_SUPPLY từ phiên đã thu phí và bằng chứng thiết bị. Không có API/nút mở cửa tự do. Màn hình QR/RFID và giữ tài nguyên hiển thị tiến trình từ Backend; chỉ COMPLETED mới là hoàn tất. ACK chỉ xác nhận nhận lệnh.
+
+Simulator `normal` chỉ ACK; để chủ động demo bàn giao, chạy `python -m simulators.device.main --station both --scenario physical` trong `.venv` với `PYTHONPATH=services/backend`. Lệnh này làm thay đổi dữ liệu mô phỏng theo phiên đang hoạt động; không chạy vào DB demo chỉ để thử lỗi. Dùng `tools/smoke_phase7.py` cho E2E với schema/ledger test riêng. Hạn nhận/ACK15s, bằng chứng vật lý sau ACK tối đa60s từ lúc tạo lệnh, freshness15s. Lỗi/timeout giữ tài nguyên ở REVIEW_REQUIRED; không tự refund/cấp thêm. Không migration/dependency mới; giữ nguyên DB và `.local`.
 
 ## Phase 6 — Thanh toán mô phỏng
 

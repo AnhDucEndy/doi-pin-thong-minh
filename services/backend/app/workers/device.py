@@ -20,7 +20,8 @@ def review(session,db,station_id,reason):
             ('old_battery_id','new_battery_id','return_compartment_id','supply_compartment_id','amount_minor')):
             continue
         if row['state']=='REVIEW_REQUIRED' and row['review_reason']==reason:continue
-        session.execute(update(swaps).where(swaps.c.id==row['id']).values(state='REVIEW_REQUIRED',review_reason=reason,version=row['version']+1))
+        from app.application.swaps import review as review_swap
+        review_swap(session,db,row,reason)
 
 
 def alert(session,db,device,code,event=None,slot=None,pin=None):
@@ -58,7 +59,9 @@ def station_locks(session,db,station_id):
         session.execute(select(users.c.id).where(users.c.id==user).with_for_update())
     session.execute(select(swaps.c.id).where(swaps.c.station_id==station_id).order_by(swaps.c.id).with_for_update()).all()
     slot_ids=list(session.scalars(select(slots.c.id).where(slots.c.station_id==station_id).order_by(slots.c.id).with_for_update()))
-    session.execute(select(pins.c.id).where(pins.c.compartment_id.in_(slot_ids)).order_by(pins.c.id).with_for_update()).all()
+    swap_pins = {s[k] for s in active for k in ('old_battery_id', 'new_battery_id') if s[k]}
+    session.execute(select(pins.c.id).where(or_(pins.c.compartment_id.in_(slot_ids),
+        pins.c.id.in_(swap_pins))).order_by(pins.c.id).with_for_update()).all()
 
 
 def observation(session,db,device,event,slot_id,payload,expected_command=False):
@@ -84,7 +87,10 @@ def command_event(session,db,device,event):
     now=utcnow()
     if command['state'] in TERMINAL:
         return  # late duplicate ACKs cannot regress a terminal result
-    if command['state']=='UNKNOWN' or event['received_at']>command['expires_at'] or now>command['expires_at']:
+    policy=assets.get_row(session,db,'swap_transactions',command['swap_id'])['policy_snapshot']
+    deadline=(command['created_at']+timedelta(seconds=policy['physical_step_timeout_seconds'])
+        if command['state']=='ACKNOWLEDGED' and event['kind']!='COMMAND_ACK' else command['expires_at'])
+    if command['state']=='UNKNOWN' or event['received_at']>=deadline or now>=deadline:
         raise DomainError(422,'COMMAND_LATE_OR_UNKNOWN')
     if command['state'] not in ('DISPATCHED','ACKNOWLEDGED'):
         raise DomainError(422,'COMMAND_NOT_DISPATCHED')
@@ -115,7 +121,7 @@ def command_event(session,db,device,event):
     if not any(o<p<event['seq'] for o in opens for p in presence):return
     session.execute(update(table).where(table.c.id==command['id']).values(state='OBSERVED',evidence_event_id=event['id'],version=command['version']+1))
     audit(session,db,device,'COMMAND_OBSERVED',command['id'],{'event_id':str(event['id'])})
-    # No custody, payment or swap-completion updates in this phase.
+    # process_one marks the inbox and applies custody in this same transaction.
 
 
 def apply(session,db,device,event,policy,now):
@@ -191,6 +197,16 @@ def process_one(session,db,event_id,policy,now=None):
         values={'processed_at':now,'accepted':False,'processing_error':error.code}
     session.execute(update(db.table('device_events')).where(db.table('device_events').c.id==event_id).values(**values))
     audit(session,db,device,'DEVICE_EVENT_PROCESSED',event_id,{'kind':event['kind'],'accepted':values['accepted'],'error':values['processing_error']})
+    if values['accepted'] and event['kind']=='DOOR' and event['command_id']:
+        command=assets.get_row(session,db,'device_commands',event['command_id'])
+        if command['state']=='OBSERVED' and command['evidence_event_id']==event_id:
+            from app.application import swaps
+            try:
+                with session.begin_nested():swaps.advance(session,db,event['swap_id'])
+            except DomainError as error:
+                swap=assets.get_row(session,db,'swap_transactions',event['swap_id'],lock=True)
+                if swap['state'] in ('AWAITING_RETURN','RETURN_ACCEPTED','AWAITING_PICKUP'):
+                    swaps.review(session,db,swap,error.code)
     return True
 
 
@@ -199,6 +215,10 @@ def expire_station(session,db,device,policy,now):
     commands=db.table('device_commands')
     for command in session.execute(select(commands).where(commands.c.device_id==device['id'],
         commands.c.state.in_(['QUEUED','DISPATCHED','ACKNOWLEDGED']),commands.c.expires_at<=now).with_for_update()).mappings().all():
+        swap=assets.get_row(session,db,'swap_transactions',command['swap_id'])
+        if (command['state']=='ACKNOWLEDGED' and now < command['created_at']+
+                timedelta(seconds=swap['policy_snapshot']['physical_step_timeout_seconds'])):
+            continue
         state='EXPIRED' if command['state']=='QUEUED' else 'UNKNOWN'
         session.execute(update(commands).where(commands.c.id==command['id']).values(state=state,version=command['version']+1))
         audit(session,db,device,'COMMAND_TIMEOUT',command['id'],{'state':state},actor_type='SYSTEM')
@@ -231,6 +251,8 @@ def tick(db,policy,now=None):
         with db.sessions.begin() as session:expire_station(session,db,device,policy,now)
     from app.application.reservations import expire
     expire(db, now)
+    from app.application.swaps import tick as advance_swaps
+    advance_swaps(db)
     return processed
 
 

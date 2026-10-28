@@ -28,7 +28,7 @@ export function Payment({api,role,swap}:{api:Api;role:string;swap:any}) {
       {['CREATED','PENDING'].includes(payment.state)&&<p>Đang chờ mock provider. Không tạo khoản thu khác.</p>}
       {payment.state==='UNKNOWN'&&<p>Chưa rõ kết quả. Giữ tài nguyên, chờ Admin đối soát cùng khoản thu.</p>}
       {payment.state==='FAILED'&&<p>Thanh toán bị từ chối. Backend quyết định trạng thái phiên và việc giải phóng tài nguyên.</p>}
-      {payment.state==='SUCCEEDED'&&<p>Đã xác minh thu phí. Chưa mở cửa, bàn giao pin hoặc hoàn tất đổi pin.</p>}
+      {payment.state==='SUCCEEDED'&&<p>Đã xác minh thu phí. Kết quả thanh toán không thay thế bằng chứng bàn giao; xem tiến trình đổi pin của phiên.</p>}
       {role==='ADMIN'&&['PENDING','UNKNOWN'].includes(payment.state)&&<button disabled={busy} onClick={()=>void reconcile()}>Đối soát cùng khoản thu</button>}</>}
     {swap.state==='CANCELLED'&&!payment&&<p>Phiên đã kết thúc; không được tạo khoản thu mới.</p>}
   </section>;

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import QRCode from 'qrcode';
 import { Payment } from './Payment';
+import { SwapProgress } from './SwapProgress';
 
 type Api = (path:string, method?:string, data?:unknown, key?:string)=>Promise<any>;
 const closed = ['CANCELLED','COMPLETED','CLOSED_COMPENSATED'];
@@ -40,6 +41,7 @@ export function Reservations({api,role}:{api:Api;role:string}) {
       {role==='CUSTOMER'&&s.state==='VERIFIED'&&<button disabled={busy} onClick={()=>void change(s,'reserve')}>Giữ pin và hai ngăn</button>}
       {role==='CUSTOMER'&&['VERIFIED','RESERVED'].includes(s.state)&&<button disabled={busy} onClick={()=>void change(s,'cancel')}>Hủy trước thanh toán</button>}
       {(s.state==='RESERVED'||s.consented_at)&&<Payment api={api} role={role} swap={s}/>}
+      <SwapProgress swap={s}/>
     </article>)}
   </section>;
 }

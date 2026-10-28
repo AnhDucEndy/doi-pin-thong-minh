@@ -131,21 +131,43 @@ def command_allowed(session,db,command,policy,now):
         if (not isinstance(command['payload'],dict) or not pin or command['payload'].get('expected_serial')!=pin['serial']
             or command['payload'].get('simulation_only') is not True
             or digest(json.dumps(command['payload'],sort_keys=True))!=command['payload_hash']):return False
+    def final_fresh(extra_slots=(), pin=None):
+        timestamps=[device['last_received_at']]
+        for observed in (slot,*extra_slots):
+            if not assets.current_observation(session,db,device,observed):return False
+            evidence=assets.latest_observation(session,db,device['id'],observed['id'])
+            timestamps.extend([observed['observed_at'],evidence['observed_at']])
+        if pin:
+            readings=db.table('battery_telemetry')
+            reading=session.execute(select(readings).where(readings.c.battery_id==pin['id'])
+                .order_by(readings.c.received_at.desc(),readings.c.id.desc()).limit(1)).mappings().first()
+            if not reading:return False
+            timestamps.extend([reading['received_at'],reading['measured_at']])
+        decision_at=utcnow()
+        return command['expires_at']>decision_at and all(assets.fresh(t,decision_at,policy) for t in timestamps)
     if command['kind'] == 'OPEN_RETURN':
         old = assets.get_row(session,db,'batteries',swap['old_battery_id']) if swap['old_battery_id'] else None
         return bool(swap['state']=='AWAITING_RETURN' and slot['id']==swap['return_compartment_id']
             and slot['observed_present'] is False and slot['observed_serial'] is None and not assets.pin_at(session,db,slot)
-            and old and old['holder_user_id']==swap['customer_id'] and old['family']==policy['battery_family'])
+            and old and old['holder_user_id']==swap['customer_id'] and old['family']==policy['battery_family']
+            and final_fresh())
     new = assets.get_row(session,db,'batteries',swap['new_battery_id']) if swap['new_battery_id'] else None
+    old = assets.get_row(session,db,'batteries',swap['old_battery_id']) if swap['old_battery_id'] else None
+    receiving = assets.get_row(session,db,'compartments',swap['return_compartment_id']) if swap['return_compartment_id'] else None
     return bool(swap['state'] in ('RETURN_ACCEPTED','AWAITING_PICKUP') and swap['return_observed_at']
+        and receiving and old and old['compartment_id']==receiving['id'] and old['holder_user_id'] is None
+        and receiving['service_state']=='ACTIVE' and receiving['door_state']=='CLOSED'
+        and receiving['observed_present'] is True and receiving['observed_serial']==old['serial']
+        and reserved(compartment_id=receiving['id'])
+        and not assets.has_alert(session,db,station['id'],receiving['id'],old['id'])
         and slot['id']==swap['supply_compartment_id'] and new and new['compartment_id']==slot['id']
         and reserved(battery_id=new['id']) and slot['observed_present'] is True and slot['observed_serial']==new['serial']
         and not assets.has_alert(session,db,station['id'],slot['id'],new['id'])
-        and assets.quality(session,db,new,device,now,policy))
+        and assets.quality(session,db,new,device,now,policy) and final_fresh((receiving,),new))
 
 
 def enqueue_command(session,db,swap_id,slot_id,kind,policy):
-    """Internal adapter for the future swap service; there is deliberately no user HTTP route."""
+    """Internal swap adapter; there is deliberately no user HTTP control route."""
     swap = assets.get_row(session,db,'swap_transactions',swap_id)
     assets.station_lock(session,db,swap['station_id'])
     assets.get_row(session,db,'users',swap['customer_id'],lock=True)
@@ -159,7 +181,7 @@ def enqueue_command(session,db,swap_id,slot_id,kind,policy):
     device=assets.available_device(session,db,swap['station_id'])
     if not device or kind not in ('OPEN_RETURN','OPEN_SUPPLY'): raise DomainError(422,'COMMAND_INVALID')
     now=utcnow(); command={'id':uuid4(),'device_id':device['id'],'swap_id':swap_id,'compartment_id':slot_id,
-        'kind':kind,'expires_at':now+timedelta(seconds=policy['command_ttl_seconds'])}
+        'kind':kind,'created_at':now,'expires_at':now+timedelta(seconds=policy['command_ttl_seconds'])}
     if not command_allowed(session,db,command,policy,now): raise DomainError(409,'COMMAND_INTERLOCK_FAILED')
     pin_id=swap['old_battery_id'] if kind=='OPEN_RETURN' else swap['new_battery_id']
     pin=assets.get_row(session,db,'batteries',pin_id)
