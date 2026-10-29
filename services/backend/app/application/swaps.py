@@ -3,6 +3,7 @@
 The device worker calls this under the same station/user/resource locks as
 telemetry, reservation and settlement. No external I/O occurs in this module.
 """
+from datetime import timedelta
 from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
@@ -77,8 +78,12 @@ def physical_context(session, db, swap, items, receiving, supplying, command=Non
             .order_by(readings.c.received_at.desc(), readings.c.id.desc()).limit(1)).mappings().first()
         if not reading: return False
         timestamps.extend([reading['received_at'], reading['measured_at']])
-    # Sample after all reads. Receipt time never substitutes measurement time.
+    # Final custody decision under station/resource locks, after all reads.
+    # Fresh evidence does not extend the command's physical window; receipt,
+    # ACK, retry and restart never move its origin. Equality is expired.
     now = utcnow()
+    if command and now >= command['created_at'] + timedelta(seconds=policy['physical_step_timeout_seconds']):
+        return False
     return all(assets.fresh(t, now, policy) for t in timestamps)
 
 
@@ -138,6 +143,8 @@ def advance(session, db, identity):
             return
         if command['state'] != 'OBSERVED':
             return
+        event = (assets.get_row(session, db, 'device_events', command['evidence_event_id'])
+                 if command['evidence_event_id'] else None)
         if (not proof(session, db, swap, command) or old['location_kind'] != 'CUSTOMER'
                 or old['holder_user_id'] != swap['customer_id'] or old['family'] != swap['policy_snapshot']['battery_family']
                 or assets.pin_at(session, db, ret)
@@ -147,7 +154,6 @@ def advance(session, db, identity):
         pins = db.table('batteries')
         session.execute(update(pins).where(pins.c.id == old['id']).values(location_kind='COMPARTMENT',
             compartment_id=ret['id'], holder_user_id=None, version=old['version'] + 1))
-        event = assets.get_row(session, db, 'device_events', command['evidence_event_id'])
         transition(session, db, swap, 'RETURN_ACCEPTED', return_observed_at=event['observed_at'])
         return  # Custody is durable now; a restart resumes the following step.
     if swap['state'] == 'RETURN_ACCEPTED':
@@ -160,6 +166,8 @@ def advance(session, db, identity):
         return
     if not command or command['state'] != 'OBSERVED':
         return
+    event = (assets.get_row(session, db, 'device_events', command['evidence_event_id'])
+             if command['evidence_event_id'] else None)
     if (not proof(session, db, swap, command) or not supply_ready(session, db, swap, items)
             or not physical_context(session, db, swap, items, old['serial'], None, command, issuing=True)):
         review(session, db, swap, 'SWAP_PICKUP_EVIDENCE')
@@ -167,7 +175,6 @@ def advance(session, db, identity):
     pins = db.table('batteries')
     session.execute(update(pins).where(pins.c.id == new['id']).values(location_kind='CUSTOMER',
         compartment_id=None, holder_user_id=swap['customer_id'], version=new['version'] + 1))
-    event = assets.get_row(session, db, 'device_events', command['evidence_event_id'])
     now = utcnow()
     transition(session, db, swap, 'COMPLETED', pickup_observed_at=event['observed_at'], closed_at=now)
     holds = db.table('resource_reservations')

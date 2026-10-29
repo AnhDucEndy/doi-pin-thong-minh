@@ -45,6 +45,7 @@ def scenario(mode, serve=False):
         PAYMENT_SERVICE_KEY=secrets.token_urlsafe(32), PAYMENT_CALLBACK_KEY=secrets.token_urlsafe(32),
         PAYMENT_MOCK_URL='http://127.0.0.1:8022', PAYMENT_LEDGER_PATH=str(ledger/'payment.sqlite3'),
         **{'DEMO_DEVICE_KEY_'+code:key for code, key in env_fixture['keys'].items()})
+    env['P7_BOUNDARY']=str(directory/'return-committed.txt')
     processes = []; logs = []; checks = []
 
     def launch(args, name):
@@ -63,12 +64,14 @@ def scenario(mode, serve=False):
             launch(['-m', 'uvicorn', 'app.main:create_app', '--factory', '--host', '127.0.0.1',
                 '--port', str(port), '--no-access-log'], 'api-'+str(port))
             wait(lambda:httpx.get(f'http://127.0.0.1:{port}/health', timeout=1).status_code == 200, 'API ready')
-        worker = launch(['-m', 'app.workers.device'], 'device-worker')
+        worker = launch(['tools/phase7_acceptance_process.py','worker'] if mode=='restart-between' else ['-m', 'app.workers.device'], 'device-worker')
         launch(['-m', 'simulators.payment.main', '--port', '8022', '--scenario', 'success'], 'provider')
         launch(['-m', 'app.workers.payment'], 'payment-worker')
         for code in ('S01', 'S02'):
-            launch(['-m', 'simulators.device.main', '--station', code, '--url', 'http://127.0.0.1:8020',
-                '--ledger-dir', str(ledger/'devices'), '--scenario', mode if code == 'S01' else 'normal'], code)
+            entry=['tools/phase7_acceptance_process.py','simulator'] if mode=='missing-pickup' and code=='S01' else ['-m','simulators.device.main']
+            sim_mode='physical' if mode in ('missing-pickup','restart-between') else mode
+            launch(entry+['--station', code, '--url', 'http://127.0.0.1:8020',
+                '--ledger-dir', str(ledger/'devices'), '--scenario', sim_mode if code == 'S01' else 'normal'], code)
         wait(lambda:row('devices', demo_id('device:S01'))['last_received_at'] is not None, 'Device online', 30)
         def measured():
             with db.sessions() as session:
@@ -98,7 +101,15 @@ def scenario(mode, serve=False):
                 a = pool.submit(consent, first, actor, swap); b = pool.submit(consent, second, actor, swap)
                 assert sorted([a.result().status_code, b.result().status_code]) == [202, 409]
             checks.append('two HTTP processes: one consent/intent')
-            expected = 'COMPLETED' if mode == 'physical' else 'REVIEW_REQUIRED'
+            expected = 'COMPLETED' if mode in ('physical','restart-between') else 'REVIEW_REQUIRED'
+            if mode=='restart-between':
+                wait(lambda:(directory/'return-committed.txt').exists(),'durable return boundary',30)
+                assert row('swap_transactions',identity)['state']=='RETURN_ACCEPTED'
+                assert row('batteries',UUID(swap['old_battery_id']))['compartment_id']==UUID(swap['return_compartment_id'])
+                assert counts(db)['device_commands']==1 and counts(db)['holds']==3
+                worker.terminate(); worker.wait(timeout=10)
+                launch(['-m','app.workers.device'],'worker-after-return-commit')
+                checks.append('restart exactly after durable return commit')
             if mode == 'crash-after-ledger':
                 wait(lambda:counts(db)['device_commands'] == 1, 'Command dispatched', 20)
                 worker.terminate(); worker.wait(timeout=10)
@@ -115,11 +126,16 @@ def scenario(mode, serve=False):
                 assert session.scalar(select(p.c.state).where(p.c.swap_id == identity)) == 'SUCCEEDED'
                 commands = list(session.execute(select(db.table('device_commands'))).mappings())
                 audits = list(session.scalars(select(db.table('audit_events').c.action)))
-            if mode == 'physical':
+            if mode in ('physical','restart-between'):
                 assert old['compartment_id'] == UUID(swap['return_compartment_id']) and old['holder_user_id'] is None
                 assert new['holder_user_id'] == current['customer_id'] and new['compartment_id'] is None
                 assert c['holds'] == 0 and len(commands) == 2 and all(x['state']=='OBSERVED' for x in commands)
                 assert audits.count('SWAP_COMPLETED') == 1 and audits.count('SWAP_RETURN_ACCEPTED') == 1
+            elif mode=='missing-pickup':
+                assert old['compartment_id']==UUID(swap['return_compartment_id']) and old['holder_user_id'] is None
+                assert new['location_kind']=='COMPARTMENT' and current['pickup_observed_at'] is None
+                assert c['holds']==3 and len(commands)==2 and current['closed_at'] is None
+                assert audits.count('SWAP_RETURN_ACCEPTED')==1 and 'SWAP_COMPLETED' not in audits
             else:
                 assert c['holds'] == 3 and len(commands) == 1 and current['closed_at'] is None
                 assert old['location_kind'] == 'CUSTOMER' and new['location_kind'] == 'COMPARTMENT'
@@ -130,7 +146,8 @@ def scenario(mode, serve=False):
             with sqlite3.connect(ledger/'devices/S01.sqlite3') as conn:
                 effects = [r[0] for r in conn.execute('SELECT effects FROM commands')]
                 assert len(effects) == len(commands) and max(effects) <= 1
-                if mode == 'physical': assert effects == [1, 1]
+                if mode in ('physical','restart-between'): assert effects == [1, 1]
+                if mode=='missing-pickup': assert sorted(effects)==[0,1]
             checks.append('provider one charge; persistent command ledger at most one effect per command')
             assert first.get('/v1/swaps/'+swap['id'], headers=actor).json()['state'] == expected
             checks.append('authenticated HTTP final state')
@@ -152,7 +169,7 @@ def scenario(mode, serve=False):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--serve',action='store_true')
-    parser.add_argument('--scenario',choices=['physical','ack-only','wrong-return','crash-after-ledger'])
+    parser.add_argument('--scenario',choices=['physical','ack-only','wrong-return','crash-after-ledger','missing-pickup','restart-between'])
     args=parser.parse_args()
     demo = Database(Settings.from_env())
     def fingerprint():
