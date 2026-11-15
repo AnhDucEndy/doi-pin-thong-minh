@@ -1,0 +1,266 @@
+{
+  "source": {
+    "files": 175,
+    "delta": [],
+    "canonical_manifest_files": 257,
+    "canonical_delta": [
+      "apps\\web\\e2e\\staged.spec.ts",
+      "services\\backend\\app\\application\\recovery_authorization.py",
+      "services\\backend\\app\\application\\recovery.py",
+      "tools/phase8a_manual_operator.py"
+    ]
+  },
+  "counts": {
+    "full": {
+      "tests": 599,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "685B4B3E69B3129205E24F429D9249164CF616B88911D6090E21361B8327CC9F"
+    },
+    "exit": {
+      "exit": 0,
+      "ended": "2026-11-15T12:10:06.4523370+07:00",
+      "started": "2026-11-15T11:20:51.0472426+07:00"
+    },
+    "collection": 599,
+    "historical": 587,
+    "missing_current": [],
+    "unexpected": [],
+    "missing_historical": [],
+    "added": [
+      "tests/test_phase8a_ia01_fix::test_same_boot_replay_and_audit_rollback[CONFIRM]",
+      "tests/test_phase8a_ia01_fix::test_same_boot_replay_and_audit_rollback[REJECT]",
+      "tests/test_phase8a_ia01_fix::test_two_backends_store_one_same_boot_technician_proof",
+      "tests/test_phase8a_ia01_fix::test_pre_rechecks_decision_time_after_provenance_reads[16-EVENT_STALE]",
+      "tests/test_phase8a_ia01_fix::test_pre_rechecks_decision_time_after_provenance_reads[121-RECOVERY_OPERATION_EXPIRED]",
+      "tests/test_phase8a_independent_acceptance::test_technician_pre_confirmation_rejects_old_boot_receipt",
+      "tests/test_phase8a_manual_operator::test_operator_rejects_unavailable_task_without_effect[ACK]",
+      "tests/test_phase8a_manual_operator::test_operator_rejects_unavailable_task_without_effect[HANDOVER]",
+      "tests/test_phase8a_manual_operator::test_operator_rejects_unavailable_task_without_effect[REINSPECT]",
+      "tests/test_phase8a_manual_operator::test_operator_rejects_unavailable_task_without_effect[CLOSE]",
+      "tests/test_phase8a_manual_operator::test_operator_rejects_unavailable_task_without_effect[ACK_CLOSURE]",
+      "tests/test_phase8a_manual_operator::test_operator_inspection_replay_keeps_original_receipt_and_no_effect"
+    ]
+  },
+  "affected_browser": [
+    {
+      "scenario": "post",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "18A5C6E5A8C1525FFD79B2228AD72B056F430AEE56C3FE61FB776095C2AD821D",
+      "exit": 0
+    },
+    {
+      "scenario": "successor",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "D47A13F757A9B94C1B2F16BBC1CB1F403FA9BEC203BA49F87CD7FDFAA0D4A366",
+      "exit": 0
+    },
+    {
+      "scenario": "old_boot",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "A33053854FE37110290ACF22AE8685FBAB963EF1F45D79024A76AC489E7540E1",
+      "exit": 0
+    },
+    {
+      "scenario": "pre_reject",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "9961EB8FFA62B65435A769DBE99BDE00CF0847853463BF1236C87F526371268F",
+      "exit": 0
+    },
+    {
+      "scenario": "revoked",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "9BD80507B664FF3D380AEA749414BFBF0A9933CD69819F1BAC5F24AEC55356E8",
+      "exit": 0
+    },
+    {
+      "scenario": "stale_expired",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "9C66C585B1528B00DD446E19B24CE14604C6C06117FED8C79C432691234003B0",
+      "exit": 0
+    }
+  ],
+  "canonical_browser": [
+    {
+      "scenario": "terminal_fix_closure_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "EEE1E125639763CDEC599C88CA82D4B36764CD4DA9172804C51B5476C0B41D7F",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_duplicate_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "1C6A5A366806B9ADF5E7B7C3B2CDBCC65C23751706FCDD7FAD2EC96292BF1541",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_post_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "91351D74EA2A6170E65BD5FB3BBBFEC5630DE43BE47E854585F8DD92B56B9595",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_post_reject_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "A6FA5068A8BD295D266E5D49FDEA89CE8205BA828BF982597B89B404601CC52A",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_pre_reject_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "5B2034A1CDE58A9C020853FEC0B71532B5EB3919CC768390660BF92909C835BF",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_reference_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "88AD6E0E3907DDA836965210C80CB8CD4D073982E475F7EEF59ABA46D19A084B",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_response_loss_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "21FAAF728A87CF58C33A60E13D1D826A36129DC2706706042611A720C2AB9279",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_revoked_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "DE7538DBFB39EEBDE2E6127789C3021EC61DBA0CB852D101B21642027FBA3DCB",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_roles_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "C3AE88B88530C50630BCB792AE96886885696A8ACCA0D938E4B5A19C77B024D2",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_smoke_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "3F14CB97B4453603C708485F40452CCBF87E35D62CBAA0821ABCC6A18FC7A0A5",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_stale_expired_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "E85758A01B034630C1BD6DF3466AB82D03B10D403023FC1CB5D6606EBA2C1A2C",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_successor_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "503097D9129838616802A3817CB83E37E59D4697E222D2022AB7894D4E04825F",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_terminal_label_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "4E54912B812526E80DDBC41A6AE00F85CDCB3AABF17F45362D201644E6931DFB",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_version_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "51B0CA6F35073F1CEF4E1535C1BF083855154A5AC253A4DA5133CE3635AB6599",
+      "exit": 0
+    },
+    {
+      "scenario": "terminal_fix_wrong_stage_20261114_01_browser",
+      "tests": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "ECD78E7CD26B327BBA4D60F6748969CA14F5D7508D9C482B7F0C41BCE58E8310",
+      "exit": 0
+    }
+  ],
+  "probe": {
+    "original_sha256": "1FE5E23BD8699590E9B7435DEF9854E27ECCB1785728BB954885FC0436D72C0F",
+    "current_sha256": "12A12CD16220419C59FFAA978C18DF9C483E6587CEADCA663E3D93B966FB72A3",
+    "historical_failures": [
+      {
+        "tests": 1,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "FA413E9E0D5929DD7B6A5916DF4DC7B14C2DC1414F429AEE13847AC5147C2C95"
+      },
+      {
+        "tests": 1,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "0C1855EA254008B17C3E1EA7AD67E3C05E9A4C32D8E9A561B6024106100231EE"
+      }
+    ],
+    "final_targeted": {
+      "tests": 6,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "44B458281F3A87E1E12F5F4E7F97820AB96C768CB90C8465230EAF701B394966"
+    }
+  }
+}

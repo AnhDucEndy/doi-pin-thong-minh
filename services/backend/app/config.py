@@ -41,13 +41,17 @@ class Settings:
     database_url: str
     schema: str = 'doi_pin'
     policy_path: str | None = None
+    recovery_operation_ttl_seconds: int = 120
 
     def __post_init__(self):
         if not self.database_url.startswith('postgresql+psycopg://'):
             raise ValueError('PostgreSQL with psycopg is required')
         if not re.fullmatch(r'[a-z][a-z0-9_]{0,62}', self.schema):
             raise ValueError('Invalid database schema')
+        if type(self.recovery_operation_ttl_seconds) is not int or self.recovery_operation_ttl_seconds <= 0:
+            raise ValueError('Recovery operation TTL must be a positive integer')
 
     @classmethod
     def from_env(cls):
-        return cls(os.environ['DATABASE_URL'], os.getenv('DATABASE_SCHEMA', 'doi_pin'))
+        return cls(os.environ['DATABASE_URL'], os.getenv('DATABASE_SCHEMA', 'doi_pin'),
+                   recovery_operation_ttl_seconds=int(os.getenv('RECOVERY_OPERATION_TTL_SECONDS', '120')))

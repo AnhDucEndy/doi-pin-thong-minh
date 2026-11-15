@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_version": {
+      "minimum": 1,
+      "title": "Expected Version",
+      "type": "integer"
+    },
+    "evidence_event_id": {
+      "format": "uuid",
+      "title": "Evidence Event Id",
+      "type": "string"
+    },
+    "note": {
+      "minLength": 1,
+      "title": "Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_version",
+    "evidence_event_id",
+    "note"
+  ],
+  "title": "LegacyEvidence",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

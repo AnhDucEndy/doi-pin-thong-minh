@@ -1,0 +1,14 @@
+{
+  "id": "R2-NFR06-01",
+  "severity": "Major acceptance requirement gap",
+  "status": "OPEN",
+  "criterion_result": "FAILED",
+  "method": "Source review plus SELECT in an existing isolated PostgreSQL fixture under SET TRANSACTION READ ONLY",
+  "expected": "Recovery aggregate transitions have actual before and after state/version audit data under NFR06; creation may have no prior object",
+  "actual": "recovery.audit inserts after_data only. All 11 recovery audit events in the E fixture have before_data NULL, including activation and foreign-object settlement",
+  "source": "services/backend/app/application/recovery.py::audit/change_case",
+  "database_evidence": "audit_readonly.json",
+  "not_a_pytest_run": true,
+  "business_state_mutated_by_review": false,
+  "minimal_followup": "Capture real before/after snapshots atomically for recovery mutations; preserve historical audit records, custody/payment/holds and idempotency; add payload and rollback regressions"
+}

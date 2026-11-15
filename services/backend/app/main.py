@@ -216,6 +216,8 @@ def create_app(settings=None):
     app.include_router(reservation_router(session, principal, admin, mutation))
     from app.api.payments import build_router as payment_router
     app.include_router(payment_router(session, principal, admin, mutation))
+    from app.api.recovery import build_router as recovery_router
+    app.include_router(recovery_router(session, principal, mutation))
 
     def contract_openapi():
         if app.openapi_schema:
@@ -226,7 +228,9 @@ def create_app(settings=None):
         spec['info'] = {'title': app.title, 'version': app.version,
                         'description': 'Phase 1-6 implemented operations; private mock payment, no physical swap workflow; original GD2 contract applies.'}
         spec['paths'] = {path: {method: original['paths'][path][method] for method in methods}
-                         for path, methods in generated['paths'].items() if path.startswith('/v1/')}
+                         for path, methods in generated['paths'].items() if path.startswith('/v1/') and path in original['paths']}
+        from app.api.recovery_contract import apply_appendix
+        apply_appendix(spec, generated)
         spec['paths']['/health'] = generated['paths']['/health']
         app.openapi_schema = spec
         return spec

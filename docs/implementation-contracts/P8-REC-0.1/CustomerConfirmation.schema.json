@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "confirm": {
+      "title": "Confirm",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "operation_id",
+    "context_hash",
+    "confirm"
+  ],
+  "title": "CustomerConfirmation",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

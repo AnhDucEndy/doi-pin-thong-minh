@@ -258,10 +258,29 @@ def test_phase1_contract_and_no_future_endpoints(client):
         '/v1/swaps/{swap_id}/reserve', '/v1/swaps/{swap_id}/cancel',
         '/v1/swaps/{swap_id}/consent', '/v1/swaps/{swap_id}/payment',
         '/v1/payments/{payment_id}/reconcile', '/v1/payment-events'}
-    assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths
+    # User-approved P8-REC-0.1 adds an independent Customer confirmation
+    # boundary. Keep the exact allowlist and original operation checks rather
+    # than disabling contract coverage for new routes.
+    recovery_paths = {'/v1/swaps/{swap_id}/recovery', '/v1/swaps/{swap_id}/recovery/evidence',
+        '/v1/swaps/{swap_id}/recovery/confirmations', '/v1/swaps/{swap_id}/recovery/settle',
+        '/v1/device/recovery-tasks', '/v1/device/recovery-observations'}
+    assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths | recovery_paths
     for path, methods in paths.items():
         if path == '/health':
             continue
         for method, operation in methods.items():
+            extra = {
+                '/v1/swaps/{swap_id}/recovery/confirmations': ('post', 'confirmRecovery', ['CUSTOMER']),
+                '/v1/device/recovery-tasks': ('get', 'pollRecoveryTasks', ['DEVICE']),
+                '/v1/device/recovery-observations': ('post', 'receiveRecoveryObservation', ['DEVICE']),
+            }
+            if path in extra:
+                expected_method, expected_id, expected_roles = extra[path]
+                assert method == expected_method
+                assert operation['operationId'] == expected_id
+                assert operation['x-roles'] == expected_roles
+                assert operation['x-contract-version'] == 'P8-REC-0.1'
+                assert operation['security'] == [{'DeviceKey' if expected_roles == ['DEVICE'] else 'UserBearer': []}]
+                continue
             assert operation['operationId'] == SPEC['paths'][path][method]['operationId']
             assert operation['x-roles'] == SPEC['paths'][path][method]['x-roles']

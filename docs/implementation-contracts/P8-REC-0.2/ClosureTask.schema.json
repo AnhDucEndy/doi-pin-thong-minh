@@ -1,0 +1,85 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "0.2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "task_kind": {
+      "enum": [
+        "CLOSE_NO_EFFECT",
+        "CLOSURE_COMMITTED"
+      ],
+      "title": "Task Kind",
+      "type": "string"
+    },
+    "closure_id": {
+      "format": "uuid",
+      "title": "Closure Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "station_id": {
+      "format": "uuid",
+      "title": "Station Id",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "payload_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Hash",
+      "type": "string"
+    },
+    "receipt_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Hash"
+    },
+    "effect_allowed": {
+      "const": false,
+      "title": "Effect Allowed",
+      "type": "boolean"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "task_kind",
+    "closure_id",
+    "operation_id",
+    "context_hash",
+    "station_id",
+    "payload",
+    "payload_hash",
+    "effect_allowed",
+    "simulation_only"
+  ],
+  "title": "ClosureTask",
+  "type": "object"
+}

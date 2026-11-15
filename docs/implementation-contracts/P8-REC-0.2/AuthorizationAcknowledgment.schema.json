@@ -1,0 +1,99 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "0.2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "message_kind": {
+      "const": "AUTHORIZATION_ACK",
+      "title": "Message Kind",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "authorization_id": {
+      "format": "uuid",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "authorization_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Hash",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "boot_id": {
+      "format": "uuid",
+      "title": "Boot Id",
+      "type": "string"
+    },
+    "ledger_id": {
+      "format": "uuid",
+      "title": "Ledger Id",
+      "type": "string"
+    },
+    "fence_generation": {
+      "minimum": 1,
+      "title": "Fence Generation",
+      "type": "integer"
+    },
+    "seq": {
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "stored": {
+      "const": true,
+      "title": "Stored",
+      "type": "boolean"
+    },
+    "effect_count_delta": {
+      "const": 0,
+      "title": "Effect Count Delta",
+      "type": "integer"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "message_kind",
+    "event_id",
+    "authorization_id",
+    "authorization_hash",
+    "operation_id",
+    "context_hash",
+    "boot_id",
+    "ledger_id",
+    "fence_generation",
+    "seq",
+    "observed_at",
+    "stored",
+    "effect_count_delta",
+    "simulation_only"
+  ],
+  "title": "AuthorizationAcknowledgment",
+  "type": "object"
+}

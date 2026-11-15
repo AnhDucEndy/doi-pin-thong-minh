@@ -1,5 +1,13 @@
 # Kế hoạch triển khai hệ thống đổi pin thông minh
 
+## Checkpoint quyết định mới — 15/11/2026
+
+**PHASE 8A — CONDITIONAL ACCEPTANCE APPROVED BY USER.** Người dùng đã phê duyệt allocation R2-D01/NFR04, R2-D02/NFR07/CT14 và R2-D04/NFR08 sang final MVP integration acceptance. Các tests/gates này vẫn **NOT RUN / OPEN, bắt buộc trước full MVP acceptance/release**, không PASSED/WAIVED. Owner TV1–TV5 là đề xuất theo R3; nhóm chưa xác nhận cá nhân nhận việc. IA01/NFR06 Recovery findings FIXED/CLOSED technical scope; evidence603 Backend,21 audit actions,8 real runners và Browser/frontend được kế thừa theo R3, không chạy mới. Không full MVP PASS, không hoàn tất refund/compensation hoặc tự mở8B/8C.
+
+[Biên bản quyết định](PHASE8A_CONDITIONAL_ACCEPTANCE.md) · [Release gates/criteria/owners](MVP_RELEASE_GATES.md) · [Đề xuất staging, không git add](PHASE8A_GIT_READINESS.md).
+
+Các kết luận/pending tại những checkpoint bên dưới là **lịch sử trước approval này**, giữ nguyên, không sửa R1/R2/R3 thành PASS hồi tố. Không đổi production/baseline hoặc xóa dữ liệu/evidence.
+
 Cập nhật Phase6 (25/10/2026): F6 chính thức FR14/UC12/TC14, FR15/UC13/TC15; consent/payment/outbox/provider ledger/callback/query được triển khai tiếp từ29f4352. Không refund/physical swap. Các kết quả cuối ở [PHASE6_IMPLEMENTATION.md](PHASE6_IMPLEMENTATION.md); các phần kế hoạch cũ giữ làm lịch sử, không sửa baseline.
 
 Ngày lập: 24/10/2026 (Asia/Bangkok). Phạm vi: MVP mô phỏng theo QD01–QD09 đã được người dùng duyệt ngày 23/10/2026. Phase 1 đã được giao và triển khai; kết quả nghiệm thu nằm trong IMPLEMENTATION_STATUS.md. Phase 2 – F2 được triển khai theo yêu cầu tiếp theo: chỉ trạm/thiết bị/ngăn (FR03–05, TC03–05). F3 pin/BMS trong cùng nhóm handoff vẫn chưa triển khai. Các phase sau vẫn là kế hoạch.

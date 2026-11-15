@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "ServiceObservation": {
+      "additionalProperties": false,
+      "description": "Observed model facts, not a desired holder or destination override.\n\nSubject/source/destination are derived from the immutable operation. A null\nactual serial is a missing observation, never proof of possession.",
+      "properties": {
+        "result": {
+          "enum": [
+            "OBSERVED",
+            "UNKNOWN",
+            "REJECTED"
+          ],
+          "title": "Result",
+          "type": "string"
+        },
+        "actual_serial": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Serial"
+        },
+        "supporting_event_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Supporting Event Ids",
+          "type": "array"
+        },
+        "simulation_only": {
+          "const": true,
+          "title": "Simulation Only",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "result",
+        "actual_serial",
+        "supporting_event_ids",
+        "simulation_only"
+      ],
+      "title": "ServiceObservation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "boot_id": {
+      "format": "uuid",
+      "title": "Boot Id",
+      "type": "string"
+    },
+    "seq": {
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "observation": {
+      "$ref": "#/$defs/ServiceObservation"
+    }
+  },
+  "required": [
+    "event_id",
+    "operation_id",
+    "context_hash",
+    "boot_id",
+    "seq",
+    "observed_at",
+    "observation"
+  ],
+  "title": "DeviceObservation",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

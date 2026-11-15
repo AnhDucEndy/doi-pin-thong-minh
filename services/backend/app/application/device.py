@@ -106,6 +106,11 @@ def receive(session, db, actor, body):
 
 
 def command_allowed(session,db,command,policy,now):
+    if 'recovery_operations' in db.tables:
+        operations = db.table('recovery_operations')
+        if session.execute(select(operations.c.id).where(operations.c.swap_id == command['swap_id'],
+                operations.c.consumed_at.is_(None), operations.c.cancelled_at.is_(None))).first():
+            return False  # An expired service operation is not proof of no effect.
     swap = assets.get_row(session,db,'swap_transactions',command['swap_id'])
     slot = assets.get_row(session,db,'compartments',command['compartment_id'])
     device = assets.get_row(session,db,'devices',command['device_id'])
@@ -185,7 +190,8 @@ def enqueue_command(session,db,swap_id,slot_id,kind,policy):
     if not command_allowed(session,db,command,policy,now): raise DomainError(409,'COMMAND_INTERLOCK_FAILED')
     pin_id=swap['old_battery_id'] if kind=='OPEN_RETURN' else swap['new_battery_id']
     pin=assets.get_row(session,db,'batteries',pin_id)
-    payload={'expected_serial':pin['serial'],'expected_battery_id':str(pin['id']),'simulation_only':True}
+    payload={'expected_serial':pin['serial'],'expected_battery_id':str(pin['id']),
+             'customer_id':str(swap['customer_id']),'simulation_only':True}
     result=session.execute(insert(table).values(**command,payload=payload,payload_hash=digest(json.dumps(payload,sort_keys=True)))
         .returning(table)).mappings().one()
     audit(session,db,device,'COMMAND_CREATED',command['id'],{'kind':kind,'swap_id':str(swap_id)},actor_type='SYSTEM')

@@ -1,0 +1,716 @@
+{
+  "time": "2026-11-15T16:20:01.879261+00:00",
+  "fixtures": [
+    {
+      "mode": "A",
+      "schema": "phase5_test_512976144df2",
+      "transaction_read_only": true,
+      "audits": 6,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_ATTESTATION_RECORDED": 3,
+        "MANUAL_RECOVERY_SETTLED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "91bbfa7a088e008d1bdc4966643c82578f6640839195741cdf135f98596a25d9"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "df649b3efae737f6edc84123b20b8982ce3109b133f0d7c437d5f20af644122f"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "c2f81f8d385d33f2ea433a385ce33dca3287b5ad766df96bd32858a7e53ffbfd"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "437170e9a0be39130bccbd4121623629587a2f1499d8df389c5e8aabd019e0f8"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "807d84eb7fbde29d1534e9ac97ef263b15a8822d9f5353dd2294f7c97a2a5289"
+        },
+        {
+          "action": "MANUAL_RECOVERY_SETTLED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "1f3802b70231d0d8d35df672ccfef5bac8a4d8c8af95d9ad1b5e77d62cc7bd7f"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "B",
+      "schema": "phase5_test_40a68408fdd5",
+      "transaction_read_only": true,
+      "audits": 6,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_ATTESTATION_RECORDED": 3,
+        "MANUAL_RECOVERY_SETTLED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "8d34c84d33fb4111ca0ef25d5433ecdd7f26dd981af0b08824100a48ea53c311"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "77c6762ec89d91bd721d5d593dd05ab07ea21184abef54e372c2fdd3f1cdce5b"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "ed3c3639c9769ef4fd5c15bd2c2b4d4caa260d4032543711fab80dc85e96a95a"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "90120e9a8916b2f91cfd189a843fefcefae750abed6d4c43cb302c04f7a93850"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "0ca28757ebedb8c7addd2f70838a9361e97127196f0362c49097bb0a0cda0287"
+        },
+        {
+          "action": "MANUAL_RECOVERY_SETTLED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "1826c1309894914364147928af9819694d5339fb14cb20ed5e1d09d478a3b2ed"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "CD",
+      "schema": "phase5_test_d2cb43d7ab69",
+      "transaction_read_only": true,
+      "audits": 6,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_ATTESTATION_RECORDED": 3,
+        "MANUAL_RECOVERY_SETTLED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "9327f09bbb019a03c18ea4b661a05ed94d6af0da8f9a1f9eafe26cc74b9e873c"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "818d4117f56d0df2659f0966f81c3d3d0b5c64d747101c67a53909959a7c4aaa"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "53ad327e01b1021b63fcc87f558f2a7a9b6017d89c9440bd1ddaa3f4021a2c62"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "942f20f38e34b0874c5bdd82fcd7050c423f0e48d3b3713583a9cc42a3a3ef56"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "ed4f0523018532a2d9b81bbf66b6e471cc628f0049b25bc1c4e10dd9b8ca6420"
+        },
+        {
+          "action": "MANUAL_RECOVERY_SETTLED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "RESOLVED",
+          "snapshot_sha256": "efa49e0cee0046cfd3ac7d846cbaa0f8f96971297f21118c8cafb7dc35a41379"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "E",
+      "schema": "phase5_test_5bb701c72d71",
+      "transaction_read_only": true,
+      "audits": 12,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_INSPECTION_RECORDED": 1,
+        "RECOVERY_PRE_ACTION_CONFIRMED": 2,
+        "RECOVERY_AUTHORIZATION_INTENT_CREATED": 1,
+        "RECOVERY_AUTHORIZATION_ACKNOWLEDGED": 1,
+        "RECOVERY_ACTION_ACTIVATED": 1,
+        "RECOVERY_POST_ACTION_RECEIPT_STORED": 1,
+        "RECOVERY_POST_ACTION_CONFIRMED": 2,
+        "FOREIGN_OBJECT_RETURN_SETTLED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "e8175acf392111fe3bf7dd9e6fc91d4cfb35b232b414dc164a31445a27dc1f3f"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "e25d29a846f225db6c3a2935fc1ffd9e4273a85b1b87389bf46b727c8671e539"
+        },
+        {
+          "action": "RECOVERY_INSPECTION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "82147c193025a11bb94400ab3e165e0eb25f39156c1cd43101ab28e7753b8869"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "fc67bf909d8df927b39808879332e5ff3f6e59f0e00ee0eb8cd25167e46c3d87"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "9deb30084c3b6357e6239e9559c8bafd31ca441a21b31d9cf520c09c7906f196"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_INTENT_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "c4f5b1e5a8b9064ee3fc9ff05ffa557d3603fdc583e062ace460b93568cc43d4"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_ACKNOWLEDGED",
+          "actor_type": "DEVICE",
+          "before_case_version": 5,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "78c766e3869e3e4330b112838973ed500748d07ef6bf63e94d3065db0caf6c68"
+        },
+        {
+          "action": "RECOVERY_ACTION_ACTIVATED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "5f0f040e32383351315eba09e1d535f6814a62b1ad24f6be5f6a18e572ee8925"
+        },
+        {
+          "action": "RECOVERY_POST_ACTION_RECEIPT_STORED",
+          "actor_type": "DEVICE",
+          "before_case_version": 6,
+          "after_case_version": 6,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "5d6edd26a1104cc1993bf420315b12bc22c83c8c28c8cafcd18b316ec054c5f9"
+        },
+        {
+          "action": "RECOVERY_POST_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 6,
+          "after_case_version": 7,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "f8c0eef85f684c07cbcc75a4dbde9409270c47d3c30684fc8a24b9d974f891b9"
+        },
+        {
+          "action": "RECOVERY_POST_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 7,
+          "after_case_version": 8,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "e9eb45397cc938e6c9bb629fcd3be0e5848d56133adc64a1d78ce10a7dea88df"
+        },
+        {
+          "action": "FOREIGN_OBJECT_RETURN_SETTLED",
+          "actor_type": "USER",
+          "before_case_version": 8,
+          "after_case_version": 9,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "0dcaabfee6eb16adab5c3ba9d5a996e9acabb4ee488215bc9701fc8aac862170"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "F",
+      "schema": "phase5_test_942c3839b1b4",
+      "transaction_read_only": true,
+      "audits": 7,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 2,
+        "RECOVERY_OPERATION_SUPERSEDED": 1,
+        "RECOVERY_ATTESTATION_RECORDED": 3
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "df65e290f49f9c19f287a0346ba940c84be0ae234b841fa0187d60640ef74c6b"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "756d09366c45d155413355e70a9d02fcb7c4cd4febbc064315d7b834b4362b36"
+        },
+        {
+          "action": "RECOVERY_OPERATION_SUPERSEDED",
+          "actor_type": "USER",
+          "before_case_version": 2,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "3a051b373209c6f6ee0756d5ba56b6634d576d326070cfd7518786dd46de84a9"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "00ce5c5b50dc4be178423e6458ce552e592e6e525ea078e6d8ed95159a5a83bf"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "5ac19e717bfa233a52195c4fcab31ac443cc2dbd00f6fe13dba6f6d091d7ef63"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "6af6618ef317809c1471acc214dae0b3633a0d467b953d32b9b4648cd62aaf1b"
+        },
+        {
+          "action": "RECOVERY_ATTESTATION_RECORDED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "EVIDENCE_RECORDED",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "b9609900f146f4d10c7fd67239ee4389646dd90f58b36913321ea4e60c49406b"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "J",
+      "schema": "phase5_test_5cb7c3a831e7",
+      "transaction_read_only": true,
+      "audits": 9,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_INSPECTION_RECORDED": 1,
+        "RECOVERY_PRE_ACTION_CONFIRMED": 2,
+        "RECOVERY_AUTHORIZATION_INTENT_CREATED": 1,
+        "RECOVERY_AUTHORIZATION_ACKNOWLEDGED": 1,
+        "RECOVERY_NO_EFFECT_CLOSURE_REQUESTED": 1,
+        "RECOVERY_NO_EFFECT_CLOSED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "684e61447c5524a69ee2717e625a8ced3dac5f32684458ee6bbfe17fd3009f97"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "dd63a36b099aa7b2b2633afd180fb09f7c707a0ee58425f7e7bc0edb22abe747"
+        },
+        {
+          "action": "RECOVERY_INSPECTION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "7febcbc0758b21ca713f6dd25ba99981c9d03e6d318a568ad77a77abbf011906"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "f925abf65d4b0bcc66e67463b2469d4a1f045252d9c4daacceccda979b3250b3"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "48abf93d03bffb2e6b8e13c1a25f5ffb19d07754930e2d640840f529d12c508b"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_INTENT_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "151b3da15b7d65622e44fa606afbaf6b7ffb56701f75d29b3aeb683c33df67f2"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_ACKNOWLEDGED",
+          "actor_type": "DEVICE",
+          "before_case_version": 5,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "a14c0c57bd00bc53751f434ecc568d4c603a5a8bc1c89ccfc01e000d9b323563"
+        },
+        {
+          "action": "RECOVERY_NO_EFFECT_CLOSURE_REQUESTED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "ab0aa189b112f2d52be562d6cf269d29e12acf176d3f9ef655520d24806d8ab7"
+        },
+        {
+          "action": "RECOVERY_NO_EFFECT_CLOSED",
+          "actor_type": "USER",
+          "before_case_version": 6,
+          "after_case_version": 7,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "d83e5711a3bd7123fcd8496a5bcb807c9b1211845da87dd71d5707afee6bd0ae"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "K",
+      "schema": "phase5_test_e8873e5f6ca4",
+      "transaction_read_only": true,
+      "audits": 14,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_INSPECTION_RECORDED": 1,
+        "RECOVERY_PRE_ACTION_CONFIRMED": 2,
+        "RECOVERY_AUTHORIZATION_INTENT_CREATED": 1,
+        "RECOVERY_AUTHORIZATION_ACKNOWLEDGED": 1,
+        "RECOVERY_ACTION_ACTIVATED": 1,
+        "RECOVERY_POST_ACTION_RECEIPT_STORED": 1,
+        "RECOVERY_REINSPECTION_REQUESTED": 1,
+        "RECOVERY_REINSPECTION_RECORDED": 1,
+        "RECOVERY_REINSPECTION_ATTESTED": 2,
+        "FOREIGN_OBJECT_RETURN_SETTLED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "e3cbd7b5680b61542aab1519c7970b11b0eaf1bd9260aaac34b5103ac8fa9571"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "5fcd808b090143dd378800529aa89b680a6f234c287a3f3026e36b569a04e033"
+        },
+        {
+          "action": "RECOVERY_INSPECTION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "9ac84248801c991cf4fd43bcd32c3f9cf61639996481ea1f6a62bcf7fed9bdba"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 2,
+          "after_case_version": 3,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "747d0044d00735d7d8c4bb98fb0fa5091f359cbfaac288e2fc3a9f712f6e8177"
+        },
+        {
+          "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+          "actor_type": "USER",
+          "before_case_version": 3,
+          "after_case_version": 4,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "5a43c648ad9b7d522f2d1e37e7e0ecb20f399867a298225d46e134331253c2b5"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_INTENT_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 4,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "831b0c492246c100a112556b8603f025d4b391f17042937bf27cb2d26d1a91ab"
+        },
+        {
+          "action": "RECOVERY_AUTHORIZATION_ACKNOWLEDGED",
+          "actor_type": "DEVICE",
+          "before_case_version": 5,
+          "after_case_version": 5,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "7a4ed55349a230fd4da5b7bb802cedebbc5f8c87fbced4c3d805b41a43eb0282"
+        },
+        {
+          "action": "RECOVERY_ACTION_ACTIVATED",
+          "actor_type": "USER",
+          "before_case_version": 5,
+          "after_case_version": 6,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "24a9186e0c1508919c1e320ef23bef4b89d018bd08c280fadc717c23352919ff"
+        },
+        {
+          "action": "RECOVERY_POST_ACTION_RECEIPT_STORED",
+          "actor_type": "DEVICE",
+          "before_case_version": 6,
+          "after_case_version": 6,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "a18e9f2859de1cfcd3287f9f476ead307f831ae75e089d209b1655668e7010bc"
+        },
+        {
+          "action": "RECOVERY_REINSPECTION_REQUESTED",
+          "actor_type": "USER",
+          "before_case_version": 6,
+          "after_case_version": 7,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "4acad777918442f0c93217a61a8e352e70af0fb7673194f611da6fd196dba4bd"
+        },
+        {
+          "action": "RECOVERY_REINSPECTION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 7,
+          "after_case_version": 7,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "bd23208449547b0f3b04067ef5408ff201033fcffdba460b31d80a761b8d3877"
+        },
+        {
+          "action": "RECOVERY_REINSPECTION_ATTESTED",
+          "actor_type": "USER",
+          "before_case_version": 7,
+          "after_case_version": 8,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "c1592cf62994cfb5df3c42f2e00b454090c2ebdea5f31fa835902be412700399"
+        },
+        {
+          "action": "RECOVERY_REINSPECTION_ATTESTED",
+          "actor_type": "USER",
+          "before_case_version": 8,
+          "after_case_version": 9,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "3857ca19f97fa9321541bb71299c05e828e48bb03ab3206e4abfda2813d32f02"
+        },
+        {
+          "action": "FOREIGN_OBJECT_RETURN_SETTLED",
+          "actor_type": "USER",
+          "before_case_version": 9,
+          "after_case_version": 10,
+          "before_state": "OPEN",
+          "after_state": "EVIDENCE_RECORDED",
+          "snapshot_sha256": "b47056e56a38926e669e94bedc87d8cef42e0f1021a941940822c3ac22fc3a8e"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "mode": "T",
+      "schema": "phase5_test_7a45ca700104",
+      "transaction_read_only": true,
+      "audits": 3,
+      "counts": {
+        "RECOVERY_CASE_CREATED": 1,
+        "RECOVERY_OPERATION_CREATED": 1,
+        "RECOVERY_INSPECTION_RECORDED": 1
+      },
+      "transitions": [
+        {
+          "action": "RECOVERY_CASE_CREATED",
+          "actor_type": "SYSTEM",
+          "before_case_version": null,
+          "after_case_version": 1,
+          "before_state": null,
+          "after_state": "OPEN",
+          "snapshot_sha256": "a5183521af3646b161c96d68fed580dab1a5badacae6eb7785298fe68f0790fe"
+        },
+        {
+          "action": "RECOVERY_OPERATION_CREATED",
+          "actor_type": "USER",
+          "before_case_version": 1,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "21946818b8563f748a8229781a4b0236e305f8d784fe81379c63da32eeb9b7bc"
+        },
+        {
+          "action": "RECOVERY_INSPECTION_RECORDED",
+          "actor_type": "DEVICE",
+          "before_case_version": 2,
+          "after_case_version": 2,
+          "before_state": "OPEN",
+          "after_state": "OPEN",
+          "snapshot_sha256": "e71f8150d447c6ff69b3f5ff5b83ef1f4da7ca2bb143aa4517cf68a51da4e3ed"
+        }
+      ],
+      "status": "PASSED"
+    }
+  ],
+  "historical_R2_unchanged": {
+    "n": 11,
+    "before_count": 0,
+    "after_count": 11
+  },
+  "total_current_audits": 63,
+  "status": "PASSED"
+}

@@ -40,10 +40,23 @@ class Simulator:
             self.conn.execute('INSERT OR IGNORE INTO slots VALUES (?,?)',(body['compartment_id'],json.dumps(body)))
         self.conn.commit()
 
+        from simulators.device.service import initialize
+        initialize(self.conn)
+        from simulators.device.recovery_fence import initialize as initialize_fence
+        initialize_fence(self.conn)
+        from simulators.device.recovery_handover import initialize as initialize_action
+        from simulators.device.recovery_reconciliation import initialize as initialize_reconciliation
+        initialize_action(self.conn)
+        initialize_reconciliation(self.conn)
+        self._effect_transaction = False
+
     def close(self):self.http.close();self.conn.close()
+    def commit_model(self):
+        if not self._effect_transaction:
+            self.conn.commit()
     def slots(self):return [json.loads(r['body']) for r in self.conn.execute('SELECT body FROM slots ORDER BY id')]
     def save_slot(self,slot):
-        self.conn.execute('UPDATE slots SET body=? WHERE id=?',(json.dumps(slot),slot['compartment_id']));self.conn.commit()
+        self.conn.execute('UPDATE slots SET body=? WHERE id=?',(json.dumps(slot),slot['compartment_id']));self.commit_model()
     def emit(self,kind,payload,**references):
         # Windows clock resolution can give presence and close the same instant.
         # Wait for a real later sample; never invent a future measurement time or
@@ -55,7 +68,7 @@ class Simulator:
             time.sleep(.001);observed=now()
         body={'event_id':str(uuid4()),'boot_id':self.boot,'seq':self.seq,'kind':kind,'observed_at':observed,'payload':payload,**references}
         self.seq+=1
-        self.conn.execute('INSERT INTO events(id,body) VALUES (?,?)',(body['event_id'],json.dumps(body)));self.conn.commit()
+        self.conn.execute('INSERT INTO events(id,body) VALUES (?,?)',(body['event_id'],json.dumps(body)));self.commit_model()
         self.last_observed=datetime.fromisoformat(observed)
         return body
     def snapshot(self):
@@ -95,8 +108,20 @@ class Simulator:
                 if time.monotonic()>deadline:raise RuntimeError('WORKER_PROCESSING_TIMEOUT: start the inbox worker')
                 time.sleep(.1)
     def handle(self,command):
+        # Serialize even commands fetched before a recovery fence was installed.
+        # UNKNOWN is committed first; a crash leaves uncertainty, not permission
+        # to retry. Model/evidence/completion then share one writer transaction.
+        try:
+            return self._handle(command)
+        except BaseException:
+            self.conn.rollback()
+            raise
+        finally:
+            self._effect_transaction = False
+    def _handle(self,command):
         body={k:command[k] for k in ('id','device_id','swap_id','compartment_id','kind','expires_at','payload')}
         hashed=hashlib.sha256(json.dumps(body,sort_keys=True).encode()).hexdigest()
+        self.conn.execute('BEGIN IMMEDIATE')
         existing=self.conn.execute('SELECT * FROM commands WHERE id=?',(command['id'],)).fetchone()
         if existing:
             cached=json.loads(existing['body']).get('ack',{'result':'ACCEPTED' if existing['status']=='EXECUTED' else 'REJECTED','reason':'DURABLE_REPLAY_NO_EFFECT'})
@@ -105,6 +130,16 @@ class Simulator:
         # Persist UNKNOWN before any actuator effect. A restart cannot execute this ID again.
         self.conn.execute('INSERT INTO commands VALUES (?,?,?,?,?)',(command['id'],hashed,'UNKNOWN',0,json.dumps(body)));self.conn.commit()
         if self.scenario=='crash-after-ledger':raise RuntimeError('SIMULATED_CRASH_AFTER_DURABLE_LEDGER')
+        self.conn.execute('BEGIN IMMEDIATE')
+        from simulators.device.recovery_fence import require_unfenced
+        require_unfenced(self.conn)
+        from simulators.device.recovery_reconciliation import deny_guard
+        deny_guard(self.conn, 'COMMAND', command['id'])
+        self._effect_transaction = True
+        result = self._execute_command(command, body)
+        self.conn.commit()
+        return result
+    def _execute_command(self,command,body):
         slot=next((s for s in self.slots() if s['compartment_id']==command['compartment_id']),None)
         valid=(command['device_id']==str(demo_id('device:'+self.code)) and command['kind'] in ('OPEN_RETURN','OPEN_SUPPLY')
             and datetime.fromisoformat(command['expires_at'].replace('Z','+00:00'))>datetime.now(timezone.utc)
@@ -114,12 +149,12 @@ class Simulator:
             valid=slot['present'] is False if command['kind']=='OPEN_RETURN' else slot['present'] is True and slot['observed_serial']==command['payload']['expected_serial']
         if not valid or self.scenario=='nack':
             body['ack']={'result':'REJECTED','reason':'INTERLOCK_OR_DEMO_NACK'}
-            self.conn.execute('UPDATE commands SET status=?,body=? WHERE id=?',('NOT_EXECUTED',json.dumps(body),command['id']));self.conn.commit()
+            self.conn.execute('UPDATE commands SET status=?,body=? WHERE id=?',('NOT_EXECUTED',json.dumps(body),command['id']));self.commit_model()
             self.acknowledge(command,'REJECTED','INTERLOCK_OR_DEMO_NACK');return 'REJECTED'
         self.acknowledge(command,'ACCEPTED','RECEIVED_NOT_PHYSICAL_PROOF')
         if self.scenario in ('normal','ack-only'):
             body['ack']={'result':'ACCEPTED','reason':'RECEIVED_NOT_PHYSICAL_PROOF'}
-            self.conn.execute('UPDATE commands SET status=?,body=? WHERE id=?',('NOT_EXECUTED',json.dumps(body),command['id']));self.conn.commit();return 'ACK_ONLY'
+            self.conn.execute('UPDATE commands SET status=?,body=? WHERE id=?',('NOT_EXECUTED',json.dumps(body),command['id']));self.commit_model();return 'ACK_ONLY'
         slot['lock_released']=True;slot['door_state']='OPEN';self.save_slot(slot)
         refs={'compartment_id':slot['compartment_id'],'swap_id':command['swap_id'],'command_id':command['id']}
         observation=lambda:{k:slot[k] for k in ('door_state','present','observed_serial')}
@@ -128,11 +163,15 @@ class Simulator:
         slot['observed_serial']=command['payload']['expected_serial'] if slot['present'] else None
         if self.scenario=='wrong-return' and command['kind']=='OPEN_RETURN':
             slot['observed_serial']='SIMULATED-WRONG-BATTERY'
-        slot['battery_id']=command['payload'].get('expected_battery_id') if slot['present'] else None
+        slot['battery_id']=(command['payload'].get('expected_battery_id')
+            if slot['present'] and slot['observed_serial']==command['payload']['expected_serial'] else None)
         self.save_slot(slot);self.emit('PRESENCE',observation(),**refs)
         slot['door_state']='CLOSED';slot['lock_released']=False;self.save_slot(slot);self.emit('DOOR',observation(),**refs)
         body['ack']={'result':'ACCEPTED','reason':'RECEIVED_NOT_PHYSICAL_PROOF'}
-        self.conn.execute('UPDATE commands SET status=?,body=?,effects=effects+1 WHERE id=?',('EXECUTED',json.dumps(body),command['id']));self.conn.commit()
+        self.conn.execute('UPDATE commands SET status=?,body=?,effects=effects+1 WHERE id=?',('EXECUTED',json.dumps(body),command['id']))
+        from simulators.device.service import command_effect
+        command_effect(self.conn, command)
+        self.commit_model()
         return 'EXECUTED'
     def cycle(self):
         if self.scenario=='offline':return []
@@ -162,7 +201,10 @@ def main():
     parser.add_argument('--scenario',choices=['normal','low-soc','low-soh','hot','missing-bms','fault','ack-only','nack','physical','wrong-return','crash-after-ledger','offline'],default='normal')
     parser.add_argument('--cycles',type=int,default=0,help='0 means run until Ctrl+C')
     parser.add_argument('--inspect',action='store_true',help='Read local physical/command ledger without sending events')
+    parser.add_argument('--service-operation',help='Explicit recovery operation UUID; requires SERVICE_TECHNICIAN_TOKEN in environment. Polling alone never performs service.')
     args=parser.parse_args();codes=['S01','S02'] if args.station=='both' else [args.station]
+    if args.service_operation and (args.station == 'both' or not os.getenv('SERVICE_TECHNICIAN_TOKEN')):
+        parser.error('Service action requires one station and SERVICE_TECHNICIAN_TOKEN')
     if args.inspect:
         for code in codes:
             path=(Path(args.ledger_dir)/(code+'.sqlite3')).resolve()
@@ -175,10 +217,21 @@ def main():
     sims=[Simulator(code,os.getenv('DEMO_DEVICE_KEY_'+code),args.url,Path(args.ledger_dir)/(code+'.sqlite3'),args.scenario) for code in codes]
     try:
         index=0
+        service_invoked=False
         while True:
             for sim in sims:
                 try:
                     receipts=sim.cycle();print(f'{sim.code}: cycle {index+1}, inbox receipts={len(receipts)}, simulation_only=True',flush=True)
+                    from simulators.device.service import perform, flush as flush_service
+                    if args.service_operation and not service_invoked:
+                        tasks=sim.http.get('/v1/device/recovery-tasks');tasks.raise_for_status()
+                        task=next((t for t in tasks.json()['items'] if t['operation_id']==args.service_operation),None)
+                        if task:
+                            outcome=perform(sim,task,technician_token=os.environ['SERVICE_TECHNICIAN_TOKEN'])
+                            service_invoked=True
+                            print(f'{sim.code}: explicit service result={outcome}; no automatic retry of UNKNOWN',flush=True)
+                            sim.snapshot();sim.flush()
+                    flush_service(sim)
                 except (httpx.HTTPError,RuntimeError) as error:
                     if args.cycles:raise
                     print(f'{sim.code}: {type(error).__name__}; durable outbox retained; retry next cycle',flush=True)

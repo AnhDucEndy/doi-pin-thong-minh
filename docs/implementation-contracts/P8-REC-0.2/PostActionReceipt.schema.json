@@ -1,0 +1,172 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "0.2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "stage": {
+      "const": "POST_ACTION_RECEIPT",
+      "title": "Stage",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "authorization_id": {
+      "format": "uuid",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "authorization_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Hash",
+      "type": "string"
+    },
+    "activation_id": {
+      "format": "uuid",
+      "title": "Activation Id",
+      "type": "string"
+    },
+    "activation_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Activation Hash",
+      "type": "string"
+    },
+    "boot_id": {
+      "format": "uuid",
+      "title": "Boot Id",
+      "type": "string"
+    },
+    "seq": {
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "ledger_id": {
+      "format": "uuid",
+      "title": "Ledger Id",
+      "type": "string"
+    },
+    "fence_generation": {
+      "minimum": 1,
+      "title": "Fence Generation",
+      "type": "integer"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "effect_started_at": {
+      "format": "date-time",
+      "title": "Effect Started At",
+      "type": "string"
+    },
+    "effect_completed_at": {
+      "format": "date-time",
+      "title": "Effect Completed At",
+      "type": "string"
+    },
+    "actual_serial": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Actual Serial",
+      "type": "string"
+    },
+    "source_compartment_id": {
+      "format": "uuid",
+      "title": "Source Compartment Id",
+      "type": "string"
+    },
+    "destination": {
+      "const": "CUSTOMER",
+      "title": "Destination",
+      "type": "string"
+    },
+    "recipient_id": {
+      "format": "uuid",
+      "title": "Recipient Id",
+      "type": "string"
+    },
+    "snapshot_event_id": {
+      "format": "uuid",
+      "title": "Snapshot Event Id",
+      "type": "string"
+    },
+    "command_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Command Digest",
+      "type": "string"
+    },
+    "service_entry": {
+      "additionalProperties": true,
+      "title": "Service Entry",
+      "type": "object"
+    },
+    "service_entry_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Service Entry Hash",
+      "type": "string"
+    },
+    "result": {
+      "const": "OBSERVED",
+      "title": "Result",
+      "type": "string"
+    },
+    "effect_count_delta": {
+      "const": 1,
+      "title": "Effect Count Delta",
+      "type": "integer"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "stage",
+    "event_id",
+    "operation_id",
+    "context_hash",
+    "authorization_id",
+    "authorization_hash",
+    "activation_id",
+    "activation_hash",
+    "boot_id",
+    "seq",
+    "ledger_id",
+    "fence_generation",
+    "observed_at",
+    "effect_started_at",
+    "effect_completed_at",
+    "actual_serial",
+    "source_compartment_id",
+    "destination",
+    "recipient_id",
+    "snapshot_event_id",
+    "command_digest",
+    "service_entry",
+    "service_entry_hash",
+    "result",
+    "effect_count_delta",
+    "simulation_only"
+  ],
+  "title": "PostActionReceipt",
+  "type": "object"
+}

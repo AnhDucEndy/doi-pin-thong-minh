@@ -101,7 +101,15 @@ def build_router(session, principal, admin, mutation):
 
     @router.get('/v1/swaps/{swap_id}', operation_id='getSwap', tags=['FR13'])
     def get_swap(swap_id: UUID, request: Request, actor=Depends(reader, scope='function'), current=Depends(session, scope='function')):
-        return service.public_swap(service.owned_swap(current, request.app.state.db, actor['user'], swap_id))
+        db = request.app.state.db
+        swap = service.owned_swap(current, db, actor['user'], swap_id)
+        result = service.public_swap(swap)
+        if 'recovery_operations' in db.tables:
+            from app.application.recovery import confirmation_context
+            context = confirmation_context(current, db, actor, swap)
+            if context:
+                result['recovery_confirmation'] = context
+        return result
 
     @router.post('/v1/swaps/{swap_id}/reserve', operation_id='reserveSwap', tags=['FR10'])
     def reserve(swap_id: UUID, body: VersionAction, request: Request, key: UUID = Header(alias='Idempotency-Key'),

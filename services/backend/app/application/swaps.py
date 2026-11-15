@@ -27,8 +27,10 @@ def transition(session, db, swap, state, **values):
 
 def review(session, db, swap, reason):
     cases = db.table('recovery_cases')
-    session.execute(pg_insert(cases).values(id=uuid4(), swap_id=swap['id'])
-        .on_conflict_do_nothing(index_elements=[cases.c.swap_id]))
+    created = session.execute(pg_insert(cases).values(id=uuid4(), swap_id=swap['id'])
+        .on_conflict_do_nothing(index_elements=[cases.c.swap_id]).returning(cases)).mappings().first()
+    from app.application.recovery_audit import created as audit_created
+    audit_created(session, db, created, 'device-worker')
     transition(session, db, swap, 'REVIEW_REQUIRED', review_reason=reason)
 
 
@@ -180,6 +182,11 @@ def advance(session, db, identity):
     holds = db.table('resource_reservations')
     session.execute(update(holds).where(holds.c.swap_id == identity, holds.c.released_at.is_(None))
         .values(released_at=now))
+    if 'recovery_operations' in db.tables:
+        # A resumed recovery closes only AFTER the unchanged automatic custody
+        # guards above succeed, in the same transaction as custody and holds.
+        from app.application.recovery import close_resumed
+        close_resumed(session, db, swap, event)
 
 
 def tick(db):

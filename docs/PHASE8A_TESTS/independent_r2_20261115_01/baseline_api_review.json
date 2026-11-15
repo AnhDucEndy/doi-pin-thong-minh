@@ -1,0 +1,51 @@
+{
+  "/v1/swaps/{swap_id}/recovery": {
+    "get": {
+      "operationId": "getRecovery",
+      "security": [
+        {
+          "UserBearer": []
+        }
+      ],
+      "x-roles": [
+        "ADMIN",
+        "TECHNICIAN"
+      ],
+      "x-fr": [
+        "FR12"
+      ]
+    }
+  },
+  "/v1/swaps/{swap_id}/recovery/evidence": {
+    "post": {
+      "operationId": "recordRecoveryEvidence",
+      "security": [
+        {
+          "UserBearer": []
+        }
+      ],
+      "x-roles": [
+        "TECHNICIAN"
+      ],
+      "x-fr": [
+        "FR12"
+      ]
+    }
+  },
+  "/v1/swaps/{swap_id}/recovery/settle": {
+    "post": {
+      "operationId": "settleRecovery",
+      "security": [
+        {
+          "UserBearer": []
+        }
+      ],
+      "x-roles": [
+        "TECHNICIAN"
+      ],
+      "x-fr": [
+        "FR12"
+      ]
+    }
+  }
+}

@@ -15,6 +15,7 @@ from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
 import pytest
+pytest_plugins = ['recovery_audit_checks']
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 

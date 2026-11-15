@@ -1,0 +1,319 @@
+{
+  "supersedes": "historical_validation.json check counts only: nested check mappings must count list entries, not mapping keys; preliminary artifact retained",
+  "real_IA01": [
+    {
+      "mode": "T",
+      "report": "docs\\PHASE8A_TESTS\\ia01_real_T_20261114_01\\reports\\PHASE8A_E2E_E.json",
+      "sha256": "b28bc9344d5a10440bc8a451a5427ad9ab747075ed9c393a0cbbe8c544a3a00e",
+      "exit": 0,
+      "status": "PASSED",
+      "database": {
+        "state": "REVIEW_REQUIRED",
+        "holds": 3,
+        "old_location": "CUSTOMER",
+        "new_location": "COMPARTMENT"
+      },
+      "operator_keys": [
+        "mode",
+        "old_boot",
+        "new_boot",
+        "statuses",
+        "case_unchanged",
+        "facts",
+        "effects",
+        "confirmation_audits",
+        "requests",
+        "http"
+      ],
+      "facts": {
+        "payment": "SUCCEEDED",
+        "holds": 3,
+        "custody": [
+          {
+            "id": "e9ff7522-1cb5-5cd1-994b-fae37bbef3c9",
+            "location_kind": "CUSTOMER",
+            "holder_user_id": "70125423-732b-5896-b084-8aae73a72f08",
+            "compartment_id": null
+          },
+          {
+            "id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+            "location_kind": "COMPARTMENT",
+            "holder_user_id": null,
+            "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3"
+          }
+        ]
+      },
+      "effect_fields": {
+        "case_unchanged": true,
+        "effects": 0,
+        "confirmation_audits": 0
+      },
+      "demo_fingerprint_unchanged": true
+    },
+    {
+      "mode": "E",
+      "report": "docs\\PHASE8A_TESTS\\ia01_real_E_20261114_01\\reports\\PHASE8A_E2E_E.json",
+      "sha256": "807745de341f0fa8406590fd49f456570044c373ec0775216a7e8e6f9575c1b8",
+      "exit": 0,
+      "status": "PASSED",
+      "database": {
+        "state": "REVIEW_REQUIRED",
+        "holds": 3,
+        "old_location": "CUSTOMER",
+        "new_location": "COMPARTMENT"
+      },
+      "operator_keys": [
+        "mode",
+        "requests",
+        "http",
+        "case_version",
+        "effects",
+        "success_audit",
+        "success_audits",
+        "facts"
+      ],
+      "facts": {
+        "payment": "SUCCEEDED",
+        "holds": 3,
+        "custody": [
+          {
+            "id": "e9ff7522-1cb5-5cd1-994b-fae37bbef3c9",
+            "location_kind": "CUSTOMER",
+            "holder_user_id": "70125423-732b-5896-b084-8aae73a72f08",
+            "compartment_id": null
+          },
+          {
+            "id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+            "location_kind": "COMPARTMENT",
+            "holder_user_id": null,
+            "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3"
+          }
+        ]
+      },
+      "effect_fields": {
+        "effects": 1,
+        "success_audit": "FOREIGN_OBJECT_RETURN_SETTLED",
+        "success_audits": 1
+      },
+      "demo_fingerprint_unchanged": true
+    },
+    {
+      "mode": "K",
+      "report": "docs\\PHASE8A_TESTS\\ia01_real_K_20261115_01\\reports\\PHASE8A_E2E_E.json",
+      "sha256": "65585798882f009e2c8a4fb715b4b9c425b5fda0c5c0f5e8828bc4757bbb0ee9",
+      "exit": 0,
+      "status": "PASSED",
+      "database": {
+        "state": "REVIEW_REQUIRED",
+        "holds": 3,
+        "old_location": "CUSTOMER",
+        "new_location": "COMPARTMENT"
+      },
+      "operator_keys": [
+        "mode",
+        "requests",
+        "http",
+        "case_version",
+        "effects",
+        "success_audit",
+        "success_audits",
+        "facts"
+      ],
+      "facts": {
+        "payment": "SUCCEEDED",
+        "holds": 3,
+        "custody": [
+          {
+            "id": "e9ff7522-1cb5-5cd1-994b-fae37bbef3c9",
+            "location_kind": "CUSTOMER",
+            "holder_user_id": "70125423-732b-5896-b084-8aae73a72f08",
+            "compartment_id": null
+          },
+          {
+            "id": "0d8addb6-2701-52c9-9d3c-c522b3dca96a",
+            "location_kind": "COMPARTMENT",
+            "holder_user_id": null,
+            "compartment_id": "9cbc34bd-61c6-5815-b821-03f57fbb31c3"
+          }
+        ]
+      },
+      "effect_fields": {
+        "effects": 1,
+        "success_audit": "FOREIGN_OBJECT_RETURN_SETTLED",
+        "success_audits": 1
+      },
+      "demo_fingerprint_unchanged": true
+    }
+  ],
+  "historical_e2e": [
+    {
+      "scenario": "A",
+      "checks": 5,
+      "exit": 0
+    },
+    {
+      "scenario": "B",
+      "checks": 6,
+      "exit": 0
+    },
+    {
+      "scenario": "CD",
+      "checks": 8,
+      "exit": 0
+    },
+    {
+      "scenario": "E",
+      "checks": 28,
+      "exit": 0
+    },
+    {
+      "scenario": "F",
+      "checks": 8,
+      "exit": 0
+    },
+    {
+      "scenario": "J",
+      "checks": 20,
+      "exit": 0
+    },
+    {
+      "scenario": "K",
+      "checks": 26,
+      "exit": 0
+    }
+  ],
+  "B_restart_exit": {
+    "exit_code": 0,
+    "runner_sha256": "312C81E4C4CEBD964A53DA27BD60C4F20BB76BF581FA74C21F411EFFA178D2FB"
+  },
+  "historical_unique_checks": 102,
+  "race_labels": [
+    {
+      "label": "final_gate_assignment_first_01",
+      "log_exists": true,
+      "log_sha256": "ce28fb672d09e3cddde96f7d16450fc65833b0028dc59d28f3269b8dd7bb6291",
+      "reports": []
+    },
+    {
+      "label": "final_gate_committed_closure_01",
+      "log_exists": true,
+      "log_sha256": "60c477fc7a0670533aabb471a4e7f942eae1d2c3b6639f4d22440f2d3f4d1ba8",
+      "reports": [
+        {
+          "path": "docs\\PHASE8A_TESTS\\final_gate_committed_closure_01\\reports\\PHASE8A_E2E_J.json",
+          "status": "PASSED",
+          "sha256": "f1dcd02ac666790b7be5fd461400b5ad2cf3b4c43ec9cc1907ad08d46c262ab4"
+        }
+      ]
+    },
+    {
+      "label": "final_gate_confirm_first_01",
+      "log_exists": true,
+      "log_sha256": "6227e3a447b19ea7b0cb62f467fa1b5abcdaf294857e1ec07317cdba2d6118bb",
+      "reports": []
+    },
+    {
+      "label": "final_gate_cross_J_01",
+      "log_exists": true,
+      "log_sha256": "1825ace3033d5ca0902ff17be64730a09d4ca8b0f42a6a5aa7374a5a9d9c27fd",
+      "reports": [
+        {
+          "path": "docs\\PHASE8A_TESTS\\final_gate_cross_J_01\\reports\\PHASE8A_E2E_J.json",
+          "status": "PASSED",
+          "sha256": "bd1ee6913cdfb7073dc24fe920cbd67d69ec78fcbee67d5e6982506e10fc4b33"
+        }
+      ]
+    },
+    {
+      "label": "final_gate_cross_K_01",
+      "log_exists": true,
+      "log_sha256": "17913f44668147ed62ac15a22fb0a395ac29dd3e75ac1eea58f50e46be86a57f",
+      "reports": [
+        {
+          "path": "docs\\PHASE8A_TESTS\\final_gate_cross_K_01\\reports\\PHASE8A_E2E_K.json",
+          "status": "PASSED",
+          "sha256": "f111abf7eecc5f142c26f45720c11b064f686a7b7bba0f5b30ec757313ba093b"
+        }
+      ]
+    },
+    {
+      "label": "final_gate_fresh_before_expiry_03",
+      "log_exists": true,
+      "log_sha256": "6dd87b6de5bd4a9da8e71a209b89de4cf5390998d1e4063142466069fca35e4b",
+      "reports": []
+    },
+    {
+      "label": "final_gate_legacy_freshness_03",
+      "log_exists": true,
+      "log_sha256": "94f0b1355c1766f4253397d2f43cde9ee1c6461f9e87a120e911e168e85912d8",
+      "reports": []
+    },
+    {
+      "label": "final_gate_operation_expiry_01",
+      "log_exists": true,
+      "log_sha256": "409fd81ca8ac9cb1ba52b720801b4adec8259c43875b5e41e192ee4be74101c2",
+      "reports": []
+    },
+    {
+      "label": "final_gate_reject_first_01",
+      "log_exists": true,
+      "log_sha256": "1f2178e81283c6a5c6889c78496444605348fdec79252c0b3ed2e77a4d556124",
+      "reports": []
+    },
+    {
+      "label": "final_gate_role_first_01",
+      "log_exists": true,
+      "log_sha256": "497dcf58d9cc8fb30f73f18855ecb9a5e71999cb7a201ed91c8ae39661de04f0",
+      "reports": []
+    },
+    {
+      "label": "final_gate_settle_before_role_01",
+      "log_exists": true,
+      "log_sha256": "fa8dd474b2eeac1da2854be8f018b41a3ce1f0ba2cf31529333326d33b3046d1",
+      "reports": []
+    },
+    {
+      "label": "final_gate_settle_before_snapshot_01",
+      "log_exists": true,
+      "log_sha256": "a8d4b33b79df1bc02668d3b4be66ba733e5b371adb15bf47989ea182a3a57b8c",
+      "reports": []
+    },
+    {
+      "label": "final_gate_settle_before_witness_01",
+      "log_exists": true,
+      "log_sha256": "cdf722798e740b69de5a866d06a808ad00543dcb9e4a3db1dbfe09ab6d12412e",
+      "reports": []
+    },
+    {
+      "label": "final_gate_settle_first_01",
+      "log_exists": true,
+      "log_sha256": "fb7a36dbf73e6ed01258e87965433980294e8c3135da1f57c7ac09a3a2f75768",
+      "reports": []
+    },
+    {
+      "label": "final_gate_snapshot_first_01",
+      "log_exists": true,
+      "log_sha256": "b699b87ba38c0c400a38d5b46e46ad648e8ce522b7ac69bdff7c6d369102da56",
+      "reports": []
+    },
+    {
+      "label": "final_gate_staged_freshness_01",
+      "log_exists": true,
+      "log_sha256": "b2c63d10095355a127e1aba2c0981977bbbf684ebcf33f4ab6c476106086ac16",
+      "reports": [
+        {
+          "path": "docs\\PHASE8A_TESTS\\final_gate_staged_freshness_01\\reports\\PHASE8A_E2E_E.json",
+          "status": "PASSED",
+          "sha256": "9ca521d36e6c189f4c677265054f63c363bbcb787f132a9e330e33f5a755d313"
+        }
+      ]
+    },
+    {
+      "label": "final_gate_witness_first_02",
+      "log_exists": true,
+      "log_sha256": "42561ed69c20ae7422ba99b56c1877b875c0aa2a2a570a764f1c542c9bf2f4e7",
+      "reports": []
+    }
+  ],
+  "race_scenarios": 17
+}

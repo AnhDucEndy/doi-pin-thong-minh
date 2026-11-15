@@ -1,0 +1,246 @@
+{
+  "$defs": {
+    "RecoveryCommandContext": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "QUEUED",
+            "DISPATCHED",
+            "ACKNOWLEDGED",
+            "OBSERVED",
+            "REJECTED",
+            "EXPIRED",
+            "UNKNOWN"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "state"
+      ],
+      "title": "RecoveryCommandContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "predecessor_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Id"
+    },
+    "predecessor_context_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Context Hash"
+    },
+    "reconciliation_only": {
+      "anyOf": [
+        {
+          "const": true,
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reconciliation Only"
+    },
+    "predecessor_authorization_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Authorization Id"
+    },
+    "predecessor_authorization_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predecessor Authorization Hash"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "case_id": {
+      "format": "uuid",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "swap_id": {
+      "format": "uuid",
+      "title": "Swap Id",
+      "type": "string"
+    },
+    "station_id": {
+      "format": "uuid",
+      "title": "Station Id",
+      "type": "string"
+    },
+    "customer_id": {
+      "format": "uuid",
+      "title": "Customer Id",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "VERIFY_OLD_POSSESSION",
+        "RETURN_OLD_TO_CUSTOMER",
+        "VERIFY_NEW_DELIVERY",
+        "RETURN_FOREIGN_OBJECT",
+        "RESUME_SWAP"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "expected_serial": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Expected Serial",
+      "type": "string"
+    },
+    "return_compartment_id": {
+      "format": "uuid",
+      "title": "Return Compartment Id",
+      "type": "string"
+    },
+    "supply_compartment_id": {
+      "format": "uuid",
+      "title": "Supply Compartment Id",
+      "type": "string"
+    },
+    "created_by": {
+      "format": "uuid",
+      "title": "Created By",
+      "type": "string"
+    },
+    "base_case_version": {
+      "minimum": 1,
+      "title": "Base Case Version",
+      "type": "integer"
+    },
+    "base_swap_version": {
+      "minimum": 1,
+      "title": "Base Swap Version",
+      "type": "integer"
+    },
+    "commands": {
+      "items": {
+        "$ref": "#/$defs/RecoveryCommandContext"
+      },
+      "title": "Commands",
+      "type": "array"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    },
+    "protocol_version": {
+      "const": "0.2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "task_kind": {
+      "const": "AUTHORIZATION_INTENT",
+      "title": "Task Kind",
+      "type": "string"
+    },
+    "authorization_id": {
+      "format": "uuid",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "authorization_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Hash",
+      "type": "string"
+    },
+    "authorization_payload": {
+      "additionalProperties": true,
+      "title": "Authorization Payload",
+      "type": "object"
+    },
+    "effect_allowed": {
+      "const": false,
+      "title": "Effect Allowed",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "operation_id",
+    "case_id",
+    "swap_id",
+    "station_id",
+    "customer_id",
+    "purpose",
+    "expected_serial",
+    "return_compartment_id",
+    "supply_compartment_id",
+    "created_by",
+    "base_case_version",
+    "base_swap_version",
+    "commands",
+    "context_hash",
+    "expires_at",
+    "simulation_only",
+    "protocol_version",
+    "task_kind",
+    "authorization_id",
+    "authorization_hash",
+    "authorization_payload",
+    "effect_allowed"
+  ],
+  "title": "AuthorizationIntentTask",
+  "type": "object"
+}

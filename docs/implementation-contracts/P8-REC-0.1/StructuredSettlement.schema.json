@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_version": {
+      "minimum": 1,
+      "title": "Expected Version",
+      "type": "integer"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "resolution_note": {
+      "minLength": 1,
+      "title": "Resolution Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_version",
+    "operation_id",
+    "resolution_note"
+  ],
+  "title": "StructuredSettlement",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

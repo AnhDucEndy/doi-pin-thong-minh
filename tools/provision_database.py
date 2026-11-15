@@ -45,6 +45,11 @@ def main():
             for name in ('payments', 'payment_events', 'outbox_messages'):
                 cursor.execute(sql.SQL('GRANT INSERT, UPDATE ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
             cursor.execute(sql.SQL('GRANT INSERT ON {}.recovery_cases TO doi_pin_runtime').format(sql.Identifier(schema)))
+            cursor.execute(sql.SQL('GRANT UPDATE (state, assigned_to, evidence_event_id, new_pin_delivered, old_pin_settled, resolution_note, version, operation_id) ON {}.recovery_cases TO doi_pin_runtime').format(sql.Identifier(schema)))
+            for name in ('recovery_operations', 'recovery_attestations', 'recovery_action_authorizations', 'recovery_inspection_inbox', 'recovery_authorization_acks', 'recovery_action_activations', 'recovery_closure_intents', 'recovery_closure_receipts'):
+                cursor.execute(sql.SQL('GRANT INSERT ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
+            cursor.execute(sql.SQL('GRANT UPDATE (revoked_at) ON {}.recovery_action_authorizations TO doi_pin_runtime').format(sql.Identifier(schema)))
+            cursor.execute(sql.SQL('GRANT UPDATE (consumed_at, cancelled_at) ON {}.recovery_operations TO doi_pin_runtime').format(sql.Identifier(schema)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

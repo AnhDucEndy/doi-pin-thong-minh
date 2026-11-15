@@ -1,0 +1,21 @@
+--- archived_original_probe
++++ current_probe
+@@ -38,7 +38,8 @@
+                 'actual_serial':receipt['payload']['actual_serial'],'observation':'CONFIRM'}}
+         result=client.post(url+'/evidence',headers={**tech,'Idempotency-Key':key},json=body)
+         replay=client.post(url+'/evidence',headers={**tech,'Idempotency-Key':key},json=body)
+-        assert replay.status_code==result.status_code and replay.json()==result.json()
++        assert replay.status_code==result.status_code
++        assert {k:v for k,v in replay.json().items() if k!='correlation_id'} == {k:v for k,v in result.json().items() if k!='correlation_id'}
+         after=client.get(url,headers=tech).json()
+         print(json.dumps({'http':result.status_code,'code':result.json().get('code'),
+             'old_boot':old_boot,'new_boot':sim.boot,'projection':projection['confirmation_status'],
+@@ -48,6 +49,8 @@
+             'replay_status':replay.status_code,
+             'protected_facts_unchanged':facts(client,swap)==before}))
+         assert result.status_code in (409,422), 'Old-boot PRE receipt must not become accepted current Technician proof'
++        assert after['version']==case['version']
++        assert after['active_operation']['attestations']==case['active_operation']['attestations']
+         assert facts(client,swap)==before
+     finally:
+         sim.close()

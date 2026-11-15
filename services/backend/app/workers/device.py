@@ -51,11 +51,11 @@ def block(session,db,device,code,event=None,slot=None,pin=None):
     review(session,db,device['station_id'],code)
 
 
-def station_locks(session,db,station_id):
+def station_locks(session,db,station_id,extra_user_ids=()):
     assets.station_lock(session,db,station_id)
     users,swaps,slots,pins=[db.table(n) for n in ('users','swap_transactions','compartments','batteries')]
     active=assets.active_swaps(session,db,station_id)
-    for user in sorted({s['customer_id'] for s in active}):
+    for user in sorted({s['customer_id'] for s in active} | set(extra_user_ids)):
         session.execute(select(users.c.id).where(users.c.id==user).with_for_update())
     session.execute(select(swaps.c.id).where(swaps.c.station_id==station_id).order_by(swaps.c.id).with_for_update()).all()
     slot_ids=list(session.scalars(select(slots.c.id).where(slots.c.station_id==station_id).order_by(slots.c.id).with_for_update()))

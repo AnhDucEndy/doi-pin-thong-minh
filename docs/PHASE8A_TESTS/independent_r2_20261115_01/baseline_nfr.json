@@ -1,0 +1,21 @@
+{
+  "doi-pin-giai-doan-2/baseline/Phan-tich-thiet-ke-doi-pin-GD1.docx": [
+    {
+      "paragraph": 354,
+      "text": "Không cấp cùng pin cho hai phiên; retry/callback trùng không tạo lần thu hoặc mở khóa thứ hai. | NFR04 | Hiệu năng | Mục tiêu p95 API đọc ≤2 giây với 20 phiên đồng thời, 2 trạm × 6 ngăn trên máy demo; đo 1000 request sau warm-up. | NFR05 | Độ mới dữ liệu"
+    },
+    {
+      "paragraph": 360,
+      "text": "Đề xuất telemetry mỗi 5 giây; quá 15 giây không cập nhật thì stale/offline và chặn giao dịch mới. Đo từ thời điểm Backend nhận. | NFR06 | Quan sát | 100% thao tác đổi trạng thái có actor/device, thời gian, ID giao dịch/lệnh, trước–sau; không ghi mật khẩu hay QR token nguyên vẹn. | NFR07 | Khôi phục"
+    },
+    {
+      "paragraph": 363,
+      "text": "100% thao tác đổi trạng thái có actor/device, thời gian, ID giao dịch/lệnh, trước–sau; không ghi mật khẩu hay QR token nguyên vẹn. | NFR07 | Khôi phục | Khởi động lại Backend giữ giao dịch dở dang; đối soát thiết bị trước tiếp tục. Demo backup/restore và so khớp số bản ghi. | NFR08 | Sử dụng"
+    },
+    {
+      "paragraph": 366,
+      "text": "Khởi động lại Backend giữ giao dịch dở dang; đối soát thiết bị trước tiếp tục. Demo backup/restore và so khớp số bản ghi. | NFR08 | Sử dụng | Màn hình hiển thị rõ bước hiện tại, phí, timeout và hướng dẫn trợ giúp; 3 người thử thực hiện đúng kịch bản mà không sửa dữ liệu tay. | NFR09 | Kiểm thử và bảo trì"
+    }
+  ],
+  "doi-pin-giai-doan-2/Thiet-ke-ky-thuat-doi-pin-GD2.docx": []
+}

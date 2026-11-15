@@ -251,8 +251,10 @@ def review(session, db, swap, reason):
     # arrives after closure; keep a durable case instead of silently dropping it.
     if reason in ('PAYMENT_RESULT_CONFLICT', 'PAYMENT_RESOURCE_REVIEW', 'PAYMENT_FAILURE_REVIEW'):
         cases = db.table('recovery_cases')
-        session.execute(pg_insert(cases).values(id=uuid4(), swap_id=swap['id'])
-            .on_conflict_do_nothing(index_elements=[cases.c.swap_id]))
+        created = session.execute(pg_insert(cases).values(id=uuid4(), swap_id=swap['id'])
+            .on_conflict_do_nothing(index_elements=[cases.c.swap_id]).returning(cases)).mappings().first()
+        from app.application.recovery_audit import created as audit_created
+        audit_created(session, db, created, 'payment-worker')
     if swap['state'] not in assets.CLOSED_SWAPS and (swap['state'] != 'REVIEW_REQUIRED' or swap['review_reason'] != reason):
         change_swap(session, db, swap, 'REVIEW_REQUIRED', reason)
 

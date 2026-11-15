@@ -1,0 +1,557 @@
+{
+  "$defs": {
+    "InspectionCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Hash",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "UNKNOWN",
+            "NOT_EXECUTED",
+            "EXECUTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "effects": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Effects",
+          "type": "integer"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "hash",
+        "status",
+        "effects",
+        "body"
+      ],
+      "title": "InspectionCommand",
+      "type": "object"
+    },
+    "InspectionPresenter": {
+      "additionalProperties": false,
+      "properties": {
+        "serial": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Serial",
+          "type": "string"
+        },
+        "customer_id": {
+          "format": "uuid",
+          "title": "Customer Id",
+          "type": "string"
+        },
+        "swap_id": {
+          "format": "uuid",
+          "title": "Swap Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "serial",
+        "customer_id",
+        "swap_id"
+      ],
+      "title": "InspectionPresenter",
+      "type": "object"
+    },
+    "InspectionService": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "context_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Hash",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "UNKNOWN",
+            "OBSERVED",
+            "REJECTED"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "effects": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Effects",
+          "type": "integer"
+        },
+        "observation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observation"
+        },
+        "sent": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Sent",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "context_hash",
+        "state",
+        "effects",
+        "observation",
+        "sent"
+      ],
+      "title": "InspectionService",
+      "type": "object"
+    },
+    "InspectionSlot": {
+      "additionalProperties": false,
+      "properties": {
+        "compartment_id": {
+          "format": "uuid",
+          "title": "Compartment Id",
+          "type": "string"
+        },
+        "door_state": {
+          "enum": [
+            "OPEN",
+            "CLOSED",
+            "UNKNOWN"
+          ],
+          "title": "Door State",
+          "type": "string"
+        },
+        "present": {
+          "title": "Present",
+          "type": "boolean"
+        },
+        "observed_serial": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed Serial"
+        },
+        "battery_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Battery Id"
+        },
+        "lock_released": {
+          "title": "Lock Released",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "compartment_id",
+        "door_state",
+        "present",
+        "observed_serial",
+        "battery_id",
+        "lock_released"
+      ],
+      "title": "InspectionSlot",
+      "type": "object"
+    },
+    "PostActionReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.2",
+          "title": "Protocol Version",
+          "type": "string"
+        },
+        "stage": {
+          "const": "POST_ACTION_RECEIPT",
+          "title": "Stage",
+          "type": "string"
+        },
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "context_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Hash",
+          "type": "string"
+        },
+        "authorization_id": {
+          "format": "uuid",
+          "title": "Authorization Id",
+          "type": "string"
+        },
+        "authorization_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authorization Hash",
+          "type": "string"
+        },
+        "activation_id": {
+          "format": "uuid",
+          "title": "Activation Id",
+          "type": "string"
+        },
+        "activation_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Activation Hash",
+          "type": "string"
+        },
+        "boot_id": {
+          "format": "uuid",
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "seq": {
+          "minimum": 1,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "ledger_id": {
+          "format": "uuid",
+          "title": "Ledger Id",
+          "type": "string"
+        },
+        "fence_generation": {
+          "minimum": 1,
+          "title": "Fence Generation",
+          "type": "integer"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "effect_started_at": {
+          "format": "date-time",
+          "title": "Effect Started At",
+          "type": "string"
+        },
+        "effect_completed_at": {
+          "format": "date-time",
+          "title": "Effect Completed At",
+          "type": "string"
+        },
+        "actual_serial": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Actual Serial",
+          "type": "string"
+        },
+        "source_compartment_id": {
+          "format": "uuid",
+          "title": "Source Compartment Id",
+          "type": "string"
+        },
+        "destination": {
+          "const": "CUSTOMER",
+          "title": "Destination",
+          "type": "string"
+        },
+        "recipient_id": {
+          "format": "uuid",
+          "title": "Recipient Id",
+          "type": "string"
+        },
+        "snapshot_event_id": {
+          "format": "uuid",
+          "title": "Snapshot Event Id",
+          "type": "string"
+        },
+        "command_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Digest",
+          "type": "string"
+        },
+        "service_entry": {
+          "additionalProperties": true,
+          "title": "Service Entry",
+          "type": "object"
+        },
+        "service_entry_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Service Entry Hash",
+          "type": "string"
+        },
+        "result": {
+          "const": "OBSERVED",
+          "title": "Result",
+          "type": "string"
+        },
+        "effect_count_delta": {
+          "const": 1,
+          "title": "Effect Count Delta",
+          "type": "integer"
+        },
+        "simulation_only": {
+          "const": true,
+          "title": "Simulation Only",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "stage",
+        "event_id",
+        "operation_id",
+        "context_hash",
+        "authorization_id",
+        "authorization_hash",
+        "activation_id",
+        "activation_hash",
+        "boot_id",
+        "seq",
+        "ledger_id",
+        "fence_generation",
+        "observed_at",
+        "effect_started_at",
+        "effect_completed_at",
+        "actual_serial",
+        "source_compartment_id",
+        "destination",
+        "recipient_id",
+        "snapshot_event_id",
+        "command_digest",
+        "service_entry",
+        "service_entry_hash",
+        "result",
+        "effect_count_delta",
+        "simulation_only"
+      ],
+      "title": "PostActionReceipt",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "0.2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "stage": {
+      "const": "RECONCILIATION_INSPECTION",
+      "title": "Stage",
+      "type": "string"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "boot_id": {
+      "format": "uuid",
+      "title": "Boot Id",
+      "type": "string"
+    },
+    "seq": {
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "ledger_id": {
+      "format": "uuid",
+      "title": "Ledger Id",
+      "type": "string"
+    },
+    "fence_generation": {
+      "minimum": 1,
+      "title": "Fence Generation",
+      "type": "integer"
+    },
+    "actual_serial": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Actual Serial"
+    },
+    "slot": {
+      "$ref": "#/$defs/InspectionSlot"
+    },
+    "presenter": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InspectionPresenter"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "command_entries": {
+      "items": {
+        "$ref": "#/$defs/InspectionCommand"
+      },
+      "title": "Command Entries",
+      "type": "array"
+    },
+    "service_entries": {
+      "items": {
+        "$ref": "#/$defs/InspectionService"
+      },
+      "title": "Service Entries",
+      "type": "array"
+    },
+    "snapshot_event_id": {
+      "format": "uuid",
+      "title": "Snapshot Event Id",
+      "type": "string"
+    },
+    "wrong_return_event_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Wrong Return Event Ids",
+      "type": "array"
+    },
+    "result": {
+      "enum": [
+        "OBSERVED",
+        "UNKNOWN",
+        "REJECTED"
+      ],
+      "title": "Result",
+      "type": "string"
+    },
+    "read_only": {
+      "const": true,
+      "title": "Read Only",
+      "type": "boolean"
+    },
+    "effect_count_delta": {
+      "const": 0,
+      "title": "Effect Count Delta",
+      "type": "integer"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    },
+    "predecessor_id": {
+      "format": "uuid",
+      "title": "Predecessor Id",
+      "type": "string"
+    },
+    "predecessor_context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Predecessor Context Hash",
+      "type": "string"
+    },
+    "recipient_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recipient Id"
+    },
+    "historical_receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PostActionReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "protocol_version",
+    "stage",
+    "event_id",
+    "operation_id",
+    "context_hash",
+    "boot_id",
+    "seq",
+    "observed_at",
+    "ledger_id",
+    "fence_generation",
+    "actual_serial",
+    "slot",
+    "presenter",
+    "command_entries",
+    "service_entries",
+    "snapshot_event_id",
+    "wrong_return_event_ids",
+    "result",
+    "read_only",
+    "effect_count_delta",
+    "simulation_only",
+    "predecessor_id",
+    "predecessor_context_hash",
+    "recipient_id",
+    "historical_receipt"
+  ],
+  "title": "ReconciliationInspection",
+  "type": "object"
+}

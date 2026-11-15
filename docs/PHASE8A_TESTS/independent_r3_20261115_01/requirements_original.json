@@ -1,0 +1,132 @@
+{
+  "doi-pin-giai-doan-2/Thiet-ke-ky-thuat-doi-pin-GD2.docx": {
+    "sha256": "8B3EB1F85C4CE971577DFD58620577663FADBA099335884A77BC01A4A738E60A",
+    "excerpts": [
+      {
+        "paragraph": 7,
+        "text": "Chuẩn nghiệp vụ | Giữ FR01–FR19, UC01–UC17, BR01–BR12; baseline GĐ1 được sao chép và ghi SHA256. | Sản phẩm thiết kế | 16 sơ đồ PlantUML, 24 bảng PostgreSQL, OpenAPI 3.1, cấu hình và bàn giao triển khai. | Kiểm chứng"
+      },
+      {
+        "paragraph": 103,
+        "text": "AD02a | UC09, UC10, UC12 | Xác thực danh tính, giữ pin/ngăn, chấp thuận phí | AD02b | UC10"
+      },
+      {
+        "paragraph": 106,
+        "text": "AD02b | UC10 | Trả pin cũ, nhận pin mới, bằng chứng vật lý | AD03 | UC07, UC08, UC15–UC17"
+      },
+      {
+        "paragraph": 115,
+        "text": "AD04b | UC10, UC14 | Khôi phục sự cố và hoàn tiền |  | Bằng chứng và nguyên tắc ngừng an toàn"
+      },
+      {
+        "paragraph": 411,
+        "text": "POST /v1/device/events | FR07,FR11,FR17,FR19UC07,UC10,UC15,UC17 | DeviceEvent → EventReceiptHTTP 202 | GET /v1/device/commands | FR17UC15"
+      },
+      {
+        "paragraph": 597,
+        "text": "FR10 | UC10 / TC10 | AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02 |  | Operation IDs đầy đủ nằm trong contracts/traceability.csv; mỗi operation OpenAPI có x-fr và x-uc. Không tạo mã FR hoặc UC mới."
+      },
+      {
+        "paragraph": 607,
+        "text": "FR11 | UC10 / TC11 | AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02 | FR12 | UC10 / TC12"
+      },
+      {
+        "paragraph": 609,
+        "text": "AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02 | FR12 | UC10 / TC12 | AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02 | FR13"
+      },
+      {
+        "paragraph": 610,
+        "text": "FR12 | UC10 / TC12 | AD-02a;AD-02b;AD-04b;SM-03a;SM-03b;ERD-02 | FR13 | UC11 / TC13"
+      }
+    ]
+  },
+  "doi-pin-giai-doan-2/baseline/Phan-tich-thiet-ke-doi-pin-GD1.docx": {
+    "sha256": "605E7C188D1726E0B8A5247F3C7CA740D7F39A412902F149130C4B55F6D9BE64",
+    "excerpts": [
+      {
+        "paragraph": 103,
+        "text": "Thứ tự đề xuất: xác thực → giữ pin/ngăn → chấp thuận phí → thu phí xác minh → nhận pin cũ → cấp pin mới → xác nhận hoàn tất. Đây là chính sách DX, chưa phải yêu cầu gốc. | BR05 | Pin trả phải thuộc mạng lưới, đúng loại và đúng pin khách đang giữ. Không nhận diện được thì không cấp pin mới. Nếu pin đã ở trong ngăn, giữ trạng thái cần xử lý và nhờ kỹ thuật viên; không tự mở lại khi chưa đánh giá điều kiện. | BR06 | Mỗi lệnh có command_id duy nhất, thời hạn và phiên đích. Retry cùng ID chỉ trả lại kết quả đã biết. ACK lệnh khác với bằng chứng cửa đã mở hoặc pin đã được lấy."
+      },
+      {
+        "paragraph": 111,
+        "text": "Nếu đã thu và xác minh chưa giao pin mới: hoàn phí theo yêu cầu Admin có nhật ký. Nếu pin cũ đã bị giữ, đồng thời mở việc kỹ thuật để trả lại hoặc xử lý quyền giữ pin; hoàn phí không tự giải quyết tài sản. | BR09 | Nếu không rõ khách đã lấy pin mới hay chưa, không hoàn tiền tự động và không cấp thêm pin; khóa phiên ở chờ đối soát. Trạng thái vật lý sau khôi phục quyết định nhánh tiếp theo. | BR10 | Cảnh báo nguy hiểm chặn cấp pin/ngăn liên quan; xác nhận đã đọc cảnh báo không đồng nghĩa đã xử lý. Chỉ kỹ thuật viên được phục hồi sau khi điều kiện hết lỗi được xác minh."
+      },
+      {
+        "paragraph": 115,
+        "text": "Cảnh báo nguy hiểm chặn cấp pin/ngăn liên quan; xác nhận đã đọc cảnh báo không đồng nghĩa đã xử lý. Chỉ kỹ thuật viên được phục hồi sau khi điều kiện hết lỗi được xác minh. | BR11 | MVP chỉ cho tạo phiên mới khi trạm online và dữ liệu đủ mới. Khi đang đổi mà mất mạng, dừng lệnh mới và giữ thông tin phiên để đối soát. | BR12 | Không xóa vật lý pin/trạm/tài khoản có lịch sử; đánh dấu ngừng sử dụng. Không chỉnh trực tiếp trạng thái giao dịch để làm đẹp báo cáo."
+      },
+      {
+        "paragraph": 117,
+        "text": "MVP chỉ cho tạo phiên mới khi trạm online và dữ liệu đủ mới. Khi đang đổi mà mất mạng, dừng lệnh mới và giữ thông tin phiên để đối soát. | BR12 | Không xóa vật lý pin/trạm/tài khoản có lịch sử; đánh dấu ngừng sử dụng. Không chỉnh trực tiếp trạng thái giao dịch để làm đẹp báo cáo. |  | Giới hạn an toàn"
+      },
+      {
+        "paragraph": 290,
+        "text": "G5F5 | UC10 | Hai khách tranh cùng pin chỉ một người giữ thành công; không mở ngăn cấp khi pin trả chưa được xác nhận. | FR11 Nhận pin trả và cấp pin mới | G2,G5F5"
+      },
+      {
+        "paragraph": 294,
+        "text": "G2,G5F5 | UC10 | Ghi nhận ID pin, cảm biến có/không có pin và cửa đóng; ACK lệnh riêng lẻ không đủ để xác nhận đổi thành công. | FR12 Xử lý giao dịch bị gián đoạn | G5/DXF5"
+      },
+      {
+        "paragraph": 296,
+        "text": "Ghi nhận ID pin, cảm biến có/không có pin và cửa đóng; ACK lệnh riêng lẻ không đủ để xác nhận đổi thành công. | FR12 Xử lý giao dịch bị gián đoạn | G5/DXF5 | UC10 | Mất kết nối hoặc phản hồi không rõ chuyển chờ xử lý; không tự mở ngăn khác hoặc giải phóng pin chưa đối soát."
+      },
+      {
+        "paragraph": 298,
+        "text": "G5/DXF5 | UC10 | Mất kết nối hoặc phản hồi không rõ chuyển chờ xử lý; không tự mở ngăn khác hoặc giải phóng pin chưa đối soát. | FR13 Tra cứu lịch sử đổi pin | G5,G9F5"
+      },
+      {
+        "paragraph": 354,
+        "text": "Không cấp cùng pin cho hai phiên; retry/callback trùng không tạo lần thu hoặc mở khóa thứ hai. | NFR04 | Hiệu năng | Mục tiêu p95 API đọc ≤2 giây với 20 phiên đồng thời, 2 trạm × 6 ngăn trên máy demo; đo 1000 request sau warm-up. | NFR05"
+      },
+      {
+        "paragraph": 360,
+        "text": "Đề xuất telemetry mỗi 5 giây; quá 15 giây không cập nhật thì stale/offline và chặn giao dịch mới. Đo từ thời điểm Backend nhận. | NFR06 | Quan sát | 100% thao tác đổi trạng thái có actor/device, thời gian, ID giao dịch/lệnh, trước–sau; không ghi mật khẩu hay QR token nguyên vẹn. | NFR07"
+      },
+      {
+        "paragraph": 363,
+        "text": "100% thao tác đổi trạng thái có actor/device, thời gian, ID giao dịch/lệnh, trước–sau; không ghi mật khẩu hay QR token nguyên vẹn. | NFR07 | Khôi phục | Khởi động lại Backend giữ giao dịch dở dang; đối soát thiết bị trước tiếp tục. Demo backup/restore và so khớp số bản ghi. | NFR08"
+      },
+      {
+        "paragraph": 366,
+        "text": "Khởi động lại Backend giữ giao dịch dở dang; đối soát thiết bị trước tiếp tục. Demo backup/restore và so khớp số bản ghi. | NFR08 | Sử dụng | Màn hình hiển thị rõ bước hiện tại, phí, timeout và hướng dẫn trợ giúp; 3 người thử thực hiện đúng kịch bản mà không sửa dữ liệu tay. | NFR09"
+      },
+      {
+        "paragraph": 426,
+        "text": "6 Xác thực và đổi pin | UC09 tạo phiên xác thực tại trạm, là tiền điều kiện của UC10. UC10 không bắt buộc thực hiện lại UC09 nếu phiên còn hợp lệ, nên không đặt include. Lệnh mở ngăn và ghi nhận pin là bước của UC10, không là mục tiêu riêng của khách. |  | Nguồn chỉnh sửa: UCD-03.puml hoặc trang UCD-03 trong Bo-so-do.drawio. Actor ngoài ranh giới; Use Case là elip; association không mũi tên. Bản này không cần quan hệ include/extend để diễn đạt các mục tiêu trên. | "
+      },
+      {
+        "paragraph": 476,
+        "text": "F4 | UC10 | Thực hiện đổi pin | F5 | UC11"
+      },
+      {
+        "paragraph": 519,
+        "text": "Quy tắc và nghiệm thu | BR12; NFR01–02. Chính sách đề xuất 5 lần sai/15 phút, chưa chốt. | FR01; TC01. Kiểm tra đăng nhập đúng/sai, giới hạn thử sai và truy cập chéo vai trò. Reload GUI không xóa được bộ đếm Backend. |  | 7 UC09 Xác thực phiên đổi bằng QR hoặc RFID"
+      },
+      {
+        "paragraph": 532,
+        "text": "3. Với QR, kiểm tra trạm và nonce chưa dùng; với RFID, kiểm tra liên kết và trạng thái thu hồi. | 4. Tiêu thụ QR và tạo phiên một lần; trả mã phiên cho UC10. | Luồng thay thế | Chọn RFID thay QR vẫn trả cùng cấu trúc phiên. Nếu có retry hợp lệ cùng request_id, trả phiên đã tạo thay vì sinh phiên thứ hai. | Ngoại lệ"
+      },
+      {
+        "paragraph": 538,
+        "text": "Quy tắc và nghiệm thu | BR01, BR03, BR11. TTL QR 120 giây là đề xuất; RFID demo không chứng minh chống sao chép thẻ thật. | FR09; TC09. Chạy cả QR và RFID hợp lệ; thử QR phát lại, sai trạm và thẻ bị thu hồi đều không tạo phiên mới. |  | 7 UC10 Thực hiện đổi pin"
+      },
+      {
+        "paragraph": 541,
+        "text": " | 7 UC10 Thực hiện đổi pin | Mục tiêu: Thực hiện đổi pin. Actor chính: Khách hàng. Actor hỗ trợ: Thiết bị trạm; thanh toán qua UC12. | Kích hoạt và điều kiện | Trigger: Khách yêu cầu đổi và chấp thuận các điều kiện tại trạm."
+      },
+      {
+        "paragraph": 572,
+        "text": "3. Nhận kết quả qua kênh xác minh, kiểm tra mã khoản thu, phiên và số tiền. | 4. Ghi nhận kết quả duy nhất và báo cho UC10; khách xem được trạng thái. | Luồng thay thế | Kết quả còn chờ: hiển thị PENDING, cập nhật khi có phản hồi. Callback trùng: trả lại kết quả đã xử lý. Retry kỹ thuật dùng cùng khóa, không tạo lần thu mới. | Ngoại lệ"
+      },
+      {
+        "paragraph": 596,
+        "text": "Ngoại lệ | Mất kết nối hoặc dữ liệu thiếu: giữ trạng thái không đủ điều kiện, không suy luận hết lỗi. Cảnh báo trong lúc đổi: UC10 chuyển chờ xử lý, không ra lệnh mở bổ sung; giữ bằng chứng để đối soát. | Quy tắc và nghiệm thu | BR02, BR10–11; NFR05, NFR10. Ngưỡng mô phỏng không chứng nhận an toàn vật lý; không có quyền bỏ qua bảo vệ. | FR19; TC19. Tiêm cờ lỗi phải chặn cấp; ACK không gỡ cách ly; chỉ trạm được giao được xử lý."
+      },
+      {
+        "paragraph": 886,
+        "text": "QD09 | Duyệt BR01–BR12 và FR01–FR19 trước thiết kế API/DB. | Thay đổi sau khi code phải cập nhật UML, dữ liệu và test. |  | Trạng thái kiểm chứng và giới hạn"
+      }
+    ]
+  }
+}

@@ -1,0 +1,592 @@
+{
+  "source": {
+    "files": 179,
+    "delta_since_full": [],
+    "changed_since_IA01": [
+      "services/backend/app/application/payments.py",
+      "services/backend/app/application/recovery_authorization.py",
+      "services/backend/app/application/recovery_closure.py",
+      "services/backend/app/application/recovery_handover.py",
+      "services/backend/app/application/recovery_inspection.py",
+      "services/backend/app/application/recovery_reconciliation.py",
+      "services/backend/app/application/recovery_settlement.py",
+      "services/backend/app/application/recovery.py",
+      "services/backend/app/application/swaps.py",
+      "tests/conftest.py"
+    ],
+    "added_since_IA01": [
+      "services/backend/app/application/recovery_audit.py",
+      "tests/recovery_audit_checks.py",
+      "tests/test_phase8a_audit.py",
+      "tools/phase8a_audit_verify.py"
+    ],
+    "baseline_paths_absent_from_new_manifest": [],
+    "manifest_before_sha256": "22CEC8001C328BA7190929150A61E924221C0B33B7DCBE762239CD9249F679E5",
+    "manifest_after_sha256": "EEA7F201CB48C154734CC1E39D327F6081C7DEABCF329D2F9D69B93A4D123925"
+  },
+  "inventory": [
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "audit",
+      "capture_lines": [
+        57
+      ],
+      "writes": [
+        {
+          "line": 53,
+          "call": "insert(db.table('audit_events'))"
+        }
+      ],
+      "audits": []
+    },
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "change_case",
+      "capture_lines": [],
+      "writes": [
+        {
+          "line": 63,
+          "call": "update(table)"
+        }
+      ],
+      "audits": []
+    },
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "add_attestation",
+      "capture_lines": [
+        150
+      ],
+      "writes": [
+        {
+          "line": 165,
+          "call": "change_case(session, db, case, state='EVIDENCE_RECORDED', operation_id=op['id'], new_pin_delivered='UNKNOWN')"
+        },
+        {
+          "line": 158,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 167,
+          "actions": [
+            "RECOVERY_ATTESTATION_RECORDED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "record",
+      "capture_lines": [
+        184,
+        242,
+        217,
+        281
+      ],
+      "writes": [
+        {
+          "line": 185,
+          "call": "change_case(session, db, case, state='EVIDENCE_RECORDED', evidence_event_id=event['id'], assigned_to=user['id'], resolution_note=body.note, new_pin_delivered='UNKNOWN')"
+        },
+        {
+          "line": 251,
+          "call": "change_case(session, db, case, operation_id=identity, assigned_to=user['id'], resolution_note=body.note, new_pin_delivered='UNKNOWN')"
+        },
+        {
+          "line": 282,
+          "call": "change_case(session, db, case, operation_id=op['id'])"
+        },
+        {
+          "line": 243,
+          "call": "insert(table)"
+        },
+        {
+          "line": 218,
+          "call": "update(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 187,
+          "actions": [
+            "RECOVERY_EVIDENCE_RECORDED"
+          ],
+          "before": "audit_before"
+        },
+        {
+          "line": 253,
+          "actions": [
+            "RECOVERY_OPERATION_CREATED"
+          ],
+          "before": "audit_before"
+        },
+        {
+          "line": 219,
+          "actions": [
+            "RECOVERY_OPERATION_SUPERSEDED"
+          ],
+          "before": "audit_before"
+        },
+        {
+          "line": 283,
+          "actions": [
+            "RECOVERY_OPERATION_ATTACHED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "close_resumed",
+      "capture_lines": [
+        514
+      ],
+      "writes": [
+        {
+          "line": 515,
+          "call": "change_case(session, db, case, state='RESOLVED', old_pin_settled=True, new_pin_delivered='YES', evidence_event_id=event['id'])"
+        }
+      ],
+      "audits": [
+        {
+          "line": 517,
+          "actions": [
+            "RECOVERY_RESUMED_COMPLETED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery.py",
+      "function": "settle",
+      "capture_lines": [
+        525
+      ],
+      "writes": [
+        {
+          "line": 717,
+          "call": "change_case(session, db, case, state='RESOLVED' if terminal else 'EVIDENCE_RECORDED', old_pin_settled=settled, new_pin_delivered=delivered, evidence_event_id=snapshot['id'], resolution_note=body.resolution_note, assigned_to=user['id'])"
+        },
+        {
+          "line": 698,
+          "call": "update(operations)"
+        },
+        {
+          "line": 691,
+          "call": "update(pins)"
+        },
+        {
+          "line": 701,
+          "call": "update(operations)"
+        },
+        {
+          "line": 712,
+          "call": "update(table)"
+        },
+        {
+          "line": 716,
+          "call": "update(holds)"
+        },
+        {
+          "line": 695,
+          "call": "update(pins)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 720,
+          "actions": [
+            "MANUAL_RECOVERY_SETTLED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_audit.py",
+      "function": "created",
+      "capture_lines": [],
+      "writes": [],
+      "audits": [
+        {
+          "line": 89,
+          "actions": [
+            "RECOVERY_CASE_CREATED"
+          ],
+          "before": "None"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_authorization.py",
+      "function": "human",
+      "capture_lines": [
+        34
+      ],
+      "writes": [
+        {
+          "line": 90,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 86,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 91,
+          "actions": [
+            "RECOVERY_PRE_ACTION_CONFIRMED",
+            "RECOVERY_REINSPECTION_ATTESTED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_authorization.py",
+      "function": "issue",
+      "capture_lines": [
+        238
+      ],
+      "writes": [
+        {
+          "line": 262,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 257,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 263,
+          "actions": [
+            "RECOVERY_AUTHORIZATION_INTENT_CREATED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_authorization.py",
+      "function": "acknowledge",
+      "capture_lines": [
+        273
+      ],
+      "writes": [
+        {
+          "line": 291,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 294,
+          "actions": [
+            "RECOVERY_AUTHORIZATION_ACKNOWLEDGED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_closure.py",
+      "function": "issue",
+      "capture_lines": [
+        49
+      ],
+      "writes": [
+        {
+          "line": 81,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 79,
+          "call": "insert(db.table('recovery_closure_intents'))"
+        }
+      ],
+      "audits": [
+        {
+          "line": 82,
+          "actions": [
+            "RECOVERY_NO_EFFECT_CLOSURE_REQUESTED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_closure.py",
+      "function": "receive",
+      "capture_lines": [
+        116
+      ],
+      "writes": [
+        {
+          "line": 159,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 155,
+          "call": "insert(db.table('recovery_closure_receipts'))"
+        },
+        {
+          "line": 158,
+          "call": "update(db.table('recovery_operations'))"
+        }
+      ],
+      "audits": [
+        {
+          "line": 160,
+          "actions": [
+            "RECOVERY_NO_EFFECT_CLOSED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_handover.py",
+      "function": "human_post",
+      "capture_lines": [
+        11
+      ],
+      "writes": [
+        {
+          "line": 68,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 65,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 69,
+          "actions": [
+            "RECOVERY_POST_ACTION_CONFIRMED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_handover.py",
+      "function": "activate",
+      "capture_lines": [
+        75
+      ],
+      "writes": [
+        {
+          "line": 103,
+          "call": "r.change_case(session, db, case)"
+        },
+        {
+          "line": 100,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 104,
+          "actions": [
+            "RECOVERY_ACTION_ACTIVATED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_handover.py",
+      "function": "receive_receipt",
+      "capture_lines": [
+        135
+      ],
+      "writes": [
+        {
+          "line": 176,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 180,
+          "actions": [
+            "RECOVERY_POST_ACTION_RECEIPT_STORED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_inspection.py",
+      "function": "receive",
+      "capture_lines": [],
+      "writes": [
+        {
+          "line": 58,
+          "call": "insert(inbox)"
+        }
+      ],
+      "audits": []
+    },
+    {
+      "file": "services/backend/app/application/recovery_inspection.py",
+      "function": "accept",
+      "capture_lines": [
+        68
+      ],
+      "writes": [
+        {
+          "line": 130,
+          "call": "insert(table)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 134,
+          "actions": [
+            "RECOVERY_INSPECTION_RECORDED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_reconciliation.py",
+      "function": "begin",
+      "capture_lines": [
+        34
+      ],
+      "writes": [
+        {
+          "line": 57,
+          "call": "r.change_case(session, db, case, operation_id=identity)"
+        },
+        {
+          "line": 53,
+          "call": "insert(db.table('recovery_operations'))"
+        }
+      ],
+      "audits": [
+        {
+          "line": 58,
+          "actions": [
+            "RECOVERY_REINSPECTION_REQUESTED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_reconciliation.py",
+      "function": "receive",
+      "capture_lines": [
+        126
+      ],
+      "writes": [
+        {
+          "line": 132,
+          "call": "insert(db.table('recovery_attestations'))"
+        }
+      ],
+      "audits": [
+        {
+          "line": 136,
+          "actions": [
+            "RECOVERY_REINSPECTION_RECORDED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_reconciliation.py",
+      "function": "settle",
+      "capture_lines": [
+        141
+      ],
+      "writes": [
+        {
+          "line": 154,
+          "call": "ids.update((UUID(pre[k]['payload']['auth_session_id']) for k in ('CUSTOMER', 'TECHNICIAN')))"
+        },
+        {
+          "line": 181,
+          "call": "r.change_case(session, db, case, state='EVIDENCE_RECORDED', evidence_event_id=snapshot['id'], resolution_note=body.resolution_note, assigned_to=user['id'])"
+        },
+        {
+          "line": 177,
+          "call": "update(operations)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 183,
+          "actions": [
+            "FOREIGN_OBJECT_RETURN_SETTLED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    },
+    {
+      "file": "services/backend/app/application/recovery_settlement.py",
+      "function": "settle_foreign",
+      "capture_lines": [
+        13
+      ],
+      "writes": [
+        {
+          "line": 120,
+          "call": "r.change_case(session, db, case, state='EVIDENCE_RECORDED', evidence_event_id=snapshot['id'], resolution_note=body.resolution_note, assigned_to=user['id'])"
+        },
+        {
+          "line": 119,
+          "call": "update(operations)"
+        }
+      ],
+      "audits": [
+        {
+          "line": 122,
+          "actions": [
+            "FOREIGN_OBJECT_RETURN_SETTLED"
+          ],
+          "before": "audit_before"
+        }
+      ]
+    }
+  ],
+  "audit_actions": [
+    "FOREIGN_OBJECT_RETURN_SETTLED",
+    "MANUAL_RECOVERY_SETTLED",
+    "RECOVERY_ACTION_ACTIVATED",
+    "RECOVERY_ATTESTATION_RECORDED",
+    "RECOVERY_AUTHORIZATION_ACKNOWLEDGED",
+    "RECOVERY_AUTHORIZATION_INTENT_CREATED",
+    "RECOVERY_CASE_CREATED",
+    "RECOVERY_EVIDENCE_RECORDED",
+    "RECOVERY_INSPECTION_RECORDED",
+    "RECOVERY_NO_EFFECT_CLOSED",
+    "RECOVERY_NO_EFFECT_CLOSURE_REQUESTED",
+    "RECOVERY_OPERATION_ATTACHED",
+    "RECOVERY_OPERATION_CREATED",
+    "RECOVERY_OPERATION_SUPERSEDED",
+    "RECOVERY_POST_ACTION_CONFIRMED",
+    "RECOVERY_POST_ACTION_RECEIPT_STORED",
+    "RECOVERY_PRE_ACTION_CONFIRMED",
+    "RECOVERY_REINSPECTION_ATTESTED",
+    "RECOVERY_REINSPECTION_RECORDED",
+    "RECOVERY_REINSPECTION_REQUESTED",
+    "RECOVERY_RESUMED_COMPLETED"
+  ]
+}

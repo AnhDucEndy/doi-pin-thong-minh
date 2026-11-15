@@ -1,0 +1,138 @@
+{
+  "$defs": {
+    "AttachOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "ATTACH_OPERATION",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "title": "Operation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "operation_id"
+      ],
+      "title": "AttachOperation",
+      "type": "object"
+    },
+    "BeginOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "BEGIN_OPERATION",
+          "title": "Kind",
+          "type": "string"
+        },
+        "purpose": {
+          "enum": [
+            "VERIFY_OLD_POSSESSION",
+            "RETURN_OLD_TO_CUSTOMER",
+            "VERIFY_NEW_DELIVERY",
+            "RETURN_FOREIGN_OBJECT",
+            "RESUME_SWAP"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "purpose"
+      ],
+      "title": "BeginOperation",
+      "type": "object"
+    },
+    "TechnicianAttest": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "TECHNICIAN_ATTEST",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "context_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Hash",
+          "type": "string"
+        },
+        "actual_serial": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Actual Serial",
+          "type": "string"
+        },
+        "observation": {
+          "enum": [
+            "CONFIRM",
+            "REJECT"
+          ],
+          "title": "Observation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "operation_id",
+        "context_hash",
+        "actual_serial",
+        "observation"
+      ],
+      "title": "TechnicianAttest",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_version": {
+      "minimum": 1,
+      "title": "Expected Version",
+      "type": "integer"
+    },
+    "statement": {
+      "discriminator": {
+        "mapping": {
+          "ATTACH_OPERATION": "#/$defs/AttachOperation",
+          "BEGIN_OPERATION": "#/$defs/BeginOperation",
+          "TECHNICIAN_ATTEST": "#/$defs/TechnicianAttest"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/BeginOperation"
+        },
+        {
+          "$ref": "#/$defs/TechnicianAttest"
+        },
+        {
+          "$ref": "#/$defs/AttachOperation"
+        }
+      ],
+      "title": "Statement"
+    },
+    "note": {
+      "minLength": 1,
+      "title": "Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_version",
+    "statement",
+    "note"
+  ],
+  "title": "StructuredEvidence",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

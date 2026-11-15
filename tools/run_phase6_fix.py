@@ -14,7 +14,7 @@ label, mode, *args = sys.argv[1:]
 if not label.replace('_', '').isalnum() or mode not in ('pytest', 'script'):
     raise ValueError('Use LABEL pytest [args] or LABEL script path [args]')
 report_root = os.environ.get('TEST_REPORT_ROOT', 'PHASE6_FIX')
-if report_root not in ('PHASE6_FIX', 'PHASE7_TESTS'):
+if report_root not in ('PHASE6_FIX', 'PHASE7_TESTS', 'PHASE8A_TESTS'):
     raise ValueError('Unsupported report directory')
 OUT = ROOT/'docs'/report_root/label
 OUT.mkdir(parents=True, exist_ok=False)

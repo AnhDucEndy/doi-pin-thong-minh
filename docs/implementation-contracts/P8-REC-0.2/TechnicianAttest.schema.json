@@ -1,0 +1,86 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "stage": {
+      "anyOf": [
+        {
+          "enum": [
+            "PRE_ACTION_INSPECTION",
+            "POST_ACTION_RECEIPT",
+            "RECONCILIATION_INSPECTION"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stage"
+    },
+    "receipt_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Id"
+    },
+    "receipt_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Hash"
+    },
+    "kind": {
+      "const": "TECHNICIAN_ATTEST",
+      "title": "Kind",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "actual_serial": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Actual Serial",
+      "type": "string"
+    },
+    "observation": {
+      "enum": [
+        "CONFIRM",
+        "REJECT"
+      ],
+      "title": "Observation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "operation_id",
+    "context_hash",
+    "actual_serial",
+    "observation"
+  ],
+  "title": "TechnicianAttest",
+  "type": "object"
+}

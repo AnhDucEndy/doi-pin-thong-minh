@@ -1,0 +1,63 @@
+{
+  "schema": "phase5_test_431e179e0940",
+  "read_only": true,
+  "actions": [
+    {
+      "action": "FOREIGN_OBJECT_RETURN_SETTLED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_ACTION_ACTIVATED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_AUTHORIZATION_ACKNOWLEDGED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_AUTHORIZATION_INTENT_CREATED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_INSPECTION_RECORDED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_OPERATION_CREATED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_POST_ACTION_CONFIRMED",
+      "events": 2,
+      "with_before": 0,
+      "with_after": 2
+    },
+    {
+      "action": "RECOVERY_POST_ACTION_RECEIPT_STORED",
+      "events": 1,
+      "with_before": 0,
+      "with_after": 1
+    },
+    {
+      "action": "RECOVERY_PRE_ACTION_CONFIRMED",
+      "events": 2,
+      "with_before": 0,
+      "with_after": 2
+    }
+  ],
+  "triggers": [
+    "CREATE TRIGGER audit_append_only BEFORE DELETE OR UPDATE ON phase5_test_431e179e0940.audit_events FOR EACH ROW EXECUTE FUNCTION phase5_test_431e179e0940.reject_audit_change()"
+  ]
+}

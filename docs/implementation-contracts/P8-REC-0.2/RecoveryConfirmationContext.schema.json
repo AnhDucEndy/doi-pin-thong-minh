@@ -1,0 +1,157 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "anyOf": [
+        {
+          "const": "0.2",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Protocol Version"
+    },
+    "stage": {
+      "default": "LEGACY",
+      "enum": [
+        "LEGACY",
+        "PRE_ACTION_INSPECTION",
+        "POST_ACTION_RECEIPT",
+        "RECONCILIATION_INSPECTION"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "receipt_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Id"
+    },
+    "receipt_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Hash"
+    },
+    "receipt_observed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Receipt Observed At"
+    },
+    "case_version": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Case Version"
+    },
+    "confirmation_status": {
+      "default": "UNAVAILABLE",
+      "enum": [
+        "AVAILABLE",
+        "WAITING_RECEIPT",
+        "UNAVAILABLE",
+        "CONFIRMED",
+        "REJECTED",
+        "EXPIRED",
+        "CONSUMED",
+        "CANCELLED",
+        "REVOKED"
+      ],
+      "title": "Confirmation Status",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "VERIFY_OLD_POSSESSION",
+        "RETURN_OLD_TO_CUSTOMER",
+        "VERIFY_NEW_DELIVERY",
+        "RETURN_FOREIGN_OBJECT",
+        "RESUME_SWAP"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "expected_serial": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Expected Serial",
+      "type": "string"
+    },
+    "station_id": {
+      "format": "uuid",
+      "title": "Station Id",
+      "type": "string"
+    },
+    "customer_id": {
+      "format": "uuid",
+      "title": "Customer Id",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "simulation_only": {
+      "const": true,
+      "title": "Simulation Only",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "operation_id",
+    "context_hash",
+    "purpose",
+    "expected_serial",
+    "station_id",
+    "customer_id",
+    "expires_at",
+    "simulation_only"
+  ],
+  "title": "RecoveryConfirmationContext",
+  "type": "object",
+  "x-contract-version": "P8-REC-0.2/customer-projection-1"
+}

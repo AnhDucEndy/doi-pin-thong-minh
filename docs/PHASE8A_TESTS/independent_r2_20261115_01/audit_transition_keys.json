@@ -1,0 +1,28 @@
+[
+  {
+    "action": "FOREIGN_OBJECT_RETURN_SETTLED",
+    "before_is_null": true,
+    "after_keys": [
+      "receipt_id",
+      "snapshot_id",
+      "case_version",
+      "operation_id",
+      "activation_id",
+      "inspection_id",
+      "holds_released",
+      "authorization_id",
+      "new_custody_changed",
+      "old_custody_changed",
+      "post_attestation_ids"
+    ]
+  },
+  {
+    "action": "RECOVERY_ACTION_ACTIVATED",
+    "before_is_null": true,
+    "after_keys": [
+      "activation_id",
+      "authorization_id",
+      "acknowledgment_id"
+    ]
+  }
+]

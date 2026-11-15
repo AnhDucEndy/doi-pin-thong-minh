@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "AUTHORIZE_ACTION",
+      "title": "Kind",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "context_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Hash",
+      "type": "string"
+    },
+    "phase": {
+      "default": "INTENT",
+      "enum": [
+        "INTENT",
+        "ACTIVATE"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "authorization_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Authorization Id"
+    },
+    "acknowledgment_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Acknowledgment Id"
+    }
+  },
+  "required": [
+    "kind",
+    "operation_id",
+    "context_hash"
+  ],
+  "title": "AuthorizeAction",
+  "type": "object"
+}

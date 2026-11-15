@@ -1,0 +1,269 @@
+{
+  "real_current_os_process_logs": {
+    "A": [
+      {
+        "path": ".cache/phase8a_da7d2ebc7986/api-8030.log",
+        "startup_os_pids": [
+          "24620"
+        ],
+        "sha256": "D75526BFA9D04909B76FBFD95EF90CB6A9BC81FD89BE48F34E511A471053B84B"
+      },
+      {
+        "path": ".cache/phase8a_da7d2ebc7986/api-8031.log",
+        "startup_os_pids": [
+          "27360"
+        ],
+        "sha256": "FEE7C17D8049CB94B741E7DE89DD89D179EC6939D3A84695A93890E653F73612"
+      }
+    ],
+    "B": [
+      {
+        "path": ".cache/phase8a_322f6fbbee94/api-8030.log",
+        "startup_os_pids": [
+          "15364"
+        ],
+        "sha256": "9B23BE790608858C23049E742E0CD9C5D80E4490498CC7F7A7D81C100CDCB56F"
+      },
+      {
+        "path": ".cache/phase8a_322f6fbbee94/api-8031.log",
+        "startup_os_pids": [
+          "6420"
+        ],
+        "sha256": "BF4440885374766F65A46D6E1333FD2AEB0A39D1B8870BC064E7DD7C6B3E5EED"
+      }
+    ],
+    "CD": [
+      {
+        "path": ".cache/p8-CD-eb8d0d7c3b/api-8070.log",
+        "startup_os_pids": [
+          "18120"
+        ],
+        "sha256": "3DF63293B9717C313E278377087E346DA798F0DA3B948B04A1AA7FDCEF0F3B1C"
+      },
+      {
+        "path": ".cache/p8-CD-eb8d0d7c3b/api-8071.log",
+        "startup_os_pids": [
+          "15672"
+        ],
+        "sha256": "0C14EECCE3627011FF56737D4841F88024E48A9E00BC20CD9E310E2AA47B386F"
+      }
+    ],
+    "E": [
+      {
+        "path": ".cache/p8-E-2a2c28b0f5/api-8070.log",
+        "startup_os_pids": [
+          "23164"
+        ],
+        "sha256": "C672A5B7B8AA475F5EF5024E07B552AD418B1957801629DD8E44A6D83D1951C0"
+      },
+      {
+        "path": ".cache/p8-E-2a2c28b0f5/api-8071.log",
+        "startup_os_pids": [
+          "27392"
+        ],
+        "sha256": "4ACD510C27EA5B78CC09F0EE973A1D3B888C231AC922F08FCADE68E4603082F7"
+      }
+    ],
+    "F": [
+      {
+        "path": ".cache/p8-F-8b6ddfa14b/api-8070.log",
+        "startup_os_pids": [
+          "4712"
+        ],
+        "sha256": "184F1420B8DDAB57D067A603B66DD0D6DEC154FC273B6632607BD0E51994FA54"
+      },
+      {
+        "path": ".cache/p8-F-8b6ddfa14b/api-8071.log",
+        "startup_os_pids": [
+          "27848"
+        ],
+        "sha256": "1277C02F8BB028C321905B62B2E59692CB3FA8DAAA523E60534422C540D5F4E2"
+      }
+    ],
+    "J": [
+      {
+        "path": ".cache/p8-E-47902e6963/api-8070.log",
+        "startup_os_pids": [
+          "6420"
+        ],
+        "sha256": "E15FB73C3C58D2474B713D0B7BE204433773A111826DFF4C7F805EA6203769D7"
+      },
+      {
+        "path": ".cache/p8-E-47902e6963/api-8071.log",
+        "startup_os_pids": [
+          "18536"
+        ],
+        "sha256": "258354AD071E70A1EBD9B151E3CC88EAEF9C5EC2471B926EB78EB5D85F34EBA4"
+      }
+    ],
+    "K": [
+      {
+        "path": ".cache/p8-E-67ef3dde05/api-8070.log",
+        "startup_os_pids": [
+          "27412"
+        ],
+        "sha256": "4D7B4877322E78EA8B4D4532448B899EAE9F6FB508BC45B17D3F8F311D530324"
+      },
+      {
+        "path": ".cache/p8-E-67ef3dde05/api-8071.log",
+        "startup_os_pids": [
+          "13072"
+        ],
+        "sha256": "AD01B38E188B23FEAD4AB7508163FBA39B5E74777CE4A37D2658787480B05B5F"
+      }
+    ],
+    "T": [
+      {
+        "path": ".cache/p8-E-7085f34e54/api-8070.log",
+        "startup_os_pids": [
+          "20996"
+        ],
+        "sha256": "5F11978EDA4B44086BFDD3555E7D7D8079C51B5842FFFBD9957A5C1100321D59"
+      },
+      {
+        "path": ".cache/p8-E-7085f34e54/api-8071.log",
+        "startup_os_pids": [
+          "13216"
+        ],
+        "sha256": "767478EA2E517652DAA9BA1E2EE647124E22EA3F02815E7EE5A94186682850FB"
+      }
+    ]
+  },
+  "canonical_browser": [
+    {
+      "path": "terminal_fix_closure_20261114_01_browser/results.xml",
+      "sha256": "EEE1E125639763CDEC599C88CA82D4B36764CD4DA9172804C51B5476C0B41D7F",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_duplicate_20261114_01_browser/results.xml",
+      "sha256": "1C6A5A366806B9ADF5E7B7C3B2CDBCC65C23751706FCDD7FAD2EC96292BF1541",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_post_20261114_01_browser/results.xml",
+      "sha256": "91351D74EA2A6170E65BD5FB3BBBFEC5630DE43BE47E854585F8DD92B56B9595",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_post_reject_20261114_01_browser/results.xml",
+      "sha256": "A6FA5068A8BD295D266E5D49FDEA89CE8205BA828BF982597B89B404601CC52A",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_pre_reject_20261114_01_browser/results.xml",
+      "sha256": "5B2034A1CDE58A9C020853FEC0B71532B5EB3919CC768390660BF92909C835BF",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_reference_20261114_01_browser/results.xml",
+      "sha256": "88AD6E0E3907DDA836965210C80CB8CD4D073982E475F7EEF59ABA46D19A084B",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_response_loss_20261114_01_browser/results.xml",
+      "sha256": "21FAAF728A87CF58C33A60E13D1D826A36129DC2706706042611A720C2AB9279",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_revoked_20261114_01_browser/results.xml",
+      "sha256": "DE7538DBFB39EEBDE2E6127789C3021EC61DBA0CB852D101B21642027FBA3DCB",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_roles_20261114_01_browser/results.xml",
+      "sha256": "C3AE88B88530C50630BCB792AE96886885696A8ACCA0D938E4B5A19C77B024D2",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_smoke_20261114_01_browser/results.xml",
+      "sha256": "3F14CB97B4453603C708485F40452CCBF87E35D62CBAA0821ABCC6A18FC7A0A5",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_stale_expired_20261114_01_browser/results.xml",
+      "sha256": "E85758A01B034630C1BD6DF3466AB82D03B10D403023FC1CB5D6606EBA2C1A2C",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_successor_20261114_01_browser/results.xml",
+      "sha256": "503097D9129838616802A3817CB83E37E59D4697E222D2022AB7894D4E04825F",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_terminal_label_20261114_01_browser/results.xml",
+      "sha256": "4E54912B812526E80DDBC41A6AE00F85CDCB3AABF17F45362D201644E6931DFB",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_version_20261114_01_browser/results.xml",
+      "sha256": "51B0CA6F35073F1CEF4E1535C1BF083855154A5AC253A4DA5133CE3635AB6599",
+      "tests": 1,
+      "exit": 0
+    },
+    {
+      "path": "terminal_fix_wrong_stage_20261114_01_browser/results.xml",
+      "sha256": "ECD78E7CD26B327BBA4D60F6748969CA14F5D7508D9C482B7F0C41BCE58E8310",
+      "tests": 1,
+      "exit": 0
+    }
+  ],
+  "IA01_browser": [
+    {
+      "path": "ia01_browser_post_20261115_01_browser/results.xml",
+      "sha256": "18A5C6E5A8C1525FFD79B2228AD72B056F430AEE56C3FE61FB776095C2AD821D",
+      "browser_exit": 0
+    },
+    {
+      "path": "ia01_browser_successor_20261115_01_browser/results.xml",
+      "sha256": "D47A13F757A9B94C1B2F16BBC1CB1F403FA9BEC203BA49F87CD7FDFAA0D4A366",
+      "browser_exit": 0
+    },
+    {
+      "path": "ia01_browser_old_boot_20261115_01_browser/results.xml",
+      "sha256": "A33053854FE37110290ACF22AE8685FBAB963EF1F45D79024A76AC489E7540E1",
+      "browser_exit": 0
+    },
+    {
+      "path": "ia01_browser_pre_reject_20261115_01_browser/results.xml",
+      "sha256": "9961EB8FFA62B65435A769DBE99BDE00CF0847853463BF1236C87F526371268F",
+      "browser_exit": 0
+    },
+    {
+      "path": "ia01_browser_revoked_20261115_01_browser/results.xml",
+      "sha256": "9BD80507B664FF3D380AEA749414BFBF0A9933CD69819F1BAC5F24AEC55356E8",
+      "browser_exit": 0
+    },
+    {
+      "path": "ia01_browser_stale_expired_20261115_01_browser/results.xml",
+      "sha256": "9C66C585B1528B00DD446E19B24CE14604C6C06117FED8C79C432691234003B0",
+      "browser_exit": 0
+    }
+  ],
+  "IA01_targeted": {
+    "tests": 6,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "44B458281F3A87E1E12F5F4E7F97820AB96C768CB90C8465230EAF701B394966"
+  },
+  "frontend_tests": 39,
+  "frontend_failed": 0,
+  "probe_delta_matches_approved_R2": true,
+  "original_probe_sha256": "1FE5E23BD8699590E9B7435DEF9854E27ECCB1785728BB954885FC0436D72C0F",
+  "current_probe_sha256": "12A12CD16220419C59FFAA978C18DF9C483E6587CEADCA663E3D93B966FB72A3",
+  "notes": "Canonical15 and IA01 Browser6 are historical inherited evidence, not new Browser executions or 21 independent scenarios. Current audit Browser3 validated separately."
+}
