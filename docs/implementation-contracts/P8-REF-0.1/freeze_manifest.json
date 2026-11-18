@@ -1,0 +1,78 @@
+{
+  "version": "P8-REF-0.1 + P8-REC-0.3 / B0",
+  "time": "2026-11-16T20:46:16.489189+07:00",
+  "scope": "Documentation/schema/OpenAPI/static validator only; runtime not implemented",
+  "files": [
+    {
+      "path": "docs/implementation-contracts/P8-REC-0.3/contract.schema.json",
+      "sha256": "E3D27CED78CA72944CE4743DA00CA487EA9A30BB5C41AB740AD00159748D0273"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REC-0.3/openapi.overlay.yaml",
+      "sha256": "DA69276AA8865AFCDA225A33471B420A457701FD080D9F56F871D0E4DC6FC4F4"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REC-0.3/README.md",
+      "sha256": "8A124A40AA96C23FFB5FC4CB0C27DF27486D1CAC397F3C094F8EED8BB1F6870B"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/contract.schema.json",
+      "sha256": "B9FD66811845C101D5F4CD6F8581F6630F775ADF0A050AA329F54519DA28FA10"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/openapi.overlay.yaml",
+      "sha256": "E2E2088FD0D094865174A8B6A861434E9EB943EECDF869988BD97B076B678997"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/README.md",
+      "sha256": "FD5B06DA39A2C1839C6C03772FCA468A2D803A42DADCB5045516D6D986318842"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/RETRY_PROTOCOL.md",
+      "sha256": "DDD3F2B097FD9D954790E3E36C39D9BC97A95947584EB2AEFB165973B75BBEE2"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/source_baseline.json",
+      "sha256": "F69BA93FD7A59AC15C4B7CA63EA4884955A7D20A59F87CB5869A7986263CE59E"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/validate_static.py",
+      "sha256": "7B88DE5759F236599D778F53FDF6CDA1FE34A826B8F69C14B9F07E0C5EC43855"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/validation_20261116_03.json",
+      "sha256": "7AE0CD99C5BFCED4F9478CAACE3767FEE3C1B6F758E739BED4F4EF0D1F9A0F7C"
+    },
+    {
+      "path": "docs/implementation-contracts/P8-REF-0.1/validation_20261116_04.json",
+      "sha256": "8646A34EBB91D7A4855EC98DD95F3A6C4EB91AD604071341D3C7904744183BFD"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "sha256": "38D40E7D1E9BFC2F38E830BEDC7D1DB88709E3E11F3F54A60D4A4E329D20A6F0"
+    },
+    {
+      "path": "docs/PHASE8B_B0_CONTRACT_FREEZE.md",
+      "sha256": "60A2CF17167FFA7A52F1C54BED1E9E1D3BABC1604360FC770CA3226D4F6347C2"
+    },
+    {
+      "path": "docs/PHASE8B_DECISIONS_APPROVED.md",
+      "sha256": "88348D8B305E3EC93535464FBC35031FF71BE4ACFC7E56E9D427217D7583812D"
+    },
+    {
+      "path": "docs/PHASE8B_DESIGN_PROPOSAL.md",
+      "sha256": "B5B731812B7EFB98B94B0A93016578BA248FD9147608245DFA38A5CE68B15FA1"
+    },
+    {
+      "path": "docs/PHASE8B_READINESS_REVIEW.md",
+      "sha256": "31BD3497F5C5190252000AD02B25DC067EC68877CF77B212CD4363BDDA9F667E"
+    },
+    {
+      "path": "docs/PHASE8B_TEST_PLAN.md",
+      "sha256": "FD1D1B431A87AA2CE3D33E8FDA8C1105BC42D5BA9E1BD458AEC9961F1399CF2B"
+    }
+  ],
+  "historical_source_freeze": "docs/PHASE8A_TESTS/nfr06_fix_20261115_01/source_final_before.json",
+  "historical_files": 179,
+  "exclude_from_manifest": "This manifest and post-freeze Git metadata; avoids self-reference"
+}

@@ -5,7 +5,13 @@ from sqlalchemy import text
 def test_recovery_schema_and_runtime_grants(environment):
     schema = environment['settings'].schema
     with environment['owner'].connect() as conn:
-        assert conn.scalar(text('select version_num from alembic_version')) == '0008_recovery_reconciliation'
+        # Forward migrations must reach the actual single repository head;
+        # Recovery grants/history assertions below remain unchanged.
+        from alembic.config import Config
+        from alembic.script import ScriptDirectory
+        from app.config import ROOT
+        head = ScriptDirectory.from_config(Config(str(ROOT/'services/backend/alembic.ini'))).get_current_head()
+        assert conn.scalar(text('select version_num from alembic_version')) == head
         for table in ('recovery_operations', 'recovery_attestations', 'recovery_action_authorizations', 'recovery_action_activations', 'recovery_closure_intents', 'recovery_closure_receipts'):
             assert conn.scalar(text('select to_regclass(:name)'), {'name': f'{schema}.{table}'})
             for permission in ('SELECT', 'INSERT'):

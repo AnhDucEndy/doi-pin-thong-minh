@@ -1,0 +1,1083 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:p8-rec:0.3",
+  "$defs": {
+    "StageReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "NO_DELIVERY_INSPECTION"
+        },
+        "receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "operation_id",
+        "context_hash",
+        "stage",
+        "receipt_id",
+        "receipt_hash"
+      ]
+    },
+    "Context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "purpose": {
+          "const": "VERIFY_NO_DELIVERY"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "swap_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "station_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "device_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "new_battery_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_serial": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supply_compartment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "return_compartment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "base_case_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "base_swap_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "predecessor_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "predecessor_context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "purpose",
+        "operation_id",
+        "case_id",
+        "swap_id",
+        "station_id",
+        "device_id",
+        "customer_id",
+        "created_by",
+        "new_battery_id",
+        "expected_serial",
+        "supply_compartment_id",
+        "return_compartment_id",
+        "base_case_version",
+        "base_swap_version",
+        "created_at",
+        "expires_at",
+        "context_hash"
+      ],
+      "dependentRequired": {
+        "predecessor_id": [
+          "predecessor_context_hash"
+        ],
+        "predecessor_context_hash": [
+          "predecessor_id"
+        ]
+      }
+    },
+    "BeginRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "BEGIN_OPERATION"
+            },
+            "purpose": {
+              "const": "VERIFY_NO_DELIVERY"
+            },
+            "predecessor_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "purpose"
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "expected_version",
+        "note",
+        "statement"
+      ]
+    },
+    "InspectionTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "task_kind": {
+          "const": "VERIFY_NO_DELIVERY_INSPECT"
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "effect_allowed": {
+          "const": false
+        }
+      },
+      "required": [
+        "protocol_version",
+        "task_kind",
+        "context",
+        "effect_allowed"
+      ]
+    },
+    "CommandEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Hash",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "UNKNOWN",
+            "NOT_EXECUTED",
+            "EXECUTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "effects": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Effects",
+          "type": "integer"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "hash",
+        "status",
+        "effects",
+        "body"
+      ],
+      "title": "InspectionCommand",
+      "type": "object"
+    },
+    "ServiceEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "PREPARED",
+            "UNKNOWN",
+            "OBSERVED",
+            "REJECTED"
+          ]
+        },
+        "effects": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "receipt_event_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "durably_disabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operation_id",
+        "context_hash",
+        "purpose",
+        "state",
+        "effects",
+        "receipt_event_id",
+        "durably_disabled"
+      ]
+    },
+    "Quiescence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ledger_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "fence_generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fence_active": {
+          "const": true
+        },
+        "cached_commands_denied": {
+          "const": true
+        },
+        "cached_service_tasks_denied": {
+          "const": true
+        },
+        "all_issuers_fenced": {
+          "const": true
+        },
+        "command_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "service_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "denied_command_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniqueItems": true
+        },
+        "denied_activation_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniqueItems": true
+        },
+        "watermark_event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "watermark_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "ledger_id",
+        "fence_generation",
+        "fence_active",
+        "cached_commands_denied",
+        "cached_service_tasks_denied",
+        "all_issuers_fenced",
+        "command_digest",
+        "service_digest",
+        "denied_command_ids",
+        "denied_activation_ids",
+        "watermark_event_id",
+        "watermark_hash"
+      ]
+    },
+    "DeliveryHistory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "complete": {
+          "const": true
+        },
+        "swap_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "serial": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delivery_count": {
+          "const": 0
+        },
+        "journal_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "event_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "boot_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "complete",
+        "swap_id",
+        "serial",
+        "delivery_count",
+        "journal_hash",
+        "event_ids",
+        "boot_ids"
+      ]
+    },
+    "Observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "stage": {
+          "const": "NO_DELIVERY_INSPECTION"
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "device_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "boot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "snapshot_event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "snapshot_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actual_serial": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supply_compartment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "present": {
+          "const": true
+        },
+        "door_state": {
+          "const": "CLOSED"
+        },
+        "read_only": {
+          "const": true
+        },
+        "effect_count_delta": {
+          "const": 0
+        },
+        "result": {
+          "const": "OBSERVED"
+        },
+        "command_entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CommandEntry"
+          },
+          "uniqueItems": true
+        },
+        "service_entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ServiceEntry"
+          },
+          "uniqueItems": true
+        },
+        "quiescence": {
+          "$ref": "#/$defs/Quiescence"
+        },
+        "delivery_history": {
+          "$ref": "#/$defs/DeliveryHistory"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "stage",
+        "event_id",
+        "operation_id",
+        "context_hash",
+        "device_id",
+        "boot_id",
+        "seq",
+        "observed_at",
+        "snapshot_event_id",
+        "snapshot_hash",
+        "actual_serial",
+        "supply_compartment_id",
+        "present",
+        "door_state",
+        "read_only",
+        "effect_count_delta",
+        "result",
+        "command_entries",
+        "service_entries",
+        "quiescence",
+        "delivery_history"
+      ]
+    },
+    "TechnicianAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "protocol_version": {
+              "const": "0.3"
+            },
+            "operation_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "context_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "stage": {
+              "const": "NO_DELIVERY_INSPECTION"
+            },
+            "receipt_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "receipt_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "kind": {
+              "const": "TECHNICIAN_ATTEST"
+            },
+            "actual_serial": {
+              "type": "string",
+              "minLength": 1
+            },
+            "observation": {
+              "type": "string",
+              "enum": [
+                "CONFIRM",
+                "REJECT"
+              ]
+            }
+          },
+          "required": [
+            "protocol_version",
+            "operation_id",
+            "context_hash",
+            "stage",
+            "receipt_id",
+            "receipt_hash",
+            "kind",
+            "actual_serial",
+            "observation"
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "expected_version",
+        "note",
+        "statement"
+      ]
+    },
+    "CustomerConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "NO_DELIVERY_INSPECTION"
+        },
+        "receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirm": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "operation_id",
+        "context_hash",
+        "stage",
+        "receipt_id",
+        "receipt_hash",
+        "confirm"
+      ]
+    },
+    "DecideRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "protocol_version": {
+              "const": "0.3"
+            },
+            "operation_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "context_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "stage": {
+              "const": "NO_DELIVERY_INSPECTION"
+            },
+            "receipt_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "receipt_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "kind": {
+              "const": "VERIFY_NO_DELIVERY_DECIDE"
+            }
+          },
+          "required": [
+            "protocol_version",
+            "operation_id",
+            "context_hash",
+            "stage",
+            "receipt_id",
+            "receipt_hash",
+            "kind"
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "expected_version",
+        "note",
+        "statement"
+      ]
+    },
+    "EligibilityCertificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "certificate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "swap_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "swap_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "station_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "device_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "boot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "serial": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "technician_attestation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "customer_attestation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "ledger_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "fence_generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "command_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "service_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "validated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "new_pin_delivered": {
+          "const": "NO"
+        },
+        "effect_count_delta": {
+          "const": 0
+        }
+      },
+      "required": [
+        "protocol_version",
+        "certificate_id",
+        "operation_id",
+        "context_hash",
+        "case_id",
+        "case_version",
+        "swap_id",
+        "swap_version",
+        "payment_id",
+        "station_id",
+        "device_id",
+        "boot_id",
+        "serial",
+        "receipt_id",
+        "receipt_hash",
+        "technician_attestation_id",
+        "customer_attestation_id",
+        "ledger_id",
+        "fence_generation",
+        "command_digest",
+        "service_digest",
+        "validated_at",
+        "valid_until",
+        "new_pin_delivered",
+        "effect_count_delta"
+      ]
+    },
+    "CustomerProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "purpose": {
+          "const": "VERIFY_NO_DELIVERY"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "NO_DELIVERY_INSPECTION"
+        },
+        "receipt_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt_hash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_serial": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmation_status": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "UNAVAILABLE",
+            "CONFIRMED",
+            "REJECTED",
+            "EXPIRED",
+            "CONSUMED",
+            "REVOKED"
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "purpose",
+        "operation_id",
+        "context_hash",
+        "stage",
+        "receipt_id",
+        "receipt_hash",
+        "expires_at",
+        "expected_serial",
+        "confirmation_status"
+      ]
+    },
+    "ProofView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_kind": {
+          "enum": [
+            "SIMULATOR",
+            "TECHNICIAN",
+            "CUSTOMER"
+          ]
+        },
+        "stage": {
+          "const": "NO_DELIVERY_INSPECTION"
+        },
+        "payload_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reference_receipt_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "operation_id",
+        "source_kind",
+        "stage",
+        "payload_hash",
+        "reference_receipt_id",
+        "observed_at",
+        "received_at",
+        "confirmed"
+      ]
+    },
+    "NoDeliveryResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "0.3"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "swap_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "new_pin_delivered": {
+          "enum": [
+            "UNKNOWN",
+            "NO",
+            "YES"
+          ]
+        },
+        "old_pin_settled": {
+          "type": "boolean"
+        },
+        "operation": {
+          "$ref": "#/$defs/Context"
+        },
+        "proofs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProofView"
+          }
+        },
+        "certificate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EligibilityCertificate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "case_id",
+        "swap_id",
+        "version",
+        "new_pin_delivered",
+        "old_pin_settled",
+        "operation",
+        "proofs",
+        "certificate"
+      ]
+    },
+    "TaskList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InspectionTask"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    }
+  }
+}

@@ -65,11 +65,15 @@ def login(session, db, policy, username, password, client_ip):
     return token, ttl, user
 
 
-def idempotent(session, db, principal, route, key, body, status, execute):
+def idempotent(session, db, principal, route, key, body, status, execute, *, authorize=None):
     table = db.table('idempotency_records')
     request_hash = digest(json.dumps(jsonable_encoder(body), sort_keys=True, separators=(',', ':')))
     identity = {'principal': str(principal), 'route': route, 'key': key}
     advisory_lock(session, f'idem:{principal}:{route}:{key}')
+    # A cached success is not authority to use a revoked scope/session. Run the
+    # caller's protected authorization after the idempotency wait, even on replay.
+    if authorize is not None:
+        authorize()
     clause = (table.c.principal == str(principal)) & (table.c.route == route) & (table.c.key == key)
     existing = session.execute(select(table).where(clause)).mappings().first()
     if existing:

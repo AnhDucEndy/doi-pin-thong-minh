@@ -1,0 +1,10 @@
+docs/PHASE8B_TESTS/b1a_deadlock_before_20261116_06/postgresql_deadlock.public.json
+docs/PHASE8B_TESTS/b1a_ia01_affected_20261117_04/summary.public.json
+docs/PHASE8B_TESTS/b1a_ia01_targeted_20261117_03/summary.public.json
+docs/PHASE8B_TESTS/b1a_independent_review_20261117_03/finding.public.json
+docs/PHASE8B_TESTS/b1a_rereview_20261117_01/summary.public.json
+docs/PHASE8B_TESTS/b1a_rereview_artifacts_20261117_01.public.json
+docs/PHASE8B_TESTS/b1a_rereview_static_20261117_01.json
+docs/PHASE8B_TESTS/b1a_rereview_validation_20261117_01.public.json
+docs/implementation-contracts/P8-REF-0.1/git_checkpoint.json
+tools/review_phase8b_b1a.py

@@ -129,7 +129,9 @@ def build_router(session, principal, admin, mutation):
         initial = assets.get_row(current, db, 'compartments', compartment_id)
         assets.scope(current, db, actor['user'], initial['station_id'])
         policy = approved_policy(request.app.state.settings.policy_path)
-        return mutation(request, current, actor, key, body.model_dump(exclude_unset=True), 200,
-                        lambda: assets.change_compartment(current, db, actor['user'], compartment_id, body, policy))
+        return assets.operator_mutation(request, current, actor, key, body.model_dump(exclude_unset=True),
+                        lambda: assets.change_compartment(current, db, actor['user'], compartment_id, body, policy),
+                        station_id=initial['station_id'], resources=[('compartments', compartment_id)],
+                        roles=('ADMIN',) if body.action == 'RETIRE' else ('ADMIN', 'TECHNICIAN'))
 
     return router

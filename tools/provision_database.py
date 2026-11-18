@@ -50,6 +50,9 @@ def main():
                 cursor.execute(sql.SQL('GRANT INSERT ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
             cursor.execute(sql.SQL('GRANT UPDATE (revoked_at) ON {}.recovery_action_authorizations TO doi_pin_runtime').format(sql.Identifier(schema)))
             cursor.execute(sql.SQL('GRANT UPDATE (consumed_at, cancelled_at) ON {}.recovery_operations TO doi_pin_runtime').format(sql.Identifier(schema)))
+            for name in ('refund_attempts', 'refund_retry_permissions', 'refund_permit_redemptions', 'refunds'):
+                cursor.execute(sql.SQL('GRANT SELECT, INSERT ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
+            cursor.execute(sql.SQL('GRANT UPDATE (state, version, provider_reference, verified_at) ON {}.refunds TO doi_pin_runtime').format(sql.Identifier(schema)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

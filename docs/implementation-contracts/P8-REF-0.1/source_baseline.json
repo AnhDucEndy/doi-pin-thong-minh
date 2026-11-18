@@ -1,0 +1,31 @@
+{
+  "head": "de9b9288452f3c4e2b6703ed0ce641668ac8fc78",
+  "baseline_openapi_sha256": "8a85c8ab906a106ab631a43faeaa040a699f1332a81245d5b497aed89f69a808",
+  "prior_overlays": {
+    "docs\\implementation-contracts\\P8-REC-0.1\\CustomerConfirmation.schema.json": "e8e29292ab66328c2a4365ca6a314225e8cf34a1241cf33ab54de8df342768f2",
+    "docs\\implementation-contracts\\P8-REC-0.1\\DeviceObservation.schema.json": "1db75deacf5351f74266d42c494307f8ac45ca9f09afe9d89fa29504d1cbd0df",
+    "docs\\implementation-contracts\\P8-REC-0.1\\LegacyEvidence.schema.json": "01e27d4e02901e82a08d1c80318d01600fcc6d7a7d2ac67a516e20de2ef1a082",
+    "docs\\implementation-contracts\\P8-REC-0.1\\LegacySettlement.schema.json": "16769341beb6c0803c0d24ec3a142a9796ca48ed8dfd4dd67742e94d433f9724",
+    "docs\\implementation-contracts\\P8-REC-0.1\\README.md": "aeb8e2b0d635d4191a52061c5ab98d80fa672681161e6ffb8101ace11f24b2b4",
+    "docs\\implementation-contracts\\P8-REC-0.1\\StructuredEvidence.schema.json": "e10e1f881ecc9e8734dfa5ad1a807b65a0fa417193875b29927d4e7119764521",
+    "docs\\implementation-contracts\\P8-REC-0.1\\StructuredSettlement.schema.json": "baf0d91bb31a11ede20e1ace9f9f6a0f9efeb0e37580cdbacfe55079c22f33f8",
+    "docs\\implementation-contracts\\P8-REC-0.2\\ActionTask.schema.json": "47a4f13449299306be7b08186cff64e8f6a70fd765e8925e52f3c71c9175ed63",
+    "docs\\implementation-contracts\\P8-REC-0.2\\AuthorizationAcknowledgment.schema.json": "915af8efb29e130934b778eb2686cdd1f345c9b582e32ea9ab26d5a8fcf93d4f",
+    "docs\\implementation-contracts\\P8-REC-0.2\\AuthorizationIntentTask.schema.json": "2f9933d317d4de82f516bbccdec4d903ca27c36cc2fd29c7c0795d6fa1a67696",
+    "docs\\implementation-contracts\\P8-REC-0.2\\AuthorizeAction.schema.json": "97913d062e5ff254ea0498b03f7c20263e465548b9b2b6c50247d64f9806bb59",
+    "docs\\implementation-contracts\\P8-REC-0.2\\CloseNoEffect.schema.json": "a7bcd2d983491cf44d5daceb0a6e7511ec862d35cf3d9ba9f5c6f6f4913d9864",
+    "docs\\implementation-contracts\\P8-REC-0.2\\ClosureTask.schema.json": "d31b24efe9cd4f8f2241515516e16f709c066b56b8efa84c1263ec3824e2048a",
+    "docs\\implementation-contracts\\P8-REC-0.2\\CustomerConfirmation.schema.json": "57fd6eb5278e87574c3426b4970847629b658e0b37451e46e83aaa5ca6fb4380",
+    "docs\\implementation-contracts\\P8-REC-0.2\\CUSTOMER_PROJECTION_1.md": "3995937fac772fd9a7842ac8679c561cc87ebd3e3157f9040b5b6b79f580fc06",
+    "docs\\implementation-contracts\\P8-REC-0.2\\InspectionTask.schema.json": "e7fc7f999e4c566f977a835b652d9c1a272d6d69a387c5d8bcd2a22b72676930",
+    "docs\\implementation-contracts\\P8-REC-0.2\\NoEffectClosure.schema.json": "689542eeaa0c66b41bcfe95be4dee86a260a531f78f4015a115f7019f28b3ae0",
+    "docs\\implementation-contracts\\P8-REC-0.2\\PostActionReceipt.schema.json": "e43bfda756a98e54c3083b431813093b5d975d4cce7f2c29c8f6fbc0ebbc59d1",
+    "docs\\implementation-contracts\\P8-REC-0.2\\PreActionInspection.schema.json": "8959f38a189cc66767e3db7d1e7b60b7808ddb1cafb121773dc46c58f40b4012",
+    "docs\\implementation-contracts\\P8-REC-0.2\\README.md": "128034dd31b76691bcd695a013e0f1295ded67f0f4e40d384163ce5c7e9de14d",
+    "docs\\implementation-contracts\\P8-REC-0.2\\ReconciliationInspection.schema.json": "122e00de9a793dca028c42991e71e0f6b0aff30ad26dde2330965e17c9e90365",
+    "docs\\implementation-contracts\\P8-REC-0.2\\ReconciliationTask.schema.json": "a95e887c9ad340e2c4c2b489ea9f037fd68a699cca4eedca4b177d517ad8f966",
+    "docs\\implementation-contracts\\P8-REC-0.2\\RecoveryConfirmationContext.schema.json": "c9f9da12c1bb698e52fc709edcde09b0b6e7781b852769449aa9a5995ab27b01",
+    "docs\\implementation-contracts\\P8-REC-0.2\\ReinspectOperation.schema.json": "e2d74d0071ebad1499e8fccf36314dcb43089e469ef2b4c229ba8559853f84b4",
+    "docs\\implementation-contracts\\P8-REC-0.2\\TechnicianAttest.schema.json": "905869663ae0c3023925442644a75ca05f8c8531fe258d59f4798286c055ca8f"
+  }
+}

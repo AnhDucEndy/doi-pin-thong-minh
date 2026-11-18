@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from sqlalchemy import and_, cast, func, or_, select, update
 from sqlalchemy.dialects.postgresql import JSONPATH
-from app.application.identity import DomainError, audit, utcnow
+from app.application.identity import DomainError, audit, idempotent, utcnow
 from app.config import ConfigNotReady
 from app.infrastructure.db import advisory_lock
 
@@ -62,7 +62,72 @@ def held(session, db, compartment_id=None, battery_id=None):
 
 def station_lock(session, db, station_id):
     advisory_lock(session, 'assets:station:' + str(station_id))
-    return get_row(session, db, 'stations', station_id, lock=True)
+    # Station identity is immutable in the API (only name/address/state change).
+    # Keep a mutually exclusive writer row lock, but allow FK KEY SHARE checks
+    # from user_station_assignments. FOR UPDATE here creates station -> user ->
+    # station cycles with AssignStations' user lock and its implicit FK lock.
+    # key_share=True + read=False compiles to PostgreSQL FOR NO KEY UPDATE;
+    # all station writers still serialize on both this row lock and the mutex.
+    table = db.table('stations')
+    row = session.execute(select(table).where(table.c.id == station_id)
+                          .with_for_update(key_share=True)).mappings().first()
+    if not row:
+        raise DomainError(404, 'RESOURCE_NOT_FOUND')
+    return row
+
+
+def operator_authority(session, db, actor, station_id, roles):
+    """User and exact session must already be locked through caller commit."""
+    user = get_row(session, db, 'users', actor['user']['id'])
+    token = get_row(session, db, 'auth_sessions', actor['session']['id'])
+    if (user['state'] != 'ACTIVE' or token['user_id'] != user['id']
+            or token['revoked_at'] or token['expires_at'] <= utcnow()):
+        raise DomainError(401, 'SESSION_REVOKED')
+    if user['role'] not in roles:
+        raise DomainError(403, 'FORBIDDEN')
+    if station_id is not None:
+        scope(session, db, user, station_id)
+
+
+def operator_mutation(request, session, actor, key, body, execute, *, station_id,
+                      resources, roles=('ADMIN', 'TECHNICIAN')):
+    """Protect assigned-operator writes and cached responses in one transaction.
+
+    After station serialization, an unprivileged resource availability wait is
+    rolled back before acquiring authority. It writes nothing and holds no user
+    or session locks. Thus a revocation may commit during an initial resource
+    wait. The protected phase then follows user -> resources -> exact session;
+    there is no resource -> user edge, retry, or autonomous transaction commit.
+    """
+    db = request.app.state.db
+
+    def authorize():
+        if station_id is not None:
+            station_lock(session, db, station_id)
+        targets = resources() if callable(resources) else resources
+        if targets:
+            probe = session.begin_nested()
+            try:
+                for name, identity in targets:
+                    get_row(session, db, name, identity, lock=True)
+            finally:
+                probe.rollback()  # PostgreSQL releases locks acquired in savepoint.
+        for identity in sorted({actor['user']['id']}):
+            get_row(session, db, 'users', identity, lock=True)
+        for name, identity in targets:
+            get_row(session, db, name, identity, lock=True)
+        get_row(session, db, 'auth_sessions', actor['session']['id'], lock=True)
+        operator_authority(session, db, actor, station_id, roles)
+
+    def protected_execute():
+        result = execute()
+        # Even real wall-clock expiry during later DB work rolls back mutation,
+        # success audit and receipt. Authority rows remain locked until commit.
+        operator_authority(session, db, actor, station_id, roles)
+        return result
+
+    return idempotent(session, db, actor['user']['id'], request.method+' '+request.url.path,
+                     key, body, 200, protected_execute, authorize=authorize)
 
 
 def available_device(session, db, station_id):

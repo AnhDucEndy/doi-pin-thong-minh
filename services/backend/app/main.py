@@ -216,6 +216,8 @@ def create_app(settings=None):
     app.include_router(reservation_router(session, principal, admin, mutation))
     from app.api.payments import build_router as payment_router
     app.include_router(payment_router(session, principal, admin, mutation))
+    from app.api.refunds import build_router as refund_router
+    app.include_router(refund_router(session, principal, admin, mutation))
     from app.api.recovery import build_router as recovery_router
     app.include_router(recovery_router(session, principal, mutation))
 

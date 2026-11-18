@@ -43,12 +43,30 @@ def build_router(session, principal, admin, mutation):
     def change_battery(battery_id: UUID, body: BatteryAction, request: Request, key: UUID = Header(alias='Idempotency-Key'),
                        actor=Depends(operator, scope='function'), current=Depends(session, scope='function')):
         db = request.app.state.db
-        batteries.scope(current, db, actor['user'], assets.get_row(current, db, 'batteries', battery_id))
+        initial = assets.get_row(current, db, 'batteries', battery_id)
+        batteries.scope(current, db, actor['user'], initial)
         if (actor['user']['role'] == 'ADMIN') != (body.action == 'RETIRE'):
             raise DomainError(403, 'FORBIDDEN')
         policy = approved_policy(request.app.state.settings.policy_path)
-        return mutation(request, current, actor, key, body.model_dump(exclude_unset=True), 200,
-            lambda: batteries.change(current, db, actor['user'], battery_id, body, policy))
+        station_id = batteries.station_for(current, db, initial)
+        def resources():
+            targets = [('compartments', initial['compartment_id'])] if initial['compartment_id'] else []
+            targets.append(('batteries', battery_id))
+            # RESTORE locks these alerts too. Acquire them before exact session
+            # and before freshness validation, in the same deterministic order.
+            if body.action == 'RESTORE':
+                alerts = db.table('alerts')
+                from sqlalchemy import and_, or_
+                ids = current.scalars(select(alerts.c.id).where(alerts.c.station_id == station_id,
+                    or_(alerts.c.battery_id == battery_id, alerts.c.compartment_id == initial['compartment_id'],
+                        and_(alerts.c.battery_id.is_(None), alerts.c.compartment_id.is_(None))))
+                    .order_by(alerts.c.id))
+                targets.extend(('alerts', identity) for identity in ids)
+            return targets
+        return assets.operator_mutation(request, current, actor, key, body.model_dump(exclude_unset=True),
+            lambda: batteries.change(current, db, actor['user'], battery_id, body, policy),
+            station_id=station_id, resources=resources,
+            roles=('ADMIN',) if body.action == 'RETIRE' else ('TECHNICIAN',))
 
     @router.get('/v1/batteries/{battery_id}/telemetry', response_model=TelemetryPage, operation_id='listTelemetry', tags=['FR07'])
     def list_telemetry(battery_id: UUID, request: Request, response: Response, cursor: UUID | None = None, limit: int = Query(20, ge=1, le=100),

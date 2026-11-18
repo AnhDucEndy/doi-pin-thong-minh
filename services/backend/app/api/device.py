@@ -108,10 +108,12 @@ def build_router(session,principal,mutation):
     def ack(alert_id:UUID,body:VersionAction,request:Request,key:UUID=Header(alias='Idempotency-Key'),actor=Depends(operator,scope='function'),current=Depends(session,scope='function')):
         row=assets.get_row(current,request.app.state.db,'alerts',alert_id);assets.scope(current,request.app.state.db,actor['user'],row['station_id'])
         if actor['user']['role']!='TECHNICIAN':raise DomainError(403,'FORBIDDEN')
-        return mutation(request,current,actor,key,body.model_dump(),200,lambda:transition(alert_id,body,request,actor,current,False))
+        return assets.operator_mutation(request,current,actor,key,body.model_dump(),lambda:transition(alert_id,body,request,actor,current,False),
+            station_id=row['station_id'],resources=[('alerts',alert_id)],roles=('TECHNICIAN',))
     @router.post('/v1/alerts/{alert_id}/resolve',operation_id='resolveAlert',tags=['FR19'])
     def resolve(alert_id:UUID,body:AlertResolve,request:Request,key:UUID=Header(alias='Idempotency-Key'),actor=Depends(operator,scope='function'),current=Depends(session,scope='function')):
         row=assets.get_row(current,request.app.state.db,'alerts',alert_id);assets.scope(current,request.app.state.db,actor['user'],row['station_id'])
         if actor['user']['role']!='TECHNICIAN':raise DomainError(403,'FORBIDDEN')
-        return mutation(request,current,actor,key,body.model_dump(),200,lambda:transition(alert_id,body,request,actor,current,True))
+        return assets.operator_mutation(request,current,actor,key,body.model_dump(),lambda:transition(alert_id,body,request,actor,current,True),
+            station_id=row['station_id'],resources=[('alerts',alert_id)],roles=('TECHNICIAN',))
     return router

@@ -264,7 +264,11 @@ def test_phase1_contract_and_no_future_endpoints(client):
     recovery_paths = {'/v1/swaps/{swap_id}/recovery', '/v1/swaps/{swap_id}/recovery/evidence',
         '/v1/swaps/{swap_id}/recovery/confirmations', '/v1/swaps/{swap_id}/recovery/settle',
         '/v1/device/recovery-tasks', '/v1/device/recovery-observations'}
-    assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths | recovery_paths
+    # B1a registers ONLY the original FR16 public operations. All prior exact
+    # operation/security checks below remain in force; private provider and
+    # future 0.3 Recovery operations are not enabled by this allowance.
+    refund_paths = {'/v1/payments/{payment_id}/refund', '/v1/refunds/{refund_id}/reconcile'}
+    assert set(path for path in paths if path.startswith('/v1/')) == phase1_paths | f2_paths | recovery_paths | refund_paths
     for path, methods in paths.items():
         if path == '/health':
             continue

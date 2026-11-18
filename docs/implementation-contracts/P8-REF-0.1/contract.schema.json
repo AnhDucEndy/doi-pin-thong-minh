@@ -1,0 +1,1044 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:p8-ref:0.1",
+  "$defs": {
+    "ReasonAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "expected_version",
+        "reason"
+      ]
+    },
+    "Refund": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Định danh UUID do ứng dụng sinh"
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Một refund intent cho khoản thu, retry cùng khóa"
+        },
+        "requested_by": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Admin; service kiểm tra role"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Idempotency key hoàn"
+        },
+        "provider_reference": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Mã hoàn bên mock"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "REQUESTED",
+            "PENDING",
+            "UNKNOWN",
+            "FAILED",
+            "SUCCEEDED"
+          ]
+        },
+        "amount_minor": {
+          "type": "integer",
+          "description": "MVP bằng toàn bộ khoản thu"
+        },
+        "verified_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Xác minh hoàn"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Lý do và kết quả đối soát"
+        },
+        "version": {
+          "type": "integer",
+          "description": "Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Thời điểm tạo UTC"
+        }
+      },
+      "required": [
+        "id",
+        "payment_id",
+        "requested_by",
+        "provider_key",
+        "provider_reference",
+        "state",
+        "amount_minor",
+        "verified_at",
+        "reason",
+        "version",
+        "created_at"
+      ]
+    },
+    "LegacyProviderRefundRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "type": "string",
+          "const": "VND"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency"
+      ]
+    },
+    "LegacyProviderResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "NOT_FOUND",
+            "PENDING",
+            "SUCCEEDED",
+            "FAILED",
+            "UNKNOWN"
+          ]
+        },
+        "amount_minor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "VND",
+            null
+          ]
+        }
+      },
+      "required": [
+        "provider_key",
+        "provider_reference",
+        "result",
+        "amount_minor",
+        "currency"
+      ]
+    },
+    "NoEffectReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "const": "FAILED"
+        },
+        "journal_state": {
+          "const": "NEVER_PREPARED"
+        },
+        "cumulative_effect_count": {
+          "const": 0
+        },
+        "attempt_durably_denied": {
+          "const": true
+        },
+        "sealed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "journal_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "attempt_id",
+        "generation",
+        "receipt_id",
+        "provider_reference",
+        "result",
+        "journal_state",
+        "cumulative_effect_count",
+        "attempt_durably_denied",
+        "sealed_at",
+        "journal_hash"
+      ]
+    },
+    "RetryPermit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "permit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "prior_attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "prior_generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "no_effect_receipt": {
+          "$ref": "#/$defs/NoEffectReceipt"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "permit_id",
+        "prior_attempt_id",
+        "prior_generation",
+        "attempt_id",
+        "generation",
+        "issued_at",
+        "expires_at",
+        "no_effect_receipt"
+      ]
+    },
+    "PermitRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "command": {
+          "const": "REQUEST_RETRY_PERMISSION"
+        },
+        "reconcile_request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "prior_attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "prior_generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "no_effect_receipt_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "protocol_version",
+        "command",
+        "reconcile_request_id",
+        "prior_attempt_id",
+        "prior_generation",
+        "no_effect_receipt_id"
+      ]
+    },
+    "AttemptInitial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "const": 0
+        },
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "command": {
+          "const": "ATTEMPT_REFUND"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "attempt_id",
+        "generation",
+        "protocol_version",
+        "command"
+      ]
+    },
+    "AttemptRetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "command": {
+          "const": "ATTEMPT_REFUND"
+        },
+        "retry_permit_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "attempt_id",
+        "generation",
+        "protocol_version",
+        "command",
+        "retry_permit_id"
+      ]
+    },
+    "ProviderRefundCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LegacyProviderRefundRequest"
+        },
+        {
+          "$ref": "#/$defs/AttemptInitial"
+        },
+        {
+          "$ref": "#/$defs/AttemptRetry"
+        },
+        {
+          "$ref": "#/$defs/PermitRequest"
+        }
+      ]
+    },
+    "PermitResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "message_kind": {
+          "const": "RETRY_PERMISSION"
+        },
+        "permit": {
+          "$ref": "#/$defs/RetryPermit"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "message_kind",
+        "permit"
+      ]
+    },
+    "AttemptResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "message_kind": {
+          "const": "ATTEMPT_RESULT"
+        },
+        "provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "UNKNOWN",
+            "FAILED",
+            "SUCCEEDED"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "RESERVED",
+            "PREPARED",
+            "UNKNOWN",
+            "FINAL"
+          ]
+        },
+        "effect_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "no_effect_receipt": {
+          "$ref": "#/$defs/NoEffectReceipt"
+        },
+        "permit_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "attempt_id",
+        "generation",
+        "protocol_version",
+        "message_kind",
+        "provider_reference",
+        "result",
+        "phase",
+        "effect_count"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "SUCCEEDED"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "effect_count": {
+                "const": 1
+              },
+              "phase": {
+                "const": "FINAL"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "FAILED"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "effect_count": {
+                "const": 0
+              },
+              "phase": {
+                "const": "FINAL"
+              }
+            },
+            "required": [
+              "no_effect_receipt"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "PENDING"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "effect_count": {
+                "const": 0
+              },
+              "phase": {
+                "const": "PREPARED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "RESERVED"
+              }
+            },
+            "required": [
+              "phase"
+            ]
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "const": "UNKNOWN"
+              },
+              "effect_count": {
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "UNKNOWN"
+              }
+            },
+            "required": [
+              "phase"
+            ]
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "const": "UNKNOWN"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "FINAL"
+              }
+            },
+            "required": [
+              "phase"
+            ]
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "enum": [
+                  "SUCCEEDED",
+                  "FAILED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "QueryContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_provider_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "const": "VND"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "STATUS",
+            "SEAL_UNACCEPTED"
+          ]
+        },
+        "reconcile_request_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "original_provider_reference",
+        "amount_minor",
+        "currency",
+        "attempt_id",
+        "generation",
+        "mode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "SEAL_UNACCEPTED"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "required": [
+              "reconcile_request_id"
+            ]
+          }
+        }
+      ]
+    },
+    "MissingResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "message_kind": {
+          "const": "NOT_FOUND"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result": {
+          "const": "NOT_FOUND"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "message_kind",
+        "provider_key",
+        "attempt_id",
+        "generation",
+        "result"
+      ]
+    },
+    "ProviderResponse": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LegacyProviderResult"
+        },
+        {
+          "$ref": "#/$defs/PermitResponse"
+        },
+        {
+          "$ref": "#/$defs/AttemptResult"
+        },
+        {
+          "$ref": "#/$defs/MissingResult"
+        }
+      ]
+    },
+    "LegacyRefundCallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_event_id": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_reference": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "type": "string",
+          "const": "VND"
+        }
+      },
+      "required": [
+        "provider_event_id",
+        "payment_id",
+        "provider_key",
+        "provider_reference",
+        "result",
+        "amount_minor",
+        "currency",
+        "refund_id"
+      ]
+    },
+    "RefundCallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_event_id": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "refund_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_reference": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "currency": {
+          "type": "string",
+          "const": "VND"
+        },
+        "protocol_version": {
+          "const": "P8-REF-0.1"
+        },
+        "attempt_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "provider_event_id",
+        "payment_id",
+        "refund_id",
+        "provider_key",
+        "provider_reference",
+        "result",
+        "amount_minor",
+        "currency",
+        "protocol_version",
+        "attempt_id",
+        "generation"
+      ]
+    }
+  }
+}

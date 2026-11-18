@@ -1,5 +1,69 @@
 # Trạng thái triển khai hệ thống đổi pin thông minh
 
+## B1a user acceptance17/11/2026 — ACCEPTED BY USER
+
+**B0 CONTRACT FROZEN; B1a ACCEPTED BY USER — 17/11/2026.** Đây là phê duyệt rõ ràng của người dùng trong phiên cộng tác, không phải chữ ký giảng viên/nhóm hoặc kết luận suy từ Codex. [Biên bản scope/provenance/evidence/residuals](PHASE8B_B1A_USER_ACCEPTANCE.md) · [Curated Git proposal](PHASE8B_B0_B1A_COMMIT_MANIFEST.md).
+
+P8B-D01/D02 APPROVED; P8B-B1A-01 và IA01 FIXED/CLOSED technical scope; independent re-review PASSED với16Passed/exit0. Accepted checkpoint191 current hashes khớp; reviewer192 gồm một test mới;543 affected/exit0 là historical verified artifacts, không rerun trong acceptance; static77checks đạt. Giữ nguyên lịch sử FAILED/BLOCKED, không hồi tố thành PASS.
+
+**B1b NOT STARTED; B2–B5 NOT STARTED.** Chưa hoàn tất full Refund/Phase8B/TC16/CT13; no positive certificate/provider effects/compensation. Phase8A CONDITIONAL ACCEPTANCE APPROVED BY USER giữ nguyên; final MVP NFR04/NFR07/CT14/NFR08 vẫn OPEN/NOT RUN, không waived. Lượt này chỉ documents/read-only Git/source/security checks, không stage/commit/push, migration demo, reset/delete hoặc tự chuyển increment.
+
+## B1a independent re-review17/11/2026 — PASSED, recommended for user acceptance
+
+**B1a INDEPENDENT RE-REVIEW PASSED — RECOMMENDED FOR USER ACCEPTANCE**, riêng Increment B1a foundation; chưa ACCEPTED BY USER, không full Refund/Phase8B/MVP acceptance và không tự mở B1b. P8B-B1A-01 và P8B-B1A-IA01 được xác nhận Fixed trong technical scope; không phát hiện Major/Blocker mới trong scope đã review. [Independent re-review/source analysis/evidence/limits](PHASE8B_B1A_INDEPENDENT_REREVIEW.md).
+
+Reviewer rerun/new probes: **16 Passed,0 Failed/Errors/Skipped,exit0**,87.33s; gồm nguyên hai probe IA01/control, mutation-first, sáu probe reviewer về cached replay logout/role, reverse cached authority, savepoint release và sibling resource-wait/logout; original deadlock/both Refund–AssignStations orders/FK compatibility và migration/grants/upgrade. Native PG waits/commit order, no unauthorized business/audit/receipt,0 captured40P01; original two schemas success audit/receipt0 đọc SQL riêng. ASGI/TestClient không được gọi two-OS-process E2E. Không sửa production, migration, contracts, assertions gốc hoặc requirements.
+
+Historical artifacts **verified, not wholesale rerun**:543 unique IDs/exit0, đủ192 cũ,191 hashes before/after/current khớp; targeted37/42 overlap không cộng; lịch sử Failed giữ nguyên. Reviewer run192 hashes =191 cũ +new probe, source stable; fingerprint đúng8 bảng demo/revision0002 unchanged. Static77checks/34definitions rerun exit0. Full Backend/Browser/new provider E2E Not Run trong re-review, không dùng chúng như gate Passed.
+
+Phase8A conditional acceptance và final MVP NFR04/NFR07/CT14/NFR08 OPEN giữ nguyên. B1b–B5 positive certificate/refund provider effects và8C chưa triển khai; missing-certificate refusal vẫn fail-closed đúng scope B1a. Không stage/commit/push/delete/reset hoặc migration demo. Chờ người dùng quyết định nghiệm thu B1a; các checkpoint OPEN/READY bên dưới giữ nguyên lịch sử.
+
+## P8B-B1A-IA01 final remediation17/11/2026 — FIXED, ready for independent re-review
+
+Current authority serialization added only for confirmed compartment/battery/alert mutation paths: retains station mutex/NO KEY UPDATE; resource availability savepoint is rolled back before sorted actor-user→resource→exact-session authority phase. Checks ACTIVE/current role/assignment/exact session after waits, protects through commit, and validates cached replay after idempotency wait. No baseline, B0, protocol, custody, Payment, holds or physical effect change. Original independent probe and all failing evidence unchanged.
+
+**P8B-B1A-IA01 FIXED — B1a READY FOR INDEPENDENT RE-REVIEW**, not independent/user acceptance. New PostgreSQL runs: original/control/sibling5Passed; targeted02 **42Passed,exit0**; final targeted03 **37Passed,exit0**, groups overlap. New sibling before-fix2Failed retained, both now403. Final affected run04 **543Passed,0Failed/Errors/Skipped,exit0**,38:56; exact original543 IDs,191 hashes before/after/current match, original probe bytes unchanged,0 captured40P01,8-table demo fingerprint/revision0002 unchanged. Original two schemas403/no success audit/receipt verified read-only. Static77checks/34definitions and diff check Passed. Full Backend collection/new Browser/two OS API servers Not Run in this remediation; ASGI/native-PG tests are labeled accurately. [Remediation report/evidence](PHASE8B_B1A_IA01_FIX.md).
+
+Five production files changed against prior543, no migration/contracts/deadlines/custody/Payment/holds/effect change. Historical independent OPEN/READY checkpoints below remain unchanged in meaning. No stage/commit/push/cleanup or B1b–B5/8C; Phase8A conditional acceptance and MVP NFR gates unchanged.
+
+## B1a independent review17/11/2026 — PARTIAL/BLOCKED
+
+**B1a INDEPENDENT REVIEW PARTIAL/BLOCKED.** Reviewer xác minh source/collection/JUnit543 unique/exit0/189 hashes và original192 đầy đủ; không rerun543. P8B-B1A-01 được xác nhận Fixed bằng current rerun probe gốc và hai ordering Refund/AssignStations; clean/upgrade/grants3 tests Passed, static77checks Passed. Không coi trạng thái READY FOR REVIEW của implementation là user acceptance.
+
+**P8B-B1A-IA01 — Major OPEN:** shared caller `assets.change_compartment` kiểm scope trước station/compartment lock wait, không lock/revalidate authority sau wait. Hai independent PG interleavings: Admin revoke200 và scopeGET403, Admin còn đọc slotBLOCKED/version1 trước release; pending Technician POST vẫn200, ghiMAINTENANCE/version2 +1 success audit. Pre-revoked control403 đúng. Failing probes/JSON/XML/exit giữ nguyên; no random sleep, no fake physical proof/certificate. Đây là pre-existing Phase2 caller body (AST matches HEAD), không quy lỗi cho NO KEY UPDATE; vẫn chặn gate review theo phạm vi shared callers. Không sửa production hoặc tự thay đổi conditional acceptance Phase8A.
+
+Run reviewer01:7Passed/2fixtureFailed (assumption ACTIVE thay vì seedBLOCKED); fixture corrected theo hai trạng thái SET_MAINTENANCE hợp lệ, expected403/no-write giữ nguyên. Run02:1Passed/2authorizationFailed; run03:2authorizationFailed với thêm observation trước release. Các lượt overlap, không cộng trùng. Tất cả isolated schemas/demo8 fingerprint/revision0002 được bảo toàn. Dừng gate acceptance/B1b và bàn giao proposed authority repair trong [independent report](PHASE8B_B1A_INDEPENDENT_REVIEW.md). Không stage/commit/push/delete/reset hoặc provider effects.
+
+## P8B-B1A-01 final checkpoint17/11/2026 — FIXED, ready for independent review
+
+**P8B-B1A-01 FIXED — B1a READY FOR INDEPENDENT REVIEW** trong technical verified scope, chưa accepted/full Refund/MVP acceptance. Replacement `b1a_deadlock_regression_20261117_06` hoàn tất **543 Passed,0 Failed/Errors/Skipped,exit0**,pytest38:26,wrapper12:13:08–12:51:37+07. Đủ192 testcase cũ, collection/JUnit khớp,189 hashes before/after/current khớp,0 captured40P01,8-table demo fingerprint/revision0002 unchanged. Run05 giữ **Interrupted** do Windows power-off, không XML/exit cuối; không suy hoặc cộng progress của nó.
+
+Remediation production chỉ đổi `assets.station_lock`: giữ advisory + exclusive station writer row lock với **FOR NO KEY UPDATE**, native FK KEY SHARE tương thích nên bỏ backward wait edge với AssignStations user lock. Không bỏ user/resource/session locks, role/scope/final-time checks, không retry40P01/đổi status để che lỗi, không đổi isolation/lock_timeout/deadlines/schema/grants/approved contracts. Original probe giữ bytes/assertions và Passed; full HTTP/PG-session two-ordering, assignment/role/session revoke, native expiry/freshness, shared callers/audit/rollback/replay đã kiểm. Static77checks/34definitions đạt. [Final root cause, callers, matrix và evidence](PHASE8B_B1A_DEADLOCK_FIX.md) · [B1a scope/historical report](PHASE8B_B1A_IMPLEMENTATION.md).
+
+Không có positive B1b certificate, provider Refund effect/dispatch,8C, Browser/Independent Acceptance hoặc deployment trong lượt này. Phase8A conditional acceptance và final MVP NFR gates OPEN giữ nguyên. Không stage/commit/push, không xóa/reset demo/schema/ledger/evidence. Các checkpoint pending/open dưới đây là lịch sử trước khi replacement06 hoàn tất.
+
+## P8B-B1A-01 remediation checkpoint17/11/2026 — implemented, verification pending
+
+Shared `assets.station_lock` giữ advisory và exclusive writer row lock, dùng PostgreSQL **FOR NO KEY UPDATE** để native FK KEY SHARE của AssignStations không tạo station→user→station cycle. Giữ mọi user/resource/session locks, RBAC, READ COMMITTED, lock_timeout5s, deadlines và certificate refusal; không thay migration/contracts/protocol/provider/custody/holds. Original failing probe bytes/assertions giữ nguyên: after-fix1Passed; new lock/HTTP/order/logout/freshness gates11Passed, settlement-race2Passed, role-revoke1Passed. Static77/34 đạt. Các số này có overlap, không cộng như full suite.
+
+Broad regression selection543 chứa đủ192 cũ. Run05 **INTERRUPTED** do Windows power-off00:45:36, thiếu finalXML/exit; không coi progress là Passed. Sau boot10:52, PostgreSQL tự recovery/fsync; bounded readiness đạt healthy/pg_isready/runtimeSELECT1. Source189 hashes không delta. **Replacement run06 đang chạy toàn543 trên schemas mới**, chưa có kết quả cuối tại checkpoint này. Finding chưa đóng/không đề xuất READY cho tới khi final regression hoàn tất. [Root cause, exact lock graph, callers, probes và recovery evidence](PHASE8B_B1A_DEADLOCK_FIX.md). Không reset/delete, stage/commit/push, không B1b–B5 hoặc8C; Phase8A conditional acceptance giữ nguyên.
+
+## B1a checkpoint16/11/2026 — Refund foundation PARTIAL/BLOCKED
+
+Đã triển khai migration forward-only `0009_refund_foundation`, strict public Refund DTO/routes gốc, read/ownership + Admin/session/version gates, domain five-state policy, immutable attempt/permission/certificate relationships và allowlisted actual before/after audit foundation. Chưa có B1b certificate issuer: request/reconcile cần chứng cứ bị fail-closed, không positive refund API, provider effect/dispatch, custody/Payment/holds mutation hoặc8C.
+
+Run `b1a_final_20261116_03`: **192 Passed,0 Failed/Errors/Skipped,exit0**,903.26s;48 B1a +3 contract/migration compatibility +141 affected P6/8A/P7 tests.187 hashes before/after khớp, demo8-table fingerprint và revision0002 giữ nguyên. Static contracts/OpenAPI **77 checks/34 definitions,exit0**; B0 normative freeze/legacy overlays không đổi. Historical603 không được dùng làm full suite cho8B. Lượt02 có48Passed/1fixtureFailed (cross-schema station enum copy), đã sửa fixture riêng và giữ fail evidence.
+
+**P8B-B1A-01 Major OPEN:** probe mới `b1a_lock_graph_20261116_05` **1Failed,exit1**, PostgreSQL**40P01 deadlock detected**, Refund503 khi station→historical Technician user lock cạnh tranh user→station FK key-share sequence của AssignStations. `pg_blocking_pids`, SQLSTATE, source/log/JSON/XML được giữ; không đổi expected/skip/xfail. Protected state/audit/payment/custody/3holds không đổi, không double effect. Probe là real PG connections + Refund API/assignment SQL sequence, không gọi hai OS Backend/full HTTP AssignStations Passed. Dừng nhánh phụ thuộc theo yêu cầu; chưa sửa shared lock graph hoặc chuyểnB1b/B2. [Implementation, root cause, coverage, evidence và proposed repair](PHASE8B_B1A_IMPLEMENTATION.md).
+
+HEAD main `de9b928`, index không stage; giữ environment artifact/untracked evidence. Không migration demo, reset/delete dữ liệu/ledger/schema hoặc commit/push. Phase8A CONDITIONAL ACCEPTANCE và NFR final MVP OPEN không đổi.
+
+## B0 checkpoint16/11/2026 — current design baseline
+
+**B0 CONTRACT FROZEN — READY FOR B1 IMPLEMENTATION REVIEW.** P8B-D01 Option B vàP8B-D02 VERIFY_NO_DELIVERY đãAPPROVED BY USER. [Decision record](PHASE8B_DECISIONS_APPROVED.md),[freeze/traceability/locking/audit/B1–B5 handoff](PHASE8B_B0_CONTRACT_FREEZE.md),[Refund overlay](implementation-contracts/P8-REF-0.1/README.md),[Recovery0.3 overlay](implementation-contracts/P8-REC-0.3/README.md) là baseline hiện hành. Staticvalidation exit0:2bundles/34definitions,77shapechecks,2standaloneOpenAPI vàmerged8A+8Bspec hợp lệ;legacyCharge/security/Recovery0.1/0.2 không đổi.179sourcehashes delta0.
+
+Freeze chỉ chốt thiết kếB0,không runtime acceptance8B hoặc quyền tự codeB1. Runtime/PGconcurrency/crash/E2E/migrations **NOT RUN**;không refund/physical effects,production changes,stage/commit/push hoặc8C. Phase8A conditional acceptance giữ nguyên;NFR04/NFR07/CT14/NFR08 vẫn OPEN. Nội dung initial review dưới đây giữ lịch sử trước approval/B0,không dùng trạng tháipending/proposed cũ thay checkpoint mới này.
+
 ## Checkpoint quyết định mới — 15/11/2026
 
 **PHASE 8A — CONDITIONAL ACCEPTANCE APPROVED BY USER.** Người dùng đã phê duyệt allocation R2-D01/NFR04, R2-D02/NFR07/CT14 và R2-D04/NFR08 sang final MVP integration acceptance. Các tests/gates này vẫn **NOT RUN / OPEN, bắt buộc trước full MVP acceptance/release**, không PASSED/WAIVED. Owner TV1–TV5 là đề xuất theo R3; nhóm chưa xác nhận cá nhân nhận việc. IA01/NFR06 Recovery findings FIXED/CLOSED technical scope; evidence603 Backend,21 audit actions,8 real runners và Browser/frontend được kế thừa theo R3, không chạy mới. Không full MVP PASS, không hoàn tất refund/compensation hoặc tự mở8B/8C.

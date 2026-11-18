@@ -1,0 +1,3386 @@
+openapi: 3.1.0
+info:
+  title: P8-REF-0.1 additive design overlay — NOT IMPLEMENTED
+  version: '0.1'
+x-base-sha256: 8a85c8ab906a106ab631a43faeaa040a699f1332a81245d5b497aed89f69a808
+paths:
+  /v1/payments/{payment_id}/refund:
+    post:
+      operationId: requestRefund
+      summary: Yêu cầu hoàn phí có kiểm chứng
+      description: Guard BR08/09 và INVARIANTS.md; payment SUCCEEDED, chắc chắn chưa
+        giao pin mới, không lệnh còn có thể tác động. Refund full amount từ DB, không
+        do client quyết định.
+      tags:
+      - FR16
+      x-roles:
+      - ADMIN
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Yêu cầu hoàn phí có kiểm chứng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+      x-contract-version: P8-REF-0.1
+    get:
+      operationId: getRefund
+      summary: Xem khoản hoàn
+      description: Khách chỉ payment của mình; 404 khi chưa có refund.
+      tags:
+      - FR16
+      x-roles:
+      - ADMIN
+      - CUSTOMER
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '200':
+          description: Xem khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      x-contract-version: P8-REF-0.1
+  /v1/refunds/{refund_id}/reconcile:
+    post:
+      operationId: reconcileRefund
+      summary: Đối soát khoản hoàn
+      description: UNKNOWN chỉ query. FAILED chỉ thử lại cùng intent/provider_key
+        sau xác nhận chưa hoàn và provider cho phép; không tạo refund mới.
+      tags:
+      - FR16
+      x-roles:
+      - ADMIN
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Đối soát khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refunds'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - UserBearer: []
+      parameters:
+      - name: refund_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Cùng principal+route+key+body trả kết quả cũ; khác body trả 409.
+          HTTP key không thay command/provider key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonAction'
+      x-contract-version: P8-REF-0.1
+  /v1/payment-events:
+    post:
+      operationId: receivePaymentEvent
+      summary: Nhận callback thu hoặc hoàn
+      description: Xác minh X-Payment-Key qua HTTPS/private mock, mã/tiền/currency.
+        Cùng event ID khác hash =409. Callback chỉ được inbox sau xác minh; không
+        cho trình duyệt tự xác nhận trả tiền.
+      tags:
+      - FR14
+      x-roles:
+      - PAYMENT
+      x-fr:
+      - FR14
+      - FR15
+      - FR16
+      x-uc:
+      - UC12
+      - UC13
+      - UC14
+      responses:
+        '202':
+          description: Nhận callback thu hoặc hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallbackReceipt'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - PaymentKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/PaymentCallback'
+              - $ref: '#/components/schemas/P8RFRefundCallback'
+      x-contract-version: P8-REF-0.1
+  /mock/v1/refunds:
+    post:
+      operationId: providerRefund
+      summary: Mock tạo khoản hoàn
+      description: Một intent, cùng key; chỉ full refund không quá khoản thu; ledger
+        tồn tại qua restart.
+      tags:
+      - FR16
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '202':
+          description: Mock tạo khoản hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/P8RFProviderResponse'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: 'Baseline mode unchanged. Tagged ATTEMPT_REFUND: attempt_id;
+          REQUEST_RETRY_PERMISSION: reconcile_request_id. provider_key remains immutable
+          intent identity.'
+      - name: X-Refund-Protocol
+        in: header
+        required: false
+        schema:
+          const: P8-REF-0.1
+        description: 'Absent: unchanged baseline. Required for tagged command/query;
+          semantic cross-check required.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/P8RFProviderRefundCommand'
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+      x-contract-version: P8-REF-0.1
+  /mock/v1/refunds/{provider_key}:
+    get:
+      operationId: providerQueryRefund
+      summary: Mock truy vấn hoàn
+      description: Mock truy vấn hoàn
+      tags:
+      - FR16
+      x-roles:
+      - BACKEND
+      x-fr:
+      - FR16
+      x-uc:
+      - UC14
+      responses:
+        '200':
+          description: Mock truy vấn hoàn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/P8RFProviderResponse'
+        '400':
+          description: Yêu cầu sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Chưa xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền/phạm vi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không thấy tài nguyên hoặc bị ẩn vì khác chủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột state/version/idempotency/tài nguyên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Dữ liệu sai schema hoặc thiếu cấu hình demo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Vượt giới hạn thử sai/tốc độ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Trạm offline hoặc dịch vụ chưa sẵn sàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - ServiceKey: []
+      parameters:
+      - name: provider_key
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Refund-Protocol
+        in: header
+        required: false
+        schema:
+          const: P8-REF-0.1
+        description: 'Absent: unchanged baseline. Required for tagged command/query;
+          semantic cross-check required.'
+      - name: context
+        in: query
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/P8RFQueryContext'
+      servers:
+      - url: http://localhost:8001
+        description: Payment mock độc lập, chỉ Backend gọi
+      x-contract-version: P8-REF-0.1
+components:
+  securitySchemes:
+    UserBearer:
+      type: http
+      scheme: bearer
+      description: Opaque web session; server lưu hash; role/scope kiểm tra mỗi request.
+    DeviceKey:
+      type: apiKey
+      in: header
+      name: X-Device-Key
+    PaymentKey:
+      type: apiKey
+      in: header
+      name: X-Payment-Key
+    ServiceKey:
+      type: apiKey
+      in: header
+      name: X-Service-Key
+  schemas:
+    Role:
+      type: string
+      enum:
+      - ADMIN
+      - CUSTOMER
+      - TECHNICIAN
+    AccountState:
+      type: string
+      enum:
+      - ACTIVE
+      - LOCKED
+      - INACTIVE
+    StationState:
+      type: string
+      enum:
+      - ACTIVE
+      - MAINTENANCE
+      - INACTIVE
+    BatteryState:
+      type: string
+      enum:
+      - REGISTERED
+      - IN_SERVICE
+      - QUARANTINED
+      - RETIRED
+    LocationKind:
+      type: string
+      enum:
+      - COMPARTMENT
+      - CUSTOMER
+      - UNKNOWN
+    CompartmentState:
+      type: string
+      enum:
+      - ACTIVE
+      - BLOCKED
+      - MAINTENANCE
+      - RETIRED
+    DoorState:
+      type: string
+      enum:
+      - UNKNOWN
+      - CLOSED
+      - OPEN
+    SwapState:
+      type: string
+      enum:
+      - VERIFIED
+      - RESERVED
+      - AWAITING_PAYMENT
+      - AWAITING_RETURN
+      - RETURN_ACCEPTED
+      - AWAITING_PICKUP
+      - REVIEW_REQUIRED
+      - COMPENSATING
+      - COMPLETED
+      - CANCELLED
+      - CLOSED_COMPENSATED
+    PaymentState:
+      type: string
+      enum:
+      - CREATED
+      - PENDING
+      - UNKNOWN
+      - SUCCEEDED
+      - FAILED
+    RefundState:
+      type: string
+      enum:
+      - REQUESTED
+      - PENDING
+      - UNKNOWN
+      - SUCCEEDED
+      - FAILED
+    CommandState:
+      type: string
+      enum:
+      - QUEUED
+      - DISPATCHED
+      - ACKNOWLEDGED
+      - OBSERVED
+      - REJECTED
+      - EXPIRED
+      - UNKNOWN
+    AlertState:
+      type: string
+      enum:
+      - OPEN
+      - ACKNOWLEDGED
+      - RESOLVED
+    CaseState:
+      type: string
+      enum:
+      - OPEN
+      - EVIDENCE_RECORDED
+      - RESOLVED
+    CredentialKind:
+      type: string
+      enum:
+      - RFID
+    CommandKind:
+      type: string
+      enum:
+      - OPEN_RETURN
+      - OPEN_SUPPLY
+    EventKind:
+      type: string
+      enum:
+      - HEARTBEAT
+      - TELEMETRY
+      - DOOR
+      - PRESENCE
+      - COMMAND_ACK
+      - SNAPSHOT
+      - FAULT
+    Users:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        username:
+          type: string
+          description: Tên đăng nhập chuẩn hóa lowercase
+        role:
+          $ref: '#/components/schemas/Role'
+          description: Không kế thừa ADMIN → TECHNICIAN
+        state:
+          $ref: '#/components/schemas/AccountState'
+          description: Khóa/ngừng tài khoản không xóa lịch sử
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - username
+      - role
+      - state
+      - version
+      - created_at
+    Stations:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        code:
+          type: string
+          description: Mã trạm
+        name:
+          type: string
+          description: Tên
+        address:
+          type: string
+          description: Địa chỉ hiển thị
+        state:
+          $ref: '#/components/schemas/StationState'
+          description: Trạng thái hành chính; online tính riêng
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - code
+      - name
+      - address
+      - state
+      - version
+      - created_at
+    Devices:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: MVP một bộ điều khiển hiện hành mỗi trạm
+        serial:
+          type: string
+          description: Mã thiết bị
+        enabled:
+          type: boolean
+          description: Vô hiệu hóa danh tính
+        last_received_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Heartbeat gần nhất được chấp nhận
+        boot_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Phiên khởi động hiện hành
+        last_seq:
+          type: integer
+          description: Sequence lớn nhất trong boot hiện hành
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - serial
+      - enabled
+      - last_received_at
+      - boot_id
+      - last_seq
+      - version
+      - created_at
+    Compartments:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: Thuộc trạm
+        slot_no:
+          type: integer
+          description: Số ngăn
+        service_state:
+          $ref: '#/components/schemas/CompartmentState'
+          description: Ban đầu chặn tới khi có snapshot
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+          description: Trạng thái cửa độc lập trạng thái phục vụ
+        observed_present:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: NULL nếu chưa biết có pin
+        observed_serial:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Giữ mã quan sát kể cả không nhận diện được
+        observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Thời gian Backend nhận quan sát hợp lệ
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - slot_no
+      - service_state
+      - door_state
+      - observed_present
+      - observed_serial
+      - observed_at
+      - version
+      - created_at
+    Batteries:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        serial:
+          type: string
+          description: Mã pin trong mạng lưới
+        family:
+          type: string
+          description: Họ pin duy nhất trong demo, vẫn lưu để kiểm tra
+        lifecycle:
+          $ref: '#/components/schemas/BatteryState'
+          description: Vòng đời quản lý không đồng nhất SOC
+        location_kind:
+          $ref: '#/components/schemas/LocationKind'
+          description: Vị trí đã xác minh
+        compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn khi location=COMPARTMENT
+        holder_user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Khách giữ khi location=CUSTOMER
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - serial
+      - family
+      - lifecycle
+      - location_kind
+      - compartment_id
+      - holder_user_id
+      - version
+      - created_at
+    SwapTransactions:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        customer_id:
+          type: string
+          format: uuid
+          description: Khách hàng
+        station_id:
+          type: string
+          format: uuid
+          description: Trạm
+        verified_via:
+          type: string
+          description: Phương thức xác thực
+        state:
+          $ref: '#/components/schemas/SwapState'
+          description: Trạng thái nghiệp vụ
+        policy_id:
+          type: string
+          format: uuid
+          description: Phiên bản chính sách
+        old_battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin khách phải trả, xác định khi giữ tài nguyên
+        new_battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin được giữ để cấp
+        return_compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn nhận
+        supply_compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn cấp
+        amount_minor:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Phí VND nguyên, chốt khi reserve
+        currency:
+          type: string
+          description: Demo chỉ VND
+        consented_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Chấp thuận phí trước yêu cầu thu
+        reservation_expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Chỉ tự hết hạn khi RESERVED chưa gửi thu
+        return_observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Bằng chứng nhận pin cũ + cửa đóng
+        pickup_observed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Bằng chứng lấy pin mới + cửa đóng
+        review_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Lý do chờ xử lý
+        closed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Thời điểm trạng thái kết thúc
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - customer_id
+      - station_id
+      - verified_via
+      - state
+      - policy_id
+      - old_battery_id
+      - new_battery_id
+      - return_compartment_id
+      - supply_compartment_id
+      - amount_minor
+      - currency
+      - consented_at
+      - reservation_expires_at
+      - return_observed_at
+      - pickup_observed_at
+      - review_reason
+      - closed_at
+      - version
+      - created_at
+    Payments:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        swap_id:
+          type: string
+          format: uuid
+          description: Một intent/phiên; thất bại chắc chắn kết thúc phiên
+        provider_key:
+          type: string
+          format: uuid
+          description: Idempotency key khi gọi mock
+        provider_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Mã phía mock
+        state:
+          $ref: '#/components/schemas/PaymentState'
+          description: Trạng thái thu độc lập
+        amount_minor:
+          type: integer
+          description: Phải bằng phí phiên
+        currency:
+          type: string
+          description: Đơn vị
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Khi đã xác minh kết quả
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - swap_id
+      - provider_key
+      - provider_reference
+      - state
+      - amount_minor
+      - currency
+      - verified_at
+      - version
+      - created_at
+    Refunds:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        payment_id:
+          type: string
+          format: uuid
+          description: Một refund intent cho khoản thu, retry cùng khóa
+        requested_by:
+          type: string
+          format: uuid
+          description: Admin; service kiểm tra role
+        provider_key:
+          type: string
+          format: uuid
+          description: Idempotency key hoàn
+        provider_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Mã hoàn bên mock
+        state:
+          $ref: '#/components/schemas/RefundState'
+          description: Lỗi/UNKNOWN không được tạo intent mới
+        amount_minor:
+          type: integer
+          description: MVP bằng toàn bộ khoản thu
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Xác minh hoàn
+        reason:
+          type: string
+          description: Lý do và kết quả đối soát
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - payment_id
+      - requested_by
+      - provider_key
+      - provider_reference
+      - state
+      - amount_minor
+      - verified_at
+      - reason
+      - version
+      - created_at
+    Alerts:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        station_id:
+          type: string
+          format: uuid
+          description: Trạm
+        battery_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Pin liên quan
+        compartment_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Ngăn liên quan
+        dedup_key:
+          type: string
+          description: Loại lỗi + tài nguyên, phạm vi trạm
+        code:
+          type: string
+          description: Mã lỗi ổn định
+        state:
+          $ref: '#/components/schemas/AlertState'
+          description: ACK không gỡ chặn
+        last_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Bằng chứng gần nhất
+        acknowledged_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên được giao
+        resolved_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên
+        resolution_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Bằng chứng hết lỗi
+        occurrences:
+          type: integer
+          description: Số lần báo
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - station_id
+      - battery_id
+      - compartment_id
+      - dedup_key
+      - code
+      - state
+      - last_event_id
+      - acknowledged_by
+      - resolved_by
+      - resolution_note
+      - occurrences
+      - version
+      - created_at
+    RecoveryCases:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        swap_id:
+          type: string
+          format: uuid
+          description: Một hồ sơ theo phiên
+        state:
+          $ref: '#/components/schemas/CaseState'
+          description: Tình trạng
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Kỹ thuật viên đúng trạm
+        evidence_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Snapshot/lịch sử mới sau reconnect
+        new_pin_delivered:
+          type: string
+          description: Kết luận dựa dữ liệu thiết bị
+        old_pin_settled:
+          type: boolean
+          description: Đã hoàn trả/giải quyết quyền giữ pin cũ
+        resolution_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Không đủ chứng cứ thì không resolve
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - swap_id
+      - state
+      - assigned_to
+      - evidence_event_id
+      - new_pin_delivered
+      - old_pin_settled
+      - resolution_note
+      - version
+      - created_at
+    BatteryTelemetry:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        event_id:
+          type: string
+          format: uuid
+          description: Telemetry event chứa đúng một pin
+        battery_id:
+          type: string
+          format: uuid
+          description: Pin
+        soc:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Phần trăm; NULL = thiếu
+        soh:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Phần trăm do BMS demo cung cấp
+        temperature_c:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Độ C; NULL = thiếu
+        fault_codes:
+          type: array
+          items:
+            type: string
+          description: Cờ lỗi
+        measured_at:
+          type: string
+          format: date-time
+          description: Thời gian đo
+        received_at:
+          type: string
+          format: date-time
+          description: Thời gian nhận
+        quality_ok:
+          type: boolean
+          description: Chỉ true khi đầy đủ, đúng thứ tự, hợp lệ
+      required:
+      - id
+      - event_id
+      - battery_id
+      - soc
+      - soh
+      - temperature_c
+      - fault_codes
+      - measured_at
+      - received_at
+      - quality_ok
+    DeviceCommands:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        device_id:
+          type: string
+          format: uuid
+          description: Thiết bị đích
+        swap_id:
+          type: string
+          format: uuid
+          description: Phiên đổi
+        compartment_id:
+          type: string
+          format: uuid
+          description: Ngăn chính xác
+        kind:
+          $ref: '#/components/schemas/CommandKind'
+          description: OPEN_RETURN hoặc OPEN_SUPPLY
+        state:
+          $ref: '#/components/schemas/CommandState'
+          description: ACK không đủ để OBSERVED
+        expires_at:
+          type: string
+          format: date-time
+          description: Lệnh quá hạn không tác động
+        payload:
+          type: object
+          additionalProperties: true
+          description: Thông tin liên động và pin dự kiến
+        evidence_event_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Event xác nhận vật lý
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - device_id
+      - swap_id
+      - compartment_id
+      - kind
+      - state
+      - expires_at
+      - payload
+      - evidence_event_id
+      - version
+      - created_at
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        correlation_id:
+          type: string
+          format: uuid
+        details:
+          type: object
+          additionalProperties: true
+      required:
+      - code
+      - message
+      - correlation_id
+      - details
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required:
+      - username
+      - password
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          const: Bearer
+        expires_in:
+          type: integer
+          minimum: 1
+        user:
+          $ref: '#/components/schemas/Users'
+      required:
+      - access_token
+      - token_type
+      - expires_in
+      - user
+    UserCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 100
+        password:
+          type: string
+          minLength: 12
+          maxLength: 256
+        role:
+          $ref: '#/components/schemas/Role'
+      required:
+      - username
+      - password
+      - role
+    UserUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        role:
+          $ref: '#/components/schemas/Role'
+        state:
+          $ref: '#/components/schemas/AccountState'
+      required:
+      - expected_version
+    AssignmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        station_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - station_ids
+    StationCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+      required:
+      - code
+      - name
+      - address
+    StationUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        address:
+          type: string
+        state:
+          $ref: '#/components/schemas/StationState'
+      required:
+      - expected_version
+    StationAvailability:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        operational_state:
+          type: string
+          enum:
+          - ONLINE
+          - OFFLINE
+          - MAINTENANCE
+          - INACTIVE
+        available_count:
+          type: integer
+          minimum: 0
+        as_of:
+          type: string
+          format: date-time
+      required:
+      - station_id
+      - name
+      - address
+      - operational_state
+      - available_count
+      - as_of
+    DeviceCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+        serial:
+          type: string
+      required:
+      - station_id
+      - serial
+    DeviceCreated:
+      type: object
+      additionalProperties: false
+      properties:
+        device:
+          $ref: '#/components/schemas/Devices'
+        device_key_once:
+          type: string
+      required:
+      - device
+      - device_key_once
+    DeviceUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        enabled:
+          type: boolean
+      required:
+      - expected_version
+      - enabled
+    CompartmentCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        slot_no:
+          type: integer
+          minimum: 1
+      required:
+      - slot_no
+    CompartmentAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        action:
+          type: string
+          enum:
+          - SET_MAINTENANCE
+          - RESTORE
+          - RETIRE
+        reason:
+          type: string
+          minLength: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+      required:
+      - expected_version
+      - action
+      - reason
+    BatteryCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        serial:
+          type: string
+        family:
+          type: string
+        location_kind:
+          $ref: '#/components/schemas/LocationKind'
+        compartment_id:
+          type: string
+          format: uuid
+        holder_user_id:
+          type: string
+          format: uuid
+      required:
+      - serial
+      - family
+      - location_kind
+    BatteryAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        action:
+          type: string
+          enum:
+          - ACTIVATE
+          - QUARANTINE
+          - RESTORE
+          - RETIRE
+        reason:
+          type: string
+          minLength: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolve_alert_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - expected_version
+      - action
+      - reason
+    CredentialRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rfid_value:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - rfid_value
+    CredentialView:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        revoked:
+          type: boolean
+      required:
+      - id
+      - user_id
+      - revoked
+    QrRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        station_id:
+          type: string
+          format: uuid
+      required:
+      - station_id
+    QrResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        challenge_id:
+          type: string
+          format: uuid
+        qr_token:
+          type: string
+        station_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - challenge_id
+      - qr_token
+      - station_id
+      - expires_at
+    VerificationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+          - QR
+          - RFID
+        credential:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - method
+      - credential
+    VersionAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+      required:
+      - expected_version
+    ConsentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        quoted_amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+        accept:
+          type: boolean
+          const: true
+      required:
+      - expected_version
+      - quoted_amount_minor
+      - currency
+      - accept
+    ReasonAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - reason
+    RecoveryEvidence:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - note
+    RecoverySettle:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolution_note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - resolution_note
+    AlertResolve:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        evidence_event_id:
+          type: string
+          format: uuid
+        resolution_note:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - evidence_event_id
+      - resolution_note
+    TelemetryPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        battery_id:
+          type: string
+          format: uuid
+        soc:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        soh:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          maximum: 100
+        temperature_c:
+          type:
+          - number
+          - 'null'
+        fault_codes:
+          type: array
+          items:
+            type: string
+      required:
+      - battery_id
+      - soc
+      - soh
+      - temperature_c
+      - fault_codes
+    ObservationPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+        present:
+          type:
+          - boolean
+          - 'null'
+        observed_serial:
+          type:
+          - string
+          - 'null'
+      required:
+      - door_state
+      - present
+      - observed_serial
+    AckPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        result:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - UNKNOWN
+        reason:
+          type: string
+      required:
+      - result
+      - reason
+    FaultPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        battery_id:
+          type: string
+          format: uuid
+        details:
+          type: string
+      required:
+      - code
+      - details
+    SnapshotSlot:
+      type: object
+      additionalProperties: false
+      properties:
+        compartment_id:
+          type: string
+          format: uuid
+        door_state:
+          $ref: '#/components/schemas/DoorState'
+        present:
+          type:
+          - boolean
+          - 'null'
+        observed_serial:
+          type:
+          - string
+          - 'null'
+      required:
+      - compartment_id
+      - door_state
+      - present
+      - observed_serial
+    SnapshotPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotSlot'
+        command_ledger:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              command_id:
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum:
+                - NOT_EXECUTED
+                - EXECUTED
+                - UNKNOWN
+            required:
+            - command_id
+            - status
+      required:
+      - slots
+      - command_ledger
+    HeartbeatPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        health:
+          type: string
+          enum:
+          - OK
+          - FAULT
+      required:
+      - health
+    HeartbeatEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: HEARTBEAT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/HeartbeatPayload'
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+    TelemetryEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: TELEMETRY
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/TelemetryPayload'
+        compartment_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+    DoorEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: DOOR
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/ObservationPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    PresenceEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: PRESENCE
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/ObservationPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    CommandAckEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: COMMAND_ACK
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/AckPayload'
+        compartment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        command_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+      - swap_id
+      - command_id
+    SnapshotEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: SNAPSHOT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/SnapshotPayload'
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+    FaultEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        boot_id:
+          type: string
+          format: uuid
+        seq:
+          type: integer
+          minimum: 0
+        kind:
+          type: string
+          const: FAULT
+        observed_at:
+          type: string
+          format: date-time
+        payload:
+          $ref: '#/components/schemas/FaultPayload'
+        compartment_id:
+          type: string
+          format: uuid
+      required:
+      - event_id
+      - boot_id
+      - seq
+      - kind
+      - observed_at
+      - payload
+      - compartment_id
+    DeviceEvent:
+      oneOf:
+      - $ref: '#/components/schemas/HeartbeatEvent'
+      - $ref: '#/components/schemas/TelemetryEvent'
+      - $ref: '#/components/schemas/DoorEvent'
+      - $ref: '#/components/schemas/PresenceEvent'
+      - $ref: '#/components/schemas/CommandAckEvent'
+      - $ref: '#/components/schemas/SnapshotEvent'
+      - $ref: '#/components/schemas/FaultEvent'
+      discriminator:
+        propertyName: kind
+        mapping:
+          HEARTBEAT: '#/components/schemas/HeartbeatEvent'
+          TELEMETRY: '#/components/schemas/TelemetryEvent'
+          DOOR: '#/components/schemas/DoorEvent'
+          PRESENCE: '#/components/schemas/PresenceEvent'
+          COMMAND_ACK: '#/components/schemas/CommandAckEvent'
+          SNAPSHOT: '#/components/schemas/SnapshotEvent'
+          FAULT: '#/components/schemas/FaultEvent'
+    EventReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        duplicate:
+          type: boolean
+        processing_state:
+          type: string
+          enum:
+          - QUEUED
+          - PROCESSED
+          - REJECTED
+      required:
+      - event_id
+      - duplicate
+      - processing_state
+    PaymentCallback:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_event_id:
+          type: string
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type: string
+        result:
+          type: string
+          enum:
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - provider_event_id
+      - payment_id
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+    CallbackReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        accepted:
+          type: boolean
+        duplicate:
+          type: boolean
+      required:
+      - accepted
+      - duplicate
+    Dashboard:
+      type: object
+      additionalProperties: false
+      properties:
+        online_stations:
+          type: integer
+        offline_stations:
+          type: integer
+        open_alerts:
+          type: integer
+        review_swaps:
+          type: integer
+        as_of:
+          type: string
+          format: date-time
+      required:
+      - online_stations
+      - offline_stations
+      - open_alerts
+      - review_swaps
+      - as_of
+    AuditView:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        actor_type:
+          type: string
+        actor_id:
+          type: string
+        action:
+          type: string
+        aggregate_type:
+          type: string
+        aggregate_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - actor_type
+      - actor_id
+      - action
+      - aggregate_type
+      - aggregate_id
+      - created_at
+    ProviderChargeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        swap_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - payment_id
+      - swap_id
+      - provider_key
+      - amount_minor
+      - currency
+    ProviderRefundRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+    ProviderResult:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type:
+          - string
+          - 'null'
+        result:
+          type: string
+          enum:
+          - NOT_FOUND
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+          - UNKNOWN
+        amount_minor:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        currency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - VND
+          - null
+      required:
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+    UsersPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Users'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    StationsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stations'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    StationAvailabilityPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StationAvailability'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    DevicesPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Devices'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    CompartmentsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Compartments'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    BatteriesPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batteries'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    SwapTransactionsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SwapTransactions'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    PaymentsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payments'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    RefundsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refunds'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    AlertsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    BatteryTelemetryPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatteryTelemetry'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    DeviceCommandsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceCommands'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    AuditViewPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditView'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    CredentialViewPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialView'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - next_cursor
+    P8RFReasonAction:
+      type: object
+      additionalProperties: false
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - expected_version
+      - reason
+    P8RFRefund:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Định danh UUID do ứng dụng sinh
+        payment_id:
+          type: string
+          format: uuid
+          description: Một refund intent cho khoản thu, retry cùng khóa
+        requested_by:
+          type: string
+          format: uuid
+          description: Admin; service kiểm tra role
+        provider_key:
+          type: string
+          format: uuid
+          description: Idempotency key hoàn
+        provider_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Mã hoàn bên mock
+        state:
+          type: string
+          enum:
+          - REQUESTED
+          - PENDING
+          - UNKNOWN
+          - FAILED
+          - SUCCEEDED
+        amount_minor:
+          type: integer
+          description: MVP bằng toàn bộ khoản thu
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Xác minh hoàn
+        reason:
+          type: string
+          description: Lý do và kết quả đối soát
+        version:
+          type: integer
+          description: Khóa lạc quan; tăng sau mỗi cập nhật nghiệp vụ
+        created_at:
+          type: string
+          format: date-time
+          description: Thời điểm tạo UTC
+      required:
+      - id
+      - payment_id
+      - requested_by
+      - provider_key
+      - provider_reference
+      - state
+      - amount_minor
+      - verified_at
+      - reason
+      - version
+      - created_at
+    P8RFLegacyProviderRefundRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+    P8RFLegacyProviderResult:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type:
+          - string
+          - 'null'
+        result:
+          type: string
+          enum:
+          - NOT_FOUND
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+          - UNKNOWN
+        amount_minor:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        currency:
+          type:
+          - string
+          - 'null'
+          enum:
+          - VND
+          - null
+      required:
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+    P8RFNoEffectReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 0
+        receipt_id:
+          type: string
+          format: uuid
+        provider_reference:
+          type: string
+          minLength: 1
+        result:
+          const: FAILED
+        journal_state:
+          const: NEVER_PREPARED
+        cumulative_effect_count:
+          const: 0
+        attempt_durably_denied:
+          const: true
+        sealed_at:
+          type: string
+          format: date-time
+        journal_hash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - attempt_id
+      - generation
+      - receipt_id
+      - provider_reference
+      - result
+      - journal_state
+      - cumulative_effect_count
+      - attempt_durably_denied
+      - sealed_at
+      - journal_hash
+    P8RFRetryPermit:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        permit_id:
+          type: string
+          format: uuid
+        prior_attempt_id:
+          type: string
+          format: uuid
+        prior_generation:
+          type: integer
+          minimum: 0
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 1
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        no_effect_receipt:
+          $ref: '#/components/schemas/P8RFNoEffectReceipt'
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - permit_id
+      - prior_attempt_id
+      - prior_generation
+      - attempt_id
+      - generation
+      - issued_at
+      - expires_at
+      - no_effect_receipt
+    P8RFPermitRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        protocol_version:
+          const: P8-REF-0.1
+        command:
+          const: REQUEST_RETRY_PERMISSION
+        reconcile_request_id:
+          type: string
+          format: uuid
+        prior_attempt_id:
+          type: string
+          format: uuid
+        prior_generation:
+          type: integer
+          minimum: 0
+        no_effect_receipt_id:
+          type: string
+          format: uuid
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - protocol_version
+      - command
+      - reconcile_request_id
+      - prior_attempt_id
+      - prior_generation
+      - no_effect_receipt_id
+    P8RFAttemptInitial:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          const: 0
+        protocol_version:
+          const: P8-REF-0.1
+        command:
+          const: ATTEMPT_REFUND
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - attempt_id
+      - generation
+      - protocol_version
+      - command
+    P8RFAttemptRetry:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 1
+        protocol_version:
+          const: P8-REF-0.1
+        command:
+          const: ATTEMPT_REFUND
+        retry_permit_id:
+          type: string
+          format: uuid
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - attempt_id
+      - generation
+      - protocol_version
+      - command
+      - retry_permit_id
+    P8RFProviderRefundCommand:
+      oneOf:
+      - $ref: '#/components/schemas/P8RFLegacyProviderRefundRequest'
+      - $ref: '#/components/schemas/P8RFAttemptInitial'
+      - $ref: '#/components/schemas/P8RFAttemptRetry'
+      - $ref: '#/components/schemas/P8RFPermitRequest'
+    P8RFPermitResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        protocol_version:
+          const: P8-REF-0.1
+        message_kind:
+          const: RETRY_PERMISSION
+        permit:
+          $ref: '#/components/schemas/P8RFRetryPermit'
+      required:
+      - protocol_version
+      - message_kind
+      - permit
+    P8RFAttemptResult:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 0
+        protocol_version:
+          const: P8-REF-0.1
+        message_kind:
+          const: ATTEMPT_RESULT
+        provider_reference:
+          type: string
+          minLength: 1
+        result:
+          type: string
+          enum:
+          - PENDING
+          - UNKNOWN
+          - FAILED
+          - SUCCEEDED
+        phase:
+          type: string
+          enum:
+          - RESERVED
+          - PREPARED
+          - UNKNOWN
+          - FINAL
+        effect_count:
+          type: integer
+          minimum: 0
+          maximum: 1
+        no_effect_receipt:
+          $ref: '#/components/schemas/P8RFNoEffectReceipt'
+        permit_id:
+          type: string
+          format: uuid
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - attempt_id
+      - generation
+      - protocol_version
+      - message_kind
+      - provider_reference
+      - result
+      - phase
+      - effect_count
+      allOf:
+      - if:
+          properties:
+            result:
+              const: SUCCEEDED
+          required:
+          - result
+        then:
+          properties:
+            effect_count:
+              const: 1
+            phase:
+              const: FINAL
+      - if:
+          properties:
+            result:
+              const: FAILED
+          required:
+          - result
+        then:
+          properties:
+            effect_count:
+              const: 0
+            phase:
+              const: FINAL
+          required:
+          - no_effect_receipt
+      - if:
+          properties:
+            result:
+              const: PENDING
+          required:
+          - result
+        then:
+          properties:
+            effect_count:
+              const: 0
+            phase:
+              const: PREPARED
+      - if:
+          properties:
+            phase:
+              const: RESERVED
+          required:
+          - phase
+        then:
+          properties:
+            result:
+              const: UNKNOWN
+            effect_count:
+              const: 0
+      - if:
+          properties:
+            phase:
+              const: UNKNOWN
+          required:
+          - phase
+        then:
+          properties:
+            result:
+              const: UNKNOWN
+      - if:
+          properties:
+            phase:
+              const: FINAL
+          required:
+          - phase
+        then:
+          properties:
+            result:
+              enum:
+              - SUCCEEDED
+              - FAILED
+    P8RFQueryContext:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        original_provider_reference:
+          type: string
+          minLength: 1
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: VND
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 0
+        mode:
+          type: string
+          enum:
+          - STATUS
+          - SEAL_UNACCEPTED
+        reconcile_request_id:
+          type: string
+          format: uuid
+      required:
+      - payment_id
+      - refund_id
+      - provider_key
+      - original_provider_reference
+      - amount_minor
+      - currency
+      - attempt_id
+      - generation
+      - mode
+      allOf:
+      - if:
+          properties:
+            mode:
+              const: SEAL_UNACCEPTED
+          required:
+          - mode
+        then:
+          required:
+          - reconcile_request_id
+    P8RFMissingResult:
+      type: object
+      additionalProperties: false
+      properties:
+        protocol_version:
+          const: P8-REF-0.1
+        message_kind:
+          const: NOT_FOUND
+        provider_key:
+          type: string
+          format: uuid
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 0
+        result:
+          const: NOT_FOUND
+      required:
+      - protocol_version
+      - message_kind
+      - provider_key
+      - attempt_id
+      - generation
+      - result
+    P8RFProviderResponse:
+      oneOf:
+      - $ref: '#/components/schemas/P8RFLegacyProviderResult'
+      - $ref: '#/components/schemas/P8RFPermitResponse'
+      - $ref: '#/components/schemas/P8RFAttemptResult'
+      - $ref: '#/components/schemas/P8RFMissingResult'
+    P8RFLegacyRefundCallback:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_event_id:
+          type: string
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type: string
+        result:
+          type: string
+          enum:
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+      required:
+      - provider_event_id
+      - payment_id
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+      - refund_id
+    P8RFRefundCallback:
+      type: object
+      additionalProperties: false
+      properties:
+        provider_event_id:
+          type: string
+        payment_id:
+          type: string
+          format: uuid
+        refund_id:
+          type: string
+          format: uuid
+        provider_key:
+          type: string
+          format: uuid
+        provider_reference:
+          type: string
+        result:
+          type: string
+          enum:
+          - PENDING
+          - SUCCEEDED
+          - FAILED
+        amount_minor:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          const: VND
+        protocol_version:
+          const: P8-REF-0.1
+        attempt_id:
+          type: string
+          format: uuid
+        generation:
+          type: integer
+          minimum: 0
+      required:
+      - provider_event_id
+      - payment_id
+      - refund_id
+      - provider_key
+      - provider_reference
+      - result
+      - amount_minor
+      - currency
+      - protocol_version
+      - attempt_id
+      - generation
