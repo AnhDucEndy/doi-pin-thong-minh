@@ -62,7 +62,7 @@ def test_migration_grants_clean_and_upgrade(environment):
     # environment executes 0001, persists a user, upgrades to head twice and
     # verifies the historical marker; a clean schema is retained, never dropped.
     with environment['owner'].connect() as c:
-        assert c.scalar(text('select version_num from alembic_version')) == '0009_refund_foundation'
+        assert c.scalar(text('select version_num from alembic_version')) == '0010_no_delivery_eligibility'
         for name in TABLES:
             target = environment['settings'].schema+'.'+name
             assert c.scalar(text('select to_regclass(:n)'), {'n':target})
@@ -75,8 +75,10 @@ def test_migration_grants_clean_and_upgrade(environment):
         for name in TABLES[1:]:
             assert not c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'UPDATE')"),
                 {'n':environment['settings'].schema+'.'+name})
+        # 0010 grants append-only certificate writes; explicit 0009 storage
+        # remains SELECT-only and is checked in test_phase8b_b1b_migration.
         for name in TABLES[-2:]:
-            assert not c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'INSERT')"),
+            assert c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'INSERT')"),
                 {'n':environment['settings'].schema+'.'+name})
 
 

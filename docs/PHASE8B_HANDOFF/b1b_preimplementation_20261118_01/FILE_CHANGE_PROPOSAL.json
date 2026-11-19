@@ -1,0 +1,277 @@
+{
+  "status": "PROPOSAL ONLY / NOT AN APPROVED STAGING OR EDIT SET",
+  "baseline_HEAD": "0024c5f2ddac4c1652e77dcff2acf48fd791b8e0",
+  "implementation_approval": "PENDING USER APPROVAL",
+  "paths": [
+    {
+      "path": "services/backend/app/api/no_delivery_schemas.py",
+      "action_after_user_approval": "NEW",
+      "category": "production",
+      "exists_now": false,
+      "reason": "Strict0.3 adapters/pure proof checks/readonly simulator journal and forward eligibility migration; not created this review"
+    },
+    {
+      "path": "services/backend/app/application/no_delivery.py",
+      "action_after_user_approval": "NEW",
+      "category": "production",
+      "exists_now": false,
+      "reason": "Strict0.3 adapters/pure proof checks/readonly simulator journal and forward eligibility migration; not created this review"
+    },
+    {
+      "path": "services/backend/app/domain/no_delivery.py",
+      "action_after_user_approval": "NEW",
+      "category": "production",
+      "exists_now": false,
+      "reason": "Strict0.3 adapters/pure proof checks/readonly simulator journal and forward eligibility migration; not created this review"
+    },
+    {
+      "path": "simulators/device/no_delivery.py",
+      "action_after_user_approval": "NEW",
+      "category": "production",
+      "exists_now": false,
+      "reason": "Strict0.3 adapters/pure proof checks/readonly simulator journal and forward eligibility migration; not created this review"
+    },
+    {
+      "path": "services/backend/alembic/versions/0010_no_delivery_eligibility.py",
+      "action_after_user_approval": "NEW",
+      "category": "production",
+      "exists_now": false,
+      "reason": "Strict0.3 adapters/pure proof checks/readonly simulator journal and forward eligibility migration; not created this review"
+    },
+    {
+      "path": "services/backend/app/api/recovery.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/api/recovery_contract.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/api/refunds.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/recovery.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/recovery_projection.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/recovery_audit.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/refunds.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/refund_audit.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/application/device.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "services/backend/app/workers/device.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "simulators/device/main.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "simulators/device/service.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "simulators/device/recovery_fence.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "simulators/device/recovery_handover.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "simulators/device/recovery_reconciliation.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "production",
+      "exists_now": true,
+      "reason": "Narrow0.3 dispatch/composition/protected authority, complete-history/fencing/invalidation, truthful audit and first Refund intent; legacy behavior preserved"
+    },
+    {
+      "path": "tools/provision_database.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "tooling",
+      "exists_now": true,
+      "reason": "Least grants, complete source-freeze coverage and isolated/redacted evidence; no demo migration"
+    },
+    {
+      "path": "tools/run_phase8b.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "tooling",
+      "exists_now": true,
+      "reason": "Least grants, complete source-freeze coverage and isolated/redacted evidence; no demo migration"
+    },
+    {
+      "path": "tools/summarize_phase8b.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "tooling",
+      "exists_now": true,
+      "reason": "Least grants, complete source-freeze coverage and isolated/redacted evidence; no demo migration"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_contract.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_migration.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_no_delivery.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_certificate.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_refund.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_races.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_ledger.py",
+      "action_after_user_approval": "NEW",
+      "category": "tests",
+      "exists_now": false,
+      "reason": "Mandatory B1b tests planned in matrix; no tests executed"
+    },
+    {
+      "path": "tests/test_phase8b_b1a.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "tests",
+      "exists_now": true,
+      "reason": "Only reviewed revision-specific migration/grant expectations; preserve0009 assertions/history and all business negative oracles"
+    },
+    {
+      "path": "tests/test_phase8b_b1a_transactions.py",
+      "action_after_user_approval": "MODIFY",
+      "category": "tests",
+      "exists_now": true,
+      "reason": "Only reviewed revision-specific migration/grant expectations; preserve0009 assertions/history and all business negative oracles"
+    },
+    {
+      "path": "tools/smoke_phase8b_b1b.py",
+      "action_after_user_approval": "NEW",
+      "category": "tooling",
+      "exists_now": false,
+      "reason": "Reproducible real-process scenarios and frozen-contract/static checker without changing normative B0 validator"
+    },
+    {
+      "path": "tools/validate_phase8b_b1b.py",
+      "action_after_user_approval": "NEW",
+      "category": "tooling",
+      "exists_now": false,
+      "reason": "Reproducible real-process scenarios and frozen-contract/static checker without changing normative B0 validator"
+    },
+    {
+      "path": "docs/PHASE8B_B1B_IMPLEMENTATION.md",
+      "action_after_user_approval": "NEW",
+      "category": "docs",
+      "exists_now": false,
+      "reason": "Actual implementation/test/evidence report after approval/code"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "action_after_user_approval": "MODIFY",
+      "category": "docs",
+      "exists_now": true,
+      "reason": "Future implementation checkpoint only; not modified in this review"
+    }
+  ],
+  "current_design_artifacts": [
+    "docs/PHASE8B_B1B_PREIMPLEMENTATION_REVIEW.md",
+    "docs/PHASE8B_B1B_TEST_PLAN.md"
+  ],
+  "excluded_changes": [
+    "Frozen B0/prior overlays/GD1/GD2/QD source and hashes",
+    "main.py/identity.py/assets.py shared primitives unless new blocker reviewed separately",
+    "Payment worker/refund provider/callback/reconcile execution",
+    "Swaps custody engine",
+    "Frontend/UI",
+    "EOL policy/config/attributes/ignore",
+    "Any deletion/backfill/demo DB migration"
+  ],
+  "notes": [
+    "Migration name0010 is proposed, source head must be checked again before code.",
+    "Private issuer provenance and append-only revocation are storage proposals, not new public fields.",
+    "All source edits require user implementation approval; none made this review."
+  ]
+}

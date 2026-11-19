@@ -36,3 +36,14 @@ def record(session, db, actor_id, action, refund_id, *, before, correlation_id, 
         before_data={'refund': before} if before is not None else None,
         after_data={'refund': snapshot(session, db, refund_id),
             'references': jsonable_encoder(safe_refs)}, correlation_id=correlation_id))
+
+
+def request_record(session,db,actor_id,refund_id,case,before,**references):
+    """Actual absent Refund + pre-transition Recovery, atomically with intent."""
+    from app.application.no_delivery import audit_snapshot
+    session.execute(insert(db.table('audit_events')).values(id=uuid4(),actor_type='USER',actor_id=str(actor_id),
+        aggregate_type='refund',aggregate_id=refund_id,action='REFUND_REQUEST_CREATED',
+        before_data={'refund':None,'recovery_snapshot':before},
+        after_data={'refund':snapshot(session,db,refund_id),'recovery_snapshot':audit_snapshot(session,db,case),
+                    'references':jsonable_encoder({k:UUID(str(v)) for k,v in references.items()})},
+        correlation_id=case['swap_id']))

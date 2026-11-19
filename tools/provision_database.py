@@ -53,6 +53,13 @@ def main():
             for name in ('refund_attempts', 'refund_retry_permissions', 'refund_permit_redemptions', 'refunds'):
                 cursor.execute(sql.SQL('GRANT SELECT, INSERT ON {}.{} TO doi_pin_runtime').format(sql.Identifier(schema), sql.Identifier(name)))
             cursor.execute(sql.SQL('GRANT UPDATE (state, version, provider_reference, verified_at) ON {}.refunds TO doi_pin_runtime').format(sql.Identifier(schema)))
+            cursor.execute('SELECT to_regclass(%s)', (schema+'.refund_certificate_revocations',))
+            if cursor.fetchone()[0] is not None:
+                # 0010 only. A retained 0009 schema stays SELECT-only.
+                for name in ('refund_eligibility_certificates', 'refund_certificate_redemptions',
+                             'refund_certificate_revocations'):
+                    cursor.execute(sql.SQL('GRANT SELECT, INSERT ON {}.{} TO doi_pin_runtime').format(
+                        sql.Identifier(schema), sql.Identifier(name)))
         else:
             raise ValueError('Stage must be roles or grants')
     engine.dispose()

@@ -38,8 +38,7 @@ def build_router(session, principal, admin, mutation):
     def request_refund(payment_id: UUID, body: ReasonAction, request: Request,
                        key: UUID = Header(alias='Idempotency-Key'),
                        actor=Depends(admin, scope='function'), current=Depends(session, scope='function')):
-        return mutation(request, current, actor, key, body.model_dump(), 202,
-            lambda: refunds.request(current, request.app.state.db, actor, payment_id, body))
+        return refunds.protected_request(request,current,actor,key,payment_id,body)
 
     @router.get('/v1/payments/{payment_id}/refund', response_model=RefundView,
                 operation_id='getRefund', tags=['FR16'])

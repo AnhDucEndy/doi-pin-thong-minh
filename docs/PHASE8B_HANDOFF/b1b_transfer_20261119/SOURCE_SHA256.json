@@ -1,0 +1,194 @@
+{
+  "scope": "Python source bytes only; excludes this manifest itself and mutable reports",
+  "files": [
+    {
+      "path": "services/backend/alembic/versions/0010_no_delivery_eligibility.py",
+      "sha256": "1771EA8E63DFE71C37B54512CC16BD33E30B635C456D4DF9B4C1A72112F487B0"
+    },
+    {
+      "path": "services/backend/app/api/no_delivery_schemas.py",
+      "sha256": "78249B2A69EBCDA2ED39BE40E28218D4B82F55B8AE3E3D298E4FD32264DB71A6"
+    },
+    {
+      "path": "services/backend/app/api/recovery.py",
+      "sha256": "29AF78332817749A2C2D5E5DF2B05BE1722DF867ECA929131FADDCB22677553C"
+    },
+    {
+      "path": "services/backend/app/api/recovery_contract.py",
+      "sha256": "4BAF6F1912164C8D649EEDEF4358F502F1F8F8FEC8A59391B78E8A9BABAAA7CB"
+    },
+    {
+      "path": "services/backend/app/api/refunds.py",
+      "sha256": "D39F8DFE818BA749582B451C80D42DF60ACABE574926500CB1E391BE1C8F5331"
+    },
+    {
+      "path": "services/backend/app/application/device.py",
+      "sha256": "A80B8EDEA500F8CFB81050D6D218D1E5D74BA2E25CB959CED92212E093E6A71C"
+    },
+    {
+      "path": "services/backend/app/application/no_delivery.py",
+      "sha256": "0FB6A6DBAF9F9EAE4BBC93C7F742FB4AE8D9E643A818B8242449C9B3BAB66B9E"
+    },
+    {
+      "path": "services/backend/app/application/recovery.py",
+      "sha256": "AD1E0B6BFBCF22ED4F6244E08C9AF86411564314D73A41DA78EA03F32CEFA015"
+    },
+    {
+      "path": "services/backend/app/application/refund_audit.py",
+      "sha256": "5E6650806F842A2E7340889F7787ECE55519E940D0D69E8E3401BAE9FD63D3A6"
+    },
+    {
+      "path": "services/backend/app/application/refunds.py",
+      "sha256": "22FC59C699CECA063AEA2097C53AC691508E41469E1F34E44B005992BE31D726"
+    },
+    {
+      "path": "services/backend/app/domain/no_delivery.py",
+      "sha256": "AF6610D3509A53D871FFC8132CFDEF22185D6FB4A9F36CCF5F847DDE26A7814E"
+    },
+    {
+      "path": "services/backend/app/workers/device.py",
+      "sha256": "DC6F23A48245606F0213DE3462CF16CE2E99A88913211233D51D4D7BDA609F89"
+    },
+    {
+      "path": "simulators/device/main.py",
+      "sha256": "30428E1A8B6F9C11F9EB7FD0C86FC64EFAA221C2E2E23C2FAFC88E45095CEC06"
+    },
+    {
+      "path": "simulators/device/no_delivery.py",
+      "sha256": "9D85B9045AC032A48B9A5B7204A87D3FFE791438E8EF53524438777511F7FDBA"
+    },
+    {
+      "path": "simulators/device/recovery_fence.py",
+      "sha256": "7CD2971D99E684B43D503AB917BFA9B5DBECBC413909120A2EB8B172C9396CB8"
+    },
+    {
+      "path": "simulators/device/service.py",
+      "sha256": "DE5E64AF1C65B448C35630CE34B49C94C09B350848A5A92963A2683A3D26AA15"
+    },
+    {
+      "path": "tests/test_phase8b_b1a.py",
+      "sha256": "E83023C70DA693B69891F4F42BB8DC9C1DFCB03C3E7C54D7878A343DE3C16C89"
+    },
+    {
+      "path": "tests/test_phase8b_b1a_transactions.py",
+      "sha256": "7B2EC85DA1BECDEE80C9E30E5DAEE79DE816CE90697F5E90B6709C54377010D0"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_certificate.py",
+      "sha256": "83226C95E9029C8803F09F220EA8A1B2C2FCF27F00A05D286C80FDD710F57A52"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_contract.py",
+      "sha256": "AD89B820C69AB15CA99E3FFC5DE88650B7EE3C61E6567F7696475BC7F864F805"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_ledger.py",
+      "sha256": "171D9B433DE7D87A001204F63F6AC96C4010CBD2DA65C4F591E2FFB56A01CB2A"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_migration.py",
+      "sha256": "F4D9965CD22479FE2D81C7C040EA7DAF13D42E8D4117BF5627754A3324F57C29"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_no_delivery.py",
+      "sha256": "5CDE828E7548391F5152FD750EB8E3B44D96447A07D707363B1AD4BE0BA5E828"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_races.py",
+      "sha256": "C46AD94F3EC6E6B4D86526AABA75C005FA93330572E6882C86366C332F8E4BE4"
+    },
+    {
+      "path": "tests/test_phase8b_b1b_refund.py",
+      "sha256": "A130AC27B26A25A5D4265402D5ABF35AE792F1A2BBD2725D698B49BBE8E2BA4C"
+    },
+    {
+      "path": "tools/provision_database.py",
+      "sha256": "FF3408B0A9525E670365ED0647EDA705E051D9C4B22A734842E0652986825BA8"
+    },
+    {
+      "path": "tools/run_phase8b.py",
+      "sha256": "76FE1A275BEBDA1A80675C283F2C1B1B2670AD59683FBDB1A7E168AE0AC9CD6A"
+    },
+    {
+      "path": "tools/smoke_phase8b_b1b.py",
+      "sha256": "152CD75F76592645BBCCD77E55A25D0D189A8BE4E02A5C3861CDE72DEFBFBB8E"
+    },
+    {
+      "path": "tools/validate_phase8b_b1b.py",
+      "sha256": "F4EE9961CDDA8FA240FC47FFED83F1EAB113006F164DEBE4A96BAF007EC4E1C5"
+    }
+  ],
+  "categories": {
+    "REQUIRED_DOCS": [
+      "docs/IMPLEMENTATION_STATUS.md",
+      "docs/PHASE8B_B1B_IMPLEMENTATION.md",
+      "docs/PHASE8B_B1B_PREIMPLEMENTATION_REVIEW.md",
+      "docs/PHASE8B_B1B_TEST_PLAN.md",
+      "docs/PHASE8B_B1B_TRANSFER_HANDOFF.md",
+      "docs/PHASE8B_HANDOFF/b1b_preimplementation_20261118_01/FILE_CHANGE_PROPOSAL.json",
+      "docs/PHASE8B_HANDOFF/b1b_transfer_20261119/SOURCE_SHA256.json",
+      "docs/PHASE8B_HANDOFF/b1b_transfer_20261119/TRANSFER_PATHS.txt",
+      "docs/PHASE8B_HANDOFF/b1b_transfer_20261119/source_baseline.json"
+    ],
+    "REQUIRED_MIGRATIONS": [
+      "services/backend/alembic/versions/0010_no_delivery_eligibility.py"
+    ],
+    "REQUIRED_CODE": [
+      "services/backend/app/api/no_delivery_schemas.py",
+      "services/backend/app/api/recovery.py",
+      "services/backend/app/api/recovery_contract.py",
+      "services/backend/app/api/refunds.py",
+      "services/backend/app/application/device.py",
+      "services/backend/app/application/no_delivery.py",
+      "services/backend/app/application/recovery.py",
+      "services/backend/app/application/refund_audit.py",
+      "services/backend/app/application/refunds.py",
+      "services/backend/app/domain/no_delivery.py",
+      "services/backend/app/workers/device.py",
+      "simulators/device/main.py",
+      "simulators/device/no_delivery.py",
+      "simulators/device/recovery_fence.py",
+      "simulators/device/service.py"
+    ],
+    "REQUIRED_TESTS": [
+      "tests/test_phase8b_b1a.py",
+      "tests/test_phase8b_b1a_transactions.py",
+      "tests/test_phase8b_b1b_certificate.py",
+      "tests/test_phase8b_b1b_contract.py",
+      "tests/test_phase8b_b1b_ledger.py",
+      "tests/test_phase8b_b1b_migration.py",
+      "tests/test_phase8b_b1b_no_delivery.py",
+      "tests/test_phase8b_b1b_races.py",
+      "tests/test_phase8b_b1b_refund.py"
+    ],
+    "REQUIRED_TOOLING": [
+      "tools/provision_database.py",
+      "tools/run_phase8b.py",
+      "tools/smoke_phase8b_b1b.py",
+      "tools/validate_phase8b_b1b.py"
+    ]
+  },
+  "excluded_patterns": {
+    "LOCAL_PRIVATE_DO_NOT_PUSH": [
+      ".env",
+      "**/private.json",
+      ".local/**",
+      "credentials/tokens/passwords"
+    ],
+    "RUNTIME_OR_EVIDENCE_KEEP_LOCAL": [
+      ".cache/**",
+      "docs/PHASE8B_TESTS/**",
+      "raw logs/XML/HAR/traces/screenshots",
+      "SQLite ledgers",
+      "PostgreSQL volumes",
+      "docs/PHASE5_TEST_ENVIRONMENT.json"
+    ],
+    "BUILD_CACHE_REGENERATE": [
+      ".venv/**",
+      "node_modules/**",
+      "apps/web/dist/**",
+      "**/__pycache__/**",
+      ".pytest_cache/**"
+    ]
+  }
+}

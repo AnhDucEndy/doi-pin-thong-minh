@@ -106,6 +106,10 @@ def receive(session, db, actor, body):
 
 
 def command_allowed(session,db,command,policy,now):
+    from app.application.no_delivery import station_fence
+    device_scope = assets.get_row(session,db,'devices',command['device_id'])
+    if station_fence(session,db,device_scope['station_id']):
+        return False
     if 'recovery_operations' in db.tables:
         operations = db.table('recovery_operations')
         if session.execute(select(operations.c.id).where(operations.c.swap_id == command['swap_id'],

@@ -1,5 +1,18 @@
 # Trạng thái triển khai hệ thống đổi pin thông minh
 
+## Phase8B B1b checkpoint — 19/11/2026 (+07)
+
+B1b PARTIAL, verification in progress; B0 frozen/B1a user acceptance unchanged. Final targeted92 Passed, current C successor/real expiry, E inbox/projection, real Backend precommit rollback, competing DECIDE and real freshness-in-lock-wait runners exit0. Read-only audit validator observes8/8 frozen actions with exact before/after. Frontend39 Recovery +1 tooling tests and TypeScript/Vite Passed. Full Backend on final B1b source and affected legacy Browser still pending. Details/fail-fix history: PHASE8B_B1B_IMPLEMENTATION.md. No provider Refund, demo migration, Git staging/commit/push or B2–B5.
+
+## B1b implementation checkpoint18/11/2026 — PARTIAL
+
+User approved the reviewed 36-path implementation scope (attachment 7cf962b2-d3bf-4664-94a7-b0c35ee83e28). B1b is now in progress, not accepted. B0 remains frozen/B1a ACCEPTED BY USER; no B2–B5 or provider Refund effects. [Implementation, evidence and open gates](PHASE8B_B1B_IMPLEMENTATION.md).
+
+Docker29.9.2/PG healthy/runtime SELECT1 verified after user restored Engine. Isolated 0010 migration/grants and strict0.3 transport added. Native SQLite journal/fence/readonly receipt, current three-source statements, Backend certificate/revocation and Admin first REQUESTED/attempt0/redemption/inert outbox implemented with partial verification. Local/schema48; PG migration10; API3; local ledger38; legacy handover/closure11; certificate/transport5; Admin intent/revocation2 Passed in separate overlapping runs. Development failures are retained, not reclassified. Full final Backend collection/suite, complete real-process A–E and both-ordering OS races remain NOT RUN.
+
+First real-process A exited1 due unprocessed trailing snapshot; Backend fail-closed409 retained. Its initial demo-after check used fixture schema after generator close; independent original doi_pin recheck matched all8 fingerprint tables/revision0002. Transport processing gate and pinned-schema runner corrections are under targeted verification; do not call real-process A Passed yet. No demo migration/reset/delete, staging/commit/push or EOL policy change. Phase8A conditional acceptance and final-MVP NFR04/NFR07/CT14/NFR08 remain as approved/OPEN. Earlier NOT STARTED statements below are historical checkpoints.
+
+
 ## B1a user acceptance17/11/2026 — ACCEPTED BY USER
 
 **B0 CONTRACT FROZEN; B1a ACCEPTED BY USER — 17/11/2026.** Đây là phê duyệt rõ ràng của người dùng trong phiên cộng tác, không phải chữ ký giảng viên/nhóm hoặc kết luận suy từ Codex. [Biên bản scope/provenance/evidence/residuals](PHASE8B_B1A_USER_ACCEPTANCE.md) · [Curated Git proposal](PHASE8B_B0_B1A_COMMIT_MANIFEST.md).
@@ -488,3 +501,8 @@ Số đo trong PHASE1_ENVIRONMENT.json; dung lượng thực trên đĩa có th�
 | PostgreSQL volume | ~69,85 MiB | Chứa DB demo và schemas test, cần bảo toàn |
 
 Không dọn file hoặc volume trong lượt này. Chỉ cân nhắc cache/build rõ nguồn gốc trong workspace khi cần. Giữ source, migrations, lockfile, thiết kế gốc, docs bằng chứng, .env local và DB để khôi phục; không dùng docker down -v/prune volumes. Source/config/tài liệu mới nhỏ, không có bản sao dự án hoặc backup trùng lặp.
+
+
+## User-approved WIP transfer checkpoint — 19/11/2026
+
+B1b PARTIAL / NOT ACCEPTED. Final targeted97 Passed and six b1b_guard_* real-process runners exit0. Full01 deliberately Interrupted for terminal-metadata fence correction; Full02 has no final JUnit/exit and no runner found at transfer preflight: Interrupted/outcome UNKNOWN, cause unconfirmed. Browser3 legacy scenarios ran before final0.3-only fence correction; do not call them new final-source runs. User authorized a curated WIP branch/commit/push for PC transfer only; main checkpoint unchanged. See PHASE8B_B1B_TRANSFER_HANDOFF.md for exact resume gates and portable tooling delta.

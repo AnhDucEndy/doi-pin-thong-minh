@@ -153,7 +153,7 @@ def flush(sim):
             sim.conn.execute('UPDATE recovery_inspection_outbox SET sent=1 WHERE operation_id=?',(row['operation_id'],))
             sim.conn.commit()
     fence = active(sim.conn)
-    if fence and not sim.conn.execute('SELECT 1 FROM recovery_authorization_outbox WHERE operation_id=?',
+    if fence and json.loads(fence['inspection']).get('protocol_version') != '0.3' and not sim.conn.execute('SELECT 1 FROM recovery_authorization_outbox WHERE operation_id=?',
                                       (fence['operation_id'],)).fetchone():
         tasks = sim.http.get('/v1/device/recovery-tasks')
         tasks.raise_for_status()

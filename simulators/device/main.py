@@ -25,9 +25,12 @@ class Simulator:
         if not key or len(key)<24:raise ValueError('Device key is required through environment')
         path=Path(ledger) if ledger else ROOT/'.local/device'/f'{code}.sqlite3'
         path=path.resolve()
+        new_ledger = not path.exists()
         if not path.is_relative_to(ROOT):raise ValueError('Keep simulator ledger inside workspace')
         path.parent.mkdir(parents=True,exist_ok=True)
         self.conn=sqlite3.connect(path);self.conn.row_factory=sqlite3.Row
+        from simulators.device.no_delivery import bind as bind_no_delivery
+        bind_no_delivery(self.conn)
         self.conn.executescript('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; CREATE TABLE IF NOT EXISTS slots(id TEXT PRIMARY KEY,body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS commands(id TEXT PRIMARY KEY,hash TEXT NOT NULL,status TEXT NOT NULL,effects INTEGER NOT NULL,body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY,body TEXT NOT NULL,sent INTEGER NOT NULL DEFAULT 0,receipt TEXT);')
         self.code,self.scenario=code,scenario;self.boot=str(uuid4());self.seq=0;self.policy=approved_policy()
         prior=self.conn.execute('SELECT body FROM events ORDER BY rowid DESC LIMIT 1').fetchone()
@@ -37,7 +40,10 @@ class Simulator:
             body={'compartment_id':str(demo_id(f'{code}:slot:{slot}')),'door_state':'CLOSED','present':slot>1,
                 'observed_serial':f'{code}-B{slot:03}' if slot>1 else None,
                 'battery_id':str(demo_id(f'{code}:battery:{slot}')) if slot>1 else None,'lock_released':False}
-            self.conn.execute('INSERT OR IGNORE INTO slots VALUES (?,?)',(body['compartment_id'],json.dumps(body)))
+            # A restart does not attempt even a no-op INSERT through an active
+            # model fence. Retained rows remain the actual physical model.
+            if not self.conn.execute('SELECT 1 FROM slots WHERE id=?',(body['compartment_id'],)).fetchone():
+                self.conn.execute('INSERT INTO slots VALUES (?,?)',(body['compartment_id'],json.dumps(body)))
         self.conn.commit()
 
         from simulators.device.service import initialize
@@ -48,7 +54,19 @@ class Simulator:
         from simulators.device.recovery_reconciliation import initialize as initialize_reconciliation
         initialize_action(self.conn)
         initialize_reconciliation(self.conn)
+        from simulators.device.no_delivery import initialize as initialize_no_delivery
+        initialize_no_delivery(self.conn, new_ledger=new_ledger, boot_id=self.boot)
+        self.http.event_hooks['response'].append(self._remember_tasks)
         self._effect_transaction = False
+
+    def _remember_tasks(self, response):
+        if response.request.method != 'GET' or response.status_code != 200:
+            return
+        kind = {'/v1/device/commands':'COMMAND', '/v1/device/recovery-tasks':'SERVICE'}.get(response.request.url.path)
+        if kind:
+            from simulators.device.no_delivery import register_tasks
+            response.read()
+            register_tasks(self.conn, kind, response.json()['items'])
 
     def close(self):self.http.close();self.conn.close()
     def commit_model(self):
@@ -225,7 +243,7 @@ def main():
                     from simulators.device.service import perform, flush as flush_service
                     if args.service_operation and not service_invoked:
                         tasks=sim.http.get('/v1/device/recovery-tasks');tasks.raise_for_status()
-                        task=next((t for t in tasks.json()['items'] if t['operation_id']==args.service_operation),None)
+                        task=next((t for t in tasks.json()['items'] if t.get('operation_id',t.get('context',{}).get('operation_id'))==args.service_operation),None)
                         if task:
                             outcome=perform(sim,task,technician_token=os.environ['SERVICE_TECHNICIAN_TOKEN'])
                             service_invoked=True

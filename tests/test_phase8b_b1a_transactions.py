@@ -121,9 +121,10 @@ def test_clean_install_direct_to_head(environment,monkeypatch):
     engine=create_engine(os.environ['MIGRATION_DATABASE_URL'],hide_parameters=True,
         connect_args={'options':f'-csearch_path={schema},public'})
     with engine.connect() as c:
-        assert c.scalar(text('select version_num from alembic_version'))=='0009_refund_foundation'
+        assert c.scalar(text('select version_num from alembic_version'))=='0010_no_delivery_eligibility'
         assert c.scalar(text('select count(*) from refunds'))==0
         assert c.scalar(text('select count(*) from refund_retry_permissions'))==0
         assert c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'INSERT')"),{'n':schema+'.refund_attempts'})
-        assert not c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'INSERT')"),{'n':schema+'.refund_eligibility_certificates'})
+        assert c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'INSERT')"),{'n':schema+'.refund_eligibility_certificates'})
+        assert not c.scalar(text("select has_table_privilege('doi_pin_runtime',:n,'UPDATE')"),{'n':schema+'.refund_eligibility_certificates'})
     engine.dispose()

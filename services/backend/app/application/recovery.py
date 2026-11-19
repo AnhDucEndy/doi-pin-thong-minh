@@ -91,7 +91,13 @@ def view(session, db, case):
 def get(session, db, actor, swap_id):
     swap = assets.get_row(session, db, 'swap_transactions', swap_id)
     authorize(session, db, actor, swap)
-    return view(session, db, case_for(session, db, swap_id))
+    case = case_for(session, db, swap_id)
+    if case['operation_id']:
+        op = assets.get_row(session, db, 'recovery_operations', case['operation_id'])
+        if op['protocol_version'] == '0.3':
+            from app.application.no_delivery import get as get_no_delivery
+            return get_no_delivery(session, db, actor, swap, case, op)
+    return view(session, db, case)
 
 
 def commands(session, db, swap_id):
@@ -172,6 +178,9 @@ def add_attestation(session, db, case, op, source, payload, actor, *,
 def record(session, db, actor, swap_id, body, ttl):
     swap, case = lock_context(session, db, swap_id, actor['user']['id'])
     user = authorize(session, db, actor, swap, write=True)
+    from app.application.no_delivery import station_fence
+    if station_fence(session,db,swap['station_id']):
+        raise DomainError(409,'QUIESCENCE_REQUIRED')
     assets.version(case, body.expected_version)
     if case['state'] == 'RESOLVED' or swap['state'] not in ('REVIEW_REQUIRED', 'COMPENSATING'):
         raise DomainError(409, 'STATE_CONFLICT')
@@ -299,6 +308,8 @@ def confirmation(session, db, actor, swap_id, body):
     if user['role'] != 'CUSTOMER' or user['id'] != swap['customer_id']:
         raise DomainError(403, 'FORBIDDEN')
     op = operation_for(session, db, case, body.operation_id)
+    if op['protocol_version'] == '0.3':
+        raise DomainError(409,'RECOVERY_STAGE_CONFLICT')
     if op['protocol_version'] == '0.2':
         open_operation(op)
         if op['context_hash'] != body.context_hash or case['operation_id'] != op['id']:
@@ -329,6 +340,8 @@ def confirmation(session, db, actor, swap_id, body):
 
 def observe(session, db, actor, body):
     initial = assets.get_row(session, db, 'recovery_operations', body.operation_id)
+    if initial['protocol_version'] == '0.3':
+        raise DomainError(409,'RECOVERY_STAGE_CONFLICT')
     if initial['protocol_version'] == '0.2':
         raise DomainError(409, 'RECONCILIATION_REQUIRED')
     if initial['station_id'] != actor['station_id']:
@@ -373,6 +386,10 @@ def tasks(session, db, actor):
     if not dev['enabled'] or dev['key_hash'] != actor['key_hash']:
         raise DomainError(403, 'DEVICE_DISABLED')
     table = db.table('recovery_operations')
+    from app.application.no_delivery import tasks as no_delivery_tasks
+    readonly = no_delivery_tasks(session,db,dev)
+    if readonly is not None:
+        return readonly
     from app.application.recovery_closure import tasks as closure_tasks
     result = closure_tasks(session, db, dev)
     closing = {task['operation_id'] for task in result}
@@ -455,6 +472,9 @@ def confirmation_context(session, db, actor, swap):
     if not case or not case['operation_id']:
         return None
     op = assets.get_row(session, db, 'recovery_operations', case['operation_id'])
+    if op['protocol_version'] == '0.3':
+        from app.application.no_delivery import project
+        return project(session, db, swap, case, op)
     if (op['swap_id'] != swap['id'] or op['case_id'] != case['id']
             or op['customer_id'] != swap['customer_id'] or op['station_id'] != swap['station_id']):
         return None
@@ -531,6 +551,8 @@ def settle(session, db, actor, swap_id, body):
     if not identity:
         raise DomainError(422, 'EVIDENCE_REQUIRED')
     op = operation_for(session, db, case, identity)
+    if op['protocol_version'] == '0.3':
+        raise DomainError(409, 'RECOVERY_STAGE_CONFLICT')
     if op['protocol_version'] == '0.2':
         if op['context'].get('reconciliation_only'):
             from app.application.recovery_reconciliation import settle as settle_chain

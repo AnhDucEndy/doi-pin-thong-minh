@@ -197,6 +197,9 @@ def process_one(session,db,event_id,policy,now=None):
         values={'processed_at':now,'accepted':False,'processing_error':error.code}
     session.execute(update(db.table('device_events')).where(db.table('device_events').c.id==event_id).values(**values))
     audit(session,db,device,'DEVICE_EVENT_PROCESSED',event_id,{'kind':event['kind'],'accepted':values['accepted'],'error':values['processing_error']})
+    if values['accepted']:
+        from app.application.no_delivery import revoke_contradictions
+        revoke_contradictions(session,db,device['id'],event_id)
     if values['accepted'] and event['kind']=='DOOR' and event['command_id']:
         command=assets.get_row(session,db,'device_commands',event['command_id'])
         if command['state']=='OBSERVED' and command['evidence_event_id']==event_id:

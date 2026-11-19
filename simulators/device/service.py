@@ -47,6 +47,10 @@ def command_effect(conn, command):
 
 
 def perform(simulator, task, *, technician_token, crash_after_prepared=False):
+    if task.get('protocol_version') == '0.3':
+        from simulators.device.no_delivery import inspect
+        inspect(simulator, task)
+        return 'NO_DELIVERY_INSPECTED_READ_ONLY'
     if task.get('task_kind') in ('RECONCILE_INSPECT', 'CLOSE_NO_EFFECT', 'CLOSURE_COMMITTED'):
         from simulators.device import recovery_reconciliation as reconciliation
         handler = {'RECONCILE_INSPECT':reconciliation.reinspect,
@@ -163,6 +167,8 @@ def perform(simulator, task, *, technician_token, crash_after_prepared=False):
 def flush(simulator):
     """Replay only durable observations; never run physical service here."""
     initialize(simulator.conn)
+    from simulators.device.no_delivery import flush as flush_no_delivery
+    flush_no_delivery(simulator)
     from simulators.device.recovery_fence import flush as flush_inspections
     flush_inspections(simulator)
     from simulators.device.recovery_reconciliation import acknowledge_closure
