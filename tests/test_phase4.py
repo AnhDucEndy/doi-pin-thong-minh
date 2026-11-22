@@ -334,7 +334,8 @@ def test_TC19_alert_scope_resolve_does_not_restore_lifecycle(client,environment,
     assert row(client,'compartments',demo_id('S01:slot:2'))['service_state']=='BLOCKED'
 
 
-def test_CT11_concurrent_duplicate_event_once(environment):
+def test_CT11_concurrent_duplicate_event_once(committed_environment):
+    environment=committed_environment
     body=snapshot_packet()
     with TestClient(create_app(environment['settings'])) as http:
         def submit(_):return http.post('/v1/device/events',headers={'X-Device-Key':environment['keys']['S01']},json=body)

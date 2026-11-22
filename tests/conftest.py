@@ -16,7 +16,7 @@ from alembic.config import Config
 from fastapi.testclient import TestClient
 import pytest
 pytest_plugins = ['recovery_audit_checks']
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, select
 from sqlalchemy.orm import sessionmaker
 
 from app.config import ROOT, Settings
@@ -25,8 +25,7 @@ from app.main import create_app
 from app.seed import seed
 
 
-@pytest.fixture(scope='session')
-def environment():
+def _environment():
     schema = 'phase5_test_' + uuid4().hex[:12]
     previous = os.environ.get('DATABASE_SCHEMA')
     os.environ['DATABASE_SCHEMA'] = schema
@@ -60,6 +59,58 @@ def environment():
         os.environ.pop('DATABASE_SCHEMA', None)
     else:
         os.environ['DATABASE_SCHEMA'] = previous
+
+
+@pytest.fixture(scope='session')
+def environment():
+    yield from _environment()
+
+
+def device_event_snapshot(env):
+    """Public metadata only; never include payloads, passwords or device keys."""
+    table = env['seed_db'].table('device_events')
+    with env['seed_db'].sessions() as session:
+        rows = session.execute(select(table.c.id, table.c.device_id, table.c.kind,
+            table.c.accepted, table.c.processed_at, table.c.processing_error)
+            .order_by(table.c.id)).mappings().all()
+    return json.loads(json.dumps([dict(row) for row in rows], default=str))
+
+
+def fixture_evidence(name, value):
+    # The supervised runner routes docs writes into its exclusive evidence root.
+    path = ROOT/'docs'/('PHASE8B_FIXTURE_'+name+'.json')
+    with path.open('x', encoding='utf-8') as stream:
+        json.dump(value, stream, indent=2, default=str)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+@pytest.fixture
+def committed_environment(environment, request):
+    """All real connections/threads share a new, retained, test-owned schema."""
+    shared_before = device_event_snapshot(environment)
+    previous_schema = os.environ.get('DATABASE_SCHEMA')
+    generator = _environment()
+    isolated = next(generator)
+    before = device_event_snapshot(isolated)
+    try:
+        assert isolated['settings'].schema != environment['settings'].schema
+        yield isolated
+    finally:
+        try:
+            shared_after = device_event_snapshot(environment)
+            fixture_evidence(isolated['settings'].schema, dict(node_id=request.node.nodeid,
+                shared_schema=environment['settings'].schema,
+                committed_schema=isolated['settings'].schema, schema_retained=True,
+                shared_before=shared_before, shared_after=shared_after,
+                committed_before=before, committed_after=device_event_snapshot(isolated)))
+            assert shared_after == shared_before, 'Committed fixture leaked into shared device history'
+        finally:
+            try:
+                next(generator)
+            except StopIteration:
+                pass
+            assert os.environ.get('DATABASE_SCHEMA') == previous_schema
 
 
 @pytest.fixture
