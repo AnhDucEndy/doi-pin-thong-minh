@@ -4,6 +4,40 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {login,recovery,refresh,mutation,safeHttp,flushHttp,runtime} from './support';
 const scenario=process.env.PW_SCENARIO ?? 'post';
+const rejectedSuccessor=process.env.PW_REJECTED_SUCCESSOR==='1';
+if(rejectedSuccessor && scenario!=='post-reject')throw new Error('Rejected successor requires isolated post-reject fixture');
+const refusalControlsOnly=process.env.PW_REFUSAL_CONTROLS==='1';
+export function assertReinspectRefusal(outcome:unknown,operationId:string,requestId:string) {
+  expect(outcome).toEqual({completed:false,error_type:'HTTPStatusError',action:'REINSPECT',
+    operation_id:operationId,request_id:requestId,http_status:409,error_code:'RECONCILIATION_REQUIRED',
+    http_method:'POST',http_path:'/v1/device/recovery-observations',request_operation_id:operationId});
+}
+if(refusalControlsOnly) {
+  // Tooling tests use the same assertion as Browser D, without a browser fixture.
+  // The positive fixture is emitted by the Python operator serializer test.
+  const fixture=JSON.parse(fs.readFileSync(process.env.PW_REFUSAL_OUTCOME_FIXTURE!,'utf8'));
+  const valid=fixture.outcome,operation=fixture.expected.operation_id,request=fixture.expected.request_id;
+  const variants:[string,unknown][]=[
+    ['HTTP 500',{...valid,http_status:500}],['HTTP 401',{...valid,http_status:401}],
+    ['HTTP 403',{...valid,http_status:403}],['wrong application code',{...valid,error_code:'EVIDENCE_REQUIRED'}],
+    ['wrong action',{...valid,action:'HANDOVER'}],
+    ['wrong operation',{...valid,operation_id:'22222222-2222-4222-8222-222222222222'}],
+    ['wrong HTTP operation',{...valid,request_operation_id:'22222222-2222-4222-8222-222222222222'}],
+    ['wrong request identity',{...valid,request_id:'request-22222222222242228222222222222222'}],
+    ['wrong endpoint',{...valid,http_path:'/v1/device/recovery-tasks'}],['wrong method',{...valid,http_method:'GET'}],
+    ['missing status',Object.fromEntries(Object.entries(valid).filter(([key])=>key!=='http_status'))],
+    ['missing code',Object.fromEntries(Object.entries(valid).filter(([key])=>key!=='error_code'))],
+    ['missing correlation',Object.fromEntries(Object.entries(valid).filter(([key])=>key!=='request_id'))],
+    ['malformed null',null],['malformed array',[]],['malformed status',{...valid,http_status:'409'}],
+    ['unexpected fields',{...valid,payload:'unexpected'}],
+  ];
+  test('operator refusal contract valid 409',()=>{
+    expect(()=>assertReinspectRefusal(valid,operation,request)).not.toThrow();
+  });
+  for(const [name,outcome] of variants)test(`operator refusal contract rejects ${name}`,()=>{
+    expect(()=>assertReinspectRefusal(outcome,operation,request)).toThrow();
+  });
+}
 const root=path.resolve('../..');
 function state() {return JSON.parse(fs.readFileSync(path.join(runtime,'state.json'),'utf8'));}
 async function operator(action:string,id:string) {
@@ -16,7 +50,7 @@ async function operator(action:string,id:string) {
   expect(outcome.completed,action).toBe(true);
   return outcome;
 }
-test(`staged Browser ${scenario}`,async({browser},info)=>{
+if(!refusalControlsOnly)test(`staged Browser ${rejectedSuccessor?'successor-after-reject-fail-closed':scenario}`,async({browser},info)=>{
   const events:any[]=[];const contexts=await Promise.all([browser.newContext(),browser.newContext()]);
   const [t,c]=await Promise.all(contexts.map(ctx=>ctx.newPage()));
   safeHttp(t,events);safeHttp(c,events);
@@ -169,6 +203,44 @@ test(`staged Browser ${scenario}`,async({browser},info)=>{
     await refresh(t);
     if(scenario==='post-reject') {
       await expect(t.getByRole('button',{name:'Yêu cầu Backend settlement'})).toBeDisabled();
+      if(rejectedSuccessor) {
+        // A recorded 0.2 REJECT is not erased by expiry or a new operation.
+        // recovery_reconciliation.current deliberately refuses this chain.
+        await expect.poll(()=>state().active_operation?.attestations.some((p:any)=>
+          p.stage==='POST_ACTION_RECEIPT' && p.source_kind==='CUSTOMER' && p.payload.confirm===false)).toBe(true);
+        const rejected=state().active_operation;
+        const rejection=rejected.attestations.find((p:any)=>p.stage==='POST_ACTION_RECEIPT'
+          && p.source_kind==='CUSTOMER' && p.payload.confirm===false);
+        expect(rejection).toBeTruthy();
+        await expect(t.getByRole('button',{name:'Yêu cầu successor inspection chỉ đọc'})).toBeDisabled();
+        await t.screenshot({path:info.outputPath('rejected-before-expiry.png'),fullPage:true});
+        await expect.poll(()=>Date.now()>=Date.parse(op.expires_at),{timeout:135_000,intervals:[500]}).toBe(true);
+        await refresh(t);
+        const response=await mutation(t,'Yêu cầu successor inspection chỉ đọc',200);
+        const child=(await response.json()).active_operation;
+        expect(child.id).not.toBe(rejected.id);expect(child.context_hash).not.toBe(rejected.context_hash);
+        expect(child.context.predecessor_id).toBe(rejected.id);
+        expect(child.context.predecessor_context_hash).toBe(rejected.context_hash);
+        expect(child.context.reconciliation_only).toBe(true);expect(child.attestations).toHaveLength(0);
+        expect(Date.parse(child.created_at)).toBeGreaterThanOrEqual(Date.parse(rejected.expires_at));
+        const output=execFileSync(path.join(root,'.venv/Scripts/python.exe'),[
+          path.join(root,'tools/phase8a_manual_operator.py'),'--request',runtime,'--action','REINSPECT','--operation',child.id],
+          {encoding:'utf8',windowsHide:true}).trim();
+        const result=output.replace(/\.json$/,'.result.json');
+        await expect.poll(()=>fs.existsSync(result),{timeout:20_000,intervals:[100]}).toBe(true);
+        const refusal=JSON.parse(fs.readFileSync(result,'utf8'));
+        const requestId=path.basename(output,'.json');
+        assertReinspectRefusal(refusal,child.id,requestId);
+        await Promise.all([refresh(t),refresh(c)]);
+        await expect(t.getByRole('button',{name:'Yêu cầu Backend settlement'})).toBeDisabled();
+        await expect(c.getByRole('button',{name:/Customer CONFIRM/})).toBeDisabled();
+        expect(state().active_operation.id).toBe(child.id);
+        expect(state().active_operation.attestations).toHaveLength(0);
+        fs.writeFileSync(path.join(process.env.PW_OUTPUT_DIR!,'rejected-successor-facts.json'),JSON.stringify({
+          predecessor_id:rejected.id,predecessor_context_hash:rejected.context_hash,expires_at:rejected.expires_at,
+          rejection,predecessor_attestations:rejected.attestations,child,refusal,request_id:requestId,
+          expected:'0.2 rejected predecessor remains fail-closed; no current proof/settlement or second action'},null,2));
+      }
     } else {
       const response=await mutation(t,'Yêu cầu Backend settlement',200);
       const original=await response.json();

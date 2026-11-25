@@ -14,6 +14,92 @@ ACTIONS={'INSPECT':'INSPECT','ACK':'AUTHORIZATION_INTENT','HANDOVER':'ACTION',
          'REINSPECT':'RECONCILE_INSPECT','CLOSE':'CLOSE_NO_EFFECT','ACK_CLOSURE':'CLOSURE_COMMITTED',
          'REBOOT':'TEST_ONLY_REBOOT'}
 
+def failure_outcome(error, *, action, operation, request_id):
+    """Allowlisted operator result, never exception text/headers/URLs/payloads.
+
+    request_id is the actual request-UUID filename stem, not an invented server
+    correlation header. request_operation_id comes from the failed HTTP request.
+    """
+    import httpx
+    def identity(value):
+        try:return str(UUID(str(value)))
+        except (ValueError,TypeError,AttributeError):return None
+    valid_request = (isinstance(request_id,str) and request_id.startswith('request-')
+        and len(request_id)==40 and identity(request_id[8:]) is not None)
+    result={'completed':False,'error_type':type(error).__name__,
+        'action':action if action in ACTIONS else None,'operation_id':identity(operation),
+        'request_id':request_id if valid_request else None,
+        'http_status':None,'error_code':None,'http_method':None,'http_path':None,
+        'request_operation_id':None}
+    if not isinstance(error,httpx.HTTPStatusError):return result
+    request=error.request
+    result['http_status']=error.response.status_code
+    result['http_method']=request.method if request.method in ('GET','POST') else None
+    allowed_paths={'/v1/device/recovery-observations','/v1/device/recovery-tasks','/v1/me'}
+    result['http_path']=request.url.path if request.url.path in allowed_paths else None
+    allowed_codes={'RECONCILIATION_REQUIRED','EVIDENCE_REQUIRED','AUTH_REQUIRED','SESSION_INVALID',
+        'SESSION_REVOKED','FORBIDDEN','STATION_FORBIDDEN','RECOVERY_CONTEXT_MISMATCH',
+        'RECOVERY_OPERATION_EXPIRED','RECOVERY_OPERATION_CLOSED','RECOVERY_ATTESTATION_EXISTS',
+        'RECOVERY_STAGE_CONFLICT','VERSION_CONFLICT','VALIDATION_ERROR'}
+    try:
+        body=error.response.json()
+        code=body.get('code') if isinstance(body,dict) else None
+        if isinstance(code,str) and code in allowed_codes:result['error_code']=code
+    except (ValueError,UnicodeError):pass
+    try:
+        packet=json.loads(request.content)
+        if isinstance(packet,dict):result['request_operation_id']=identity(packet.get('operation_id'))
+    except (ValueError,UnicodeError,httpx.RequestNotRead):pass
+    return result
+
+class StatePublicationError(RuntimeError):
+    """Fixture IPC could not publish a complete snapshot."""
+
+
+STATE_PUBLISH_MAX_ATTEMPTS = 32
+STATE_PUBLISH_DEADLINE_SECONDS = .5
+STATE_PUBLISH_RETRY_INTERVAL_SECONDS = .01
+
+
+def replace_state(temporary, destination):
+    # Real Node handles on this Windows fixture can temporarily deny replace
+    # with WinError 5. Other errors fail immediately; persistent denial is bounded.
+    deadline = time.monotonic()+STATE_PUBLISH_DEADLINE_SECONDS
+    for attempt in range(STATE_PUBLISH_MAX_ATTEMPTS):
+        try:
+            os.replace(temporary, destination)
+            return
+        except OSError as error:
+            remaining = deadline-time.monotonic()
+            if (os.name != 'nt' or getattr(error, 'winerror', None) != 5
+                    or attempt+1 == STATE_PUBLISH_MAX_ATTEMPTS or remaining <= 0):
+                raise
+            time.sleep(min(STATE_PUBLISH_RETRY_INTERVAL_SECONDS, remaining))
+            if time.monotonic() >= deadline:
+                raise
+
+
+def publish_state(directory, state):
+    # Keep the prior complete snapshot visible until its replacement is closed.
+    body = json.dumps(state, default=str, indent=2)
+    destination = directory/'state.json'
+    temporary = directory/('state.json.'+uuid4().hex+'.tmp')
+    created = False
+    try:
+        with temporary.open('x', encoding='utf8') as stream:
+            created = True
+            stream.write(body)
+            stream.flush()
+            os.fsync(stream.fileno())
+        replace_state(temporary, destination)
+    except OSError as error:
+        raise StatePublicationError('Fixture state publication failed') from error
+    finally:
+        # A collision never grants ownership of an existing temporary file.
+        if created:
+            temporary.unlink(missing_ok=True)
+
+
 def dispatch(sim, action, operation):
     from simulators.device import recovery_fence as fence, recovery_reconciliation as er
     from simulators.device.service import flush
@@ -61,8 +147,10 @@ def handoff(directory, ledger, fixture, swap, env, launch, read, case, report):
     web=subprocess.Popen(['node',str(ROOT/'apps/web/node_modules/vite/bin/vite.js'),
         '--host','127.0.0.1','--port',str(web_port),'--strictPort'],cwd=ROOT/'apps/web',env=env,
         stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+    test_process=None
     try:
         wait(lambda:httpx.get(web_url+'health').status_code==200,'Manual web ready',25)
+        publish_state(directory, case())
         public={'schema':fixture['settings'].schema,'swap_id':swap['id'],
                 'frontend':web_url,'backend':api_url,
                 'ledger':str(ledger),'ready':True,'web_pid':web.pid}
@@ -73,7 +161,7 @@ def handoff(directory, ledger, fixture, swap, env, launch, read, case, report):
             test_process=subprocess.Popen(['node',str(ROOT/'apps/web/node_modules/@playwright/test/cli.js'),
                 'test',env['P8_PLAYWRIGHT_SPEC']],cwd=ROOT/'apps/web',env=env)
             while test_process.poll() is None:
-                (directory/'state.json').write_text(json.dumps(case(),default=str,indent=2),encoding='utf8')
+                publish_state(directory, case())
                 time.sleep(.2)
             report['browser_exit']=test_process.returncode
             current_case=case()
@@ -116,10 +204,12 @@ def handoff(directory, ledger, fixture, swap, env, launch, read, case, report):
         while not (directory/'stop').exists():
             if web.poll() is not None:
                 raise RuntimeError('Manual web exited')
-            (directory/'state.json').write_text(json.dumps(case(),default=str,indent=2),encoding='utf8')
+            publish_state(directory, case())
             time.sleep(1)
         report['manual_browser']={'status':'User verification pending','schema':public['schema']}
     finally:
+        if test_process is not None and test_process.poll() is None:
+            test_process.terminate();test_process.wait(15)
         if web.poll() is None:
             web.terminate();web.wait(15)
         log.close()
@@ -176,7 +266,8 @@ def main():
                     else:
                         outcome=dispatch(sim,packet['action'],str(UUID(packet['operation_id'])))
                 except Exception as error:
-                    outcome={'completed':False,'error_type':type(error).__name__}
+                    outcome=failure_outcome(error,action=packet.get('action'),
+                        operation=packet.get('operation_id'),request_id=request.stem)
                 result.write_text(json.dumps(outcome),encoding='utf8')
             time.sleep(.1)
     finally:
