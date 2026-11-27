@@ -186,7 +186,7 @@ def api(args):
                     require(time.monotonic() < deadline, 'API readiness deadline')
                     try:
                         response = client.get(f'http://127.0.0.1:{port}/health')
-                    except httpx.ConnectError:
+                    except (httpx.ConnectError, httpx.ConnectTimeout):
                         time.sleep(.05)  # Bounded readiness polling, no process retry.
                         continue
                     require(response.status_code == 200 and response.json().get('status') == 'ok', 'API health failed')
