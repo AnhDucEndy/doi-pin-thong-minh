@@ -21,6 +21,13 @@ CLUSTER = '7712738307604140070'
 PROTECTED = frozenset({5432, 5448, 5449})
 SMOKE = 'phase5_test_ecfa77274ae3'
 
+# Database admission is independent of HTTP/raw-socket destinations. These
+# committed profiles are authority; caller-supplied endpoints never extend them.
+PROFILES = {
+    'pc': (5448, '7712160968488140838', 'doi_pin_g6_df268aa6e107'),
+    'laptop': (5449, CLUSTER, 'g6_laptop'),
+}
+
 
 class Denied(ValueError): pass
 class PendingIntegration(Denied): pass
@@ -43,14 +50,21 @@ class Config:
     system_identifier: str
     ports: tuple
     routes: tuple
+    profile: str  # Required: never infer PC/laptop from the current machine.
+
+    @property
+    def target(self):
+        require(self.profile in PROFILES, 'PROFILE')
+        return PROFILES[self.profile]
 
     def validate(self):
         require(bool(re.fullmatch('[a-f0-9]{12}', self.run_id)), 'RUN_ID')
         require(self.schema == 'phase5_test_' + self.run_id and self.schema != SMOKE, 'FRESH_SCHEMA')
         require(self.role == 'g6r_' + self.run_id, 'DEDICATED_ROLE')
-        require(self.database == 'g6_laptop' and self.system_identifier == CLUSTER, 'CLUSTER')
+        require((self.system_identifier, self.database) == self.target[1:], 'CLUSTER')
         require(bool(self.ports) and len(set(self.ports)) == len(self.ports), 'PORTS')
-        require(all(type(p) is int and 1024 <= p <= 65535 and p not in PROTECTED for p in self.ports), 'PROTECTED_PORT')
+        require(all(type(p) is int and 1024 <= p <= 65535 and p not in PROTECTED
+                    and not 5433 <= p <= 5447 for p in self.ports), 'PROTECTED_PORT')
         require(bool(self.routes), 'ROUTES')
         for port, method, path in self.routes:
             require(port in self.ports and method in ('GET', 'POST', 'PUT', 'PATCH'), 'ROUTE')
@@ -62,7 +76,7 @@ class Config:
 def validate_catalog(config, facts):
     """Checks facts from trusted read-only collector, not caller API claims."""
     config.validate()
-    require(facts['system_identifier'] == CLUSTER and facts['database'] == config.database, 'CLUSTER')
+    require(facts['system_identifier'] == config.system_identifier and facts['database'] == config.database, 'CLUSTER')
     require(facts['schema'] == config.schema and facts['role'] == config.role, 'BINDING')
     require(facts['revision'] == '0010_no_delivery_eligibility', 'REVISION')
     require(facts['owner_marker'] == 'g6_business:' + config.run_id, 'OWNERSHIP_MARKER')
@@ -77,20 +91,8 @@ def validate_catalog(config, facts):
 
 
 def inspect_live(config, connection):
-    """Read-only collector; never connects/provisions. Use dedicated runtime session.
-
-    Exact table/column grants must additionally pass the revision-aware official
-    plan review. Until that collector is integrated, no business launch is armed.
-    """
-    config.validate()
-    info = connection.info
-    require(info.host == '127.0.0.1' and info.port == 5449 and info.dbname == config.database, 'DB_ENDPOINT')
-    require(info.user == config.role and connection.execute('SHOW transaction_read_only').fetchone()[0] == 'on', 'READONLY_INSPECTION')
-    identity = connection.execute('SELECT system_identifier::text FROM pg_control_system()').fetchone()[0]
-    require(identity == CLUSTER, 'CLUSTER')
-    # Runtime normally cannot read pg_control_system: a separate trusted readonly
-    # identity collector is needed, without granting runtime this authority.
-    raise PendingIntegration('SEPARATE_IDENTITY_AND_EXACT_GRANT_COLLECTOR_REQUIRED')
+    """The runtime alone cannot attest cluster identity. No reusable launch token."""
+    raise PendingIntegration('SEPARATE_TRUSTED_IDENTITY_REQUIRED')
 
 
 def check_endpoint(config, host, port):

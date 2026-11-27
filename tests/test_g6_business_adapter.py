@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def config():
     return Config('abcdef123456', 'phase5_test_abcdef123456', 'g6r_abcdef123456',
-        'g6_laptop', CLUSTER, (18765,), ((18765, 'GET', '/health'),))
+        'g6_laptop', CLUSTER, (18765,), ((18765, 'GET', '/health'),), profile='laptop')
 
 
 def facts():
