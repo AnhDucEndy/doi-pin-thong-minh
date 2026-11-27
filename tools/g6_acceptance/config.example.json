@@ -1,0 +1,8 @@
+{
+  "database_port": null,
+  "database_name": null,
+  "schema": null,
+  "expected_system_identifier": null,
+  "env_file": ".local/g6/credentials.env",
+  "protected_ports": []
+}
